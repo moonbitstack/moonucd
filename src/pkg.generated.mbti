@@ -1,0 +1,151 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd"
+
+// Values
+pub fn bidi(Char) -> Bidi
+
+pub fn category(Char) -> Category
+
+pub fn fold(StringView) -> String
+
+pub fn has(Char, Property) -> Bool
+
+pub fn lower(StringView) -> String
+
+pub fn numeric(Char) -> Numeric?
+
+pub fn title(StringView) -> String
+
+pub fn upper(StringView) -> String
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum Bidi {
+  L
+  R
+  AL
+  EN
+  ES
+  ET
+  AN
+  CS
+  NSM
+  BN
+  B
+  S
+  WS
+  ON
+  LRE
+  LRO
+  RLE
+  RLO
+  PDF
+  LRI
+  RLI
+  FSI
+  PDI
+} derive(Eq)
+pub fn Bidi::equal(Self, Self) -> Bool
+pub fn Bidi::not_equal(Self, Self) -> Bool
+
+pub(all) enum Category {
+  Lu
+  Ll
+  Lt
+  Lm
+  Lo
+  Mn
+  Mc
+  Me
+  Nd
+  Nl
+  No
+  Pc
+  Pd
+  Ps
+  Pe
+  Pi
+  Pf
+  Po
+  Sm
+  Sc
+  Sk
+  So
+  Zs
+  Zl
+  Zp
+  Cc
+  Cf
+  Cs
+  Co
+  Cn
+} derive(Eq)
+pub fn Category::equal(Self, Self) -> Bool
+pub fn Category::not_equal(Self, Self) -> Bool
+pub fn Category::output(Self, &Logger) -> Unit
+pub fn Category::to_string(Self) -> String
+pub impl Show for Category
+
+pub(all) enum Numeric {
+  Decimal
+  Digit
+  Numeric
+} derive(Eq)
+pub fn Numeric::equal(Self, Self) -> Bool
+pub fn Numeric::not_equal(Self, Self) -> Bool
+
+pub(all) enum Property {
+  Alphabetic
+  Lowercase
+  Uppercase
+  Cased
+  CaseIgnorable
+  ChangesWhenLowercased
+  ChangesWhenUppercased
+  ChangesWhenTitlecased
+  ChangesWhenCasefolded
+  ChangesWhenCasemapped
+  IdStart
+  IdContinue
+  XidStart
+  XidContinue
+  DefaultIgnorableCodePoint
+  GraphemeExtend
+  GraphemeBase
+  Math
+  WhiteSpace
+  BidiControl
+  JoinControl
+  Dash
+  Hyphen
+  QuotationMark
+  TerminalPunctuation
+  HexDigit
+  AsciiHexDigit
+  Ideographic
+  Diacritic
+  Extender
+  NoncharacterCodePoint
+  IdsBinaryOperator
+  IdsTrinaryOperator
+  Radical
+  UnifiedIdeograph
+  Deprecated
+  SoftDotted
+  LogicalOrderException
+  SentenceTerminal
+  VariationSelector
+  PatternWhiteSpace
+  PatternSyntax
+  PrependedConcatenationMark
+  RegionalIndicator
+} derive(Eq)
+pub fn Property::equal(Self, Self) -> Bool
+pub fn Property::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits

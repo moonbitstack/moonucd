@@ -27,7 +27,7 @@ jobs:
       - name: test
         run: |
           moon update
-          moon check --target all
+          moon check --target all --deny-warn
           moon test --target all
 
   publish:

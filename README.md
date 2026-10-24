@@ -1,58 +1,53 @@
-# CHANGE-ME
+# moonucd
 
-One sentence saying what this is.
+The Unicode Character Database, queried from MoonBit: what kind of character
+something is, which properties it has, and how it changes case — for every
+code point of Unicode 17.0.0.
 
 ```moonbit
-@lib.greet("moonbit")
+@moonucd.category('ǅ')                 // Lt
+@moonucd.has('中', Alphabetic)          // true
+@moonucd.numeric('٣')                  // Some(Decimal)
+@moonucd.upper("straße")               // "STRASSE"
+@moonucd.lower("ΟΔΟΣ")                 // "οδος"
+@moonucd.fold("Straße") == @moonucd.fold("STRASSE")   // true
 ```
 
-Run `moon run examples/tour` for the whole surface in one go.
+```
+moon add moonbitstack/moonucd
+```
 
-## Starting from this template
+## What a character is
 
-1. `gh repo create moonbitstack/<name> --template moonbitstack/moonkit --public`
-2. Replace `CHANGE-ME` everywhere: `moon.mod` (name and repository), the two
-   `moon.pkg` files that import `lib`, and this file's title.
-3. Delete `bin/` if the repository ships no binary; delete `lib/` if it ships
-   only a binary. Most repositories here keep `lib/` and rename it to whatever
-   the package actually is — `base64/`, `sha2/`, `jwt/` — because a package is
-   named after what it does, not after its role.
-4. Fill in `keywords` and `description` in `moon.mod`. The description is what
-   mooncakes shows, so it says what the package is and what it is not.
-5. Write the specification link into every `moon.pkg`.
-
-## What is here and what is not
-
-| Carried | Why |
+| Call | Answers |
 |:--|:--|
-| `.github/workflows/` | GitHub does not inherit workflows; every repository needs its own copy |
-| `moon.mod`, `lib/`, `bin/`, `examples/tour/` | The module layout, with the library and the binary separated the way cargo separates them |
-| `.gitignore`, `.moonignore` | The second one exists because `.gitignore`'s `!.git*` would otherwise pull the whole object database into a published tarball |
-| `LICENSE` | Apache-2.0, the same across the organisation |
+| `category(ch)` | its General_Category, one of 30 two-letter values; unassigned code points are `Cn` |
+| `bidi(ch)` | its Bidi_Class, with the defaults Unicode gives unassigned code points |
+| `numeric(ch)` | `Decimal`, `Digit` or `Numeric` for characters with a numeric value, else `None` |
+| `has(ch, property)` | whether it has one of 44 binary properties: `Alphabetic`, `Uppercase`, `Lowercase`, `Cased`, `CaseIgnorable`, `WhiteSpace`, `XidStart`, `XidContinue`, `Math`, `Dash`, `Ideographic`, `RegionalIndicator`… |
 
-**Issue and pull-request templates are not here.** The organisation's `.github`
-repository supplies them to every repository that has none of its own; a copy
-here would shadow that one and then drift from it. A repository adds its own
-only when it needs something the organisation's does not cover.
+## Changing case
 
-## The gate
+All four take a string and return a new one, because one character can
+become several.
 
-Every commit passes this, with each exit code seen to be zero:
+| Call | Does |
+|:--|:--|
+| `upper(text)` | full uppercase mapping: `ß` becomes `SS`, `ﬃ` becomes `FFI` |
+| `lower(text)` | full lowercase mapping; a capital sigma ending a word becomes `ς` |
+| `title(text)` | each character to its titlecase form: `ǆ` becomes `ǅ`; which characters start a word is the caller's call |
+| `fold(text)` | full case folding, for comparing text without regard to case |
 
-```bash
-moon clean && moon fmt && moon check --target all --deny-warn \
-  && moon build --target all && moon test --target all
-```
+The mappings are the ones that hold in every language. Turkish and
+Lithuanian rules that depend on a locale are left to the caller.
 
-Before a release, `moon info --target all && git diff --exit-code` as well: the
-generated interface is checked in, and a difference means the interface moved
-without anyone saying so.
+## Version
 
-## Releasing
+`version()` returns `"17.0.0"`. The tables are generated from the Unicode
+Character Database by `scripts/gen_tables.py`; a new Unicode release is a
+regeneration, not a code change.
 
-Push a signed tag `v<version>`. `release.yml` runs the tests first and publishes
-only if they pass and the organisation variable `MOONCAKES_PUBLISH` is `true`.
-The major version stays at 0.
+Runs on every MoonBit backend: native, wasm, wasm-gc and js.
 
 ## Licence
 
