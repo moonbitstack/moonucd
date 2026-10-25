@@ -91,7 +91,7 @@ def mbt_strings(name, values, per_line=1):
     return "\n".join(lines)
 
 
-def mbt_string_pool(name, text, width=60, per_chunk_chars=180000):
+def mbt_string_pool(name, text, width=60, per_chunk_chars=180000, escaper=None):
     """A `let` holding `text` as a `String`, split into chunks small enough to
     stay under MoonBit's per-value string-literal length limit and its
     cumulative "text segment" line limit.
@@ -104,13 +104,15 @@ def mbt_string_pool(name, text, width=60, per_chunk_chars=180000):
     `text_segment_excceed`), and the named value is the concatenation of every
     chunk. The result is one `String` equal to `text`, but no single
     literal—and no single segment—approaches the limit."""
+    if escaper is None:
+        escaper = quote_raw
     pieces = []
     i = 0
     while i < len(text):
         piece = text[i : i + width]
         while piece.count("\\u{") != piece.count("}"):
             piece = piece[:-1]
-        pieces.append(f'"{quote_raw(piece)}"')
+        pieces.append(f'"{escaper(piece)}"')
         i += len(piece)
     chunks = []
     cur = []
@@ -153,6 +155,31 @@ def quote_raw(text):
             out.append("\\t")
         elif ch == "\r":
             out.append("\\r")
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def quote_full(text):
+    """The body of a MoonBit string literal that escapes every non-ASCII code
+    point as `\\u{...}`, so the lexer never meets a character it refuses to read
+    literally. Returns the body only (no surrounding quotes) — `mbt_string_pool`
+    adds those."""
+    out = []
+    for ch in text:
+        cp = ord(ch)
+        if ch == '"':
+            out.append('\\"')
+        elif ch == "\\":
+            out.append("\\\\")
+        elif ch == "\n":
+            out.append("\\n")
+        elif ch == "\t":
+            out.append("\\t")
+        elif ch == "\r":
+            out.append("\\r")
+        elif cp < 0x20 or cp == 0x7F or cp >= 0x80:
+            out.append(f"\\u{{{cp:04X}}}")
         else:
             out.append(ch)
     return "".join(out)

@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/normalize"
+
+// Values
+pub fn combining(Char) -> Int32
+
+pub fn decomposition(Char) -> String
+
+pub fn is_normalized(Form, StringView) -> Bool
+
+pub fn normalize(Form, StringView) -> String
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum Form {
+  NFC
+  NFD
+  NFKC
+  NFKD
+} derive(Eq)
+pub fn Form::equal(Self, Self) -> Bool
+pub fn Form::not_equal(Self, Self) -> Bool
+pub fn Form::output(Self, &Logger) -> Unit
+pub fn Form::to_string(Self) -> String
+pub impl Show for Form
+
+// Type aliases
+
+// Traits
