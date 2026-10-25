@@ -202,7 +202,7 @@ pub fn numeric(ch : Char) -> Numeric? {
 }
 
 ///|
-/// A binary property from PropList and DerivedCoreProperties.
+/// A binary property from PropList, DerivedCoreProperties and emoji-data.
 pub(all) enum Property {
   Alphabetic
   Lowercase
@@ -248,6 +248,12 @@ pub(all) enum Property {
   PatternSyntax
   PrependedConcatenationMark
   RegionalIndicator
+  Emoji
+  EmojiPresentation
+  EmojiModifier
+  EmojiModifierBase
+  EmojiComponent
+  ExtendedPictographic
 } derive(Eq)
 
 ///|
@@ -299,6 +305,12 @@ let properties : FixedArray[Property] = [
   PatternSyntax,
   PrependedConcatenationMark,
   RegionalIndicator,
+  Emoji,
+  EmojiPresentation,
+  EmojiModifier,
+  EmojiModifierBase,
+  EmojiComponent,
+  ExtendedPictographic,
 ]
 
 ///|

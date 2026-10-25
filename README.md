@@ -24,7 +24,7 @@ moon add moonbitstack/moonucd
 | `category(ch)` | its General_Category, one of 30 two-letter values; unassigned code points are `Cn` |
 | `bidi(ch)` | its Bidi_Class, with the defaults Unicode gives unassigned code points |
 | `numeric(ch)` | `Decimal`, `Digit` or `Numeric` for characters with a numeric value, else `None` |
-| `has(ch, property)` | whether it has one of 44 binary properties: `Alphabetic`, `Uppercase`, `Lowercase`, `Cased`, `CaseIgnorable`, `WhiteSpace`, `XidStart`, `XidContinue`, `Math`, `Dash`, `Ideographic`, `RegionalIndicator`… |
+| `has(ch, property)` | whether it has one of 50 binary properties: `Alphabetic`, `Uppercase`, `Lowercase`, `Cased`, `CaseIgnorable`, `WhiteSpace`, `XidStart`, `XidContinue`, `Math`, `Dash`, `Ideographic`, `RegionalIndicator`, `Emoji`, `EmojiPresentation`, `ExtendedPictographic`… |
 
 ## Changing case
 

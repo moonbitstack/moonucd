@@ -142,6 +142,12 @@ pub(all) enum Property {
   PatternSyntax
   PrependedConcatenationMark
   RegionalIndicator
+  Emoji
+  EmojiPresentation
+  EmojiModifier
+  EmojiModifierBase
+  EmojiComponent
+  ExtendedPictographic
 } derive(Eq)
 pub fn Property::equal(Self, Self) -> Bool
 pub fn Property::not_equal(Self, Self) -> Bool

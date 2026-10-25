@@ -82,6 +82,31 @@ test "fold agrees with str.casefold on every code point" {
 }
 
 ///|
+test "emoji properties agree with emoji-data.txt on every code point" {
+  let d = digest((ch, out) => {
+    out.push(if @moonucd.has(ch, Emoji) { 1 } else { 0 })
+    out.push(if @moonucd.has(ch, EmojiPresentation) { 1 } else { 0 })
+    out.push(if @moonucd.has(ch, EmojiModifier) { 1 } else { 0 })
+    out.push(if @moonucd.has(ch, EmojiModifierBase) { 1 } else { 0 })
+    out.push(if @moonucd.has(ch, EmojiComponent) { 1 } else { 0 })
+    out.push(if @moonucd.has(ch, ExtendedPictographic) { 1 } else { 0 })
+  })
+  assert_eq(d, 3592936711)
+}
+
+///|
+test "emoji properties on the usual suspects" {
+  assert_true(@moonucd.has('#', Emoji))
+  assert_true(!@moonucd.has('#', EmojiPresentation))
+  assert_true(@moonucd.has('\u{1F600}', EmojiPresentation))
+  assert_true(@moonucd.has('\u{1F3FB}', EmojiModifier))
+  assert_true(@moonucd.has('☝', EmojiModifierBase))
+  assert_true(@moonucd.has('#', EmojiComponent))
+  assert_true(!@moonucd.has('a', EmojiComponent))
+  assert_true(@moonucd.has('©', ExtendedPictographic))
+}
+
+///|
 test "full mappings change length" {
   assert_eq(@moonucd.upper("straße"), "STRASSE")
   assert_eq(@moonucd.fold("Straße"), "strasse")
