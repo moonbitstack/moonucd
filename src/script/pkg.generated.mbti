@@ -1,0 +1,201 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/script"
+
+// Values
+pub fn extensions(Char) -> Array[Script]
+
+pub fn script(Char) -> Script
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum Script {
+  Adlam
+  Ahom
+  AnatolianHieroglyphs
+  Arabic
+  Armenian
+  Avestan
+  Balinese
+  Bamum
+  BassaVah
+  Batak
+  Bengali
+  BeriaErfe
+  Bhaiksuki
+  Bopomofo
+  Brahmi
+  Braille
+  Buginese
+  Buhid
+  CanadianAboriginal
+  Carian
+  CaucasianAlbanian
+  Chakma
+  Cham
+  Cherokee
+  Chorasmian
+  Common
+  Coptic
+  Cuneiform
+  Cypriot
+  CyproMinoan
+  Cyrillic
+  Deseret
+  Devanagari
+  DivesAkuru
+  Dogra
+  Duployan
+  EgyptianHieroglyphs
+  Elbasan
+  Elymaic
+  Ethiopic
+  Garay
+  Georgian
+  Glagolitic
+  Gothic
+  Grantha
+  Greek
+  Gujarati
+  GunjalaGondi
+  Gurmukhi
+  GurungKhema
+  Han
+  Hangul
+  HanifiRohingya
+  Hanunoo
+  Hatran
+  Hebrew
+  Hiragana
+  ImperialAramaic
+  Inherited
+  InscriptionalPahlavi
+  InscriptionalParthian
+  Javanese
+  Kaithi
+  Kannada
+  Katakana
+  KatakanaOrHiragana
+  Kawi
+  KayahLi
+  Kharoshthi
+  KhitanSmallScript
+  Khmer
+  Khojki
+  Khudawadi
+  KiratRai
+  Lao
+  Latin
+  Lepcha
+  Limbu
+  LinearA
+  LinearB
+  Lisu
+  Lycian
+  Lydian
+  Mahajani
+  Makasar
+  Malayalam
+  Mandaic
+  Manichaean
+  Marchen
+  MasaramGondi
+  Medefaidrin
+  MeeteiMayek
+  MendeKikakui
+  MeroiticCursive
+  MeroiticHieroglyphs
+  Miao
+  Modi
+  Mongolian
+  Mro
+  Multani
+  Myanmar
+  Nabataean
+  NagMundari
+  Nandinagari
+  NewTaiLue
+  Newa
+  Nko
+  Nushu
+  NyiakengPuachueHmong
+  Ogham
+  OlChiki
+  OlOnal
+  OldHungarian
+  OldItalic
+  OldNorthArabian
+  OldPermic
+  OldPersian
+  OldSogdian
+  OldSouthArabian
+  OldTurkic
+  OldUyghur
+  Oriya
+  Osage
+  Osmanya
+  PahawhHmong
+  Palmyrene
+  PauCinHau
+  PhagsPa
+  Phoenician
+  PsalterPahlavi
+  Rejang
+  Runic
+  Samaritan
+  Saurashtra
+  Sharada
+  Shavian
+  Siddham
+  Sidetic
+  SignWriting
+  Sinhala
+  Sogdian
+  SoraSompeng
+  Soyombo
+  Sundanese
+  Sunuwar
+  SylotiNagri
+  Syriac
+  Tagalog
+  Tagbanwa
+  TaiLe
+  TaiTham
+  TaiViet
+  TaiYo
+  Takri
+  Tamil
+  Tangsa
+  Tangut
+  Telugu
+  Thaana
+  Thai
+  Tibetan
+  Tifinagh
+  Tirhuta
+  Todhri
+  TolongSiki
+  Toto
+  TuluTigalari
+  Ugaritic
+  Unknown
+  Vai
+  Vithkuqi
+  Wancho
+  WarangCiti
+  Yezidi
+  Yi
+  ZanabazarSquare
+} derive(Eq)
+pub fn Script::equal(Self, Self) -> Bool
+pub fn Script::not_equal(Self, Self) -> Bool
+pub fn Script::of(StringView) -> Self?
+pub fn Script::output(Self, &Logger) -> Unit
+pub fn Script::to_string(Self) -> String
+pub impl Show for Script
+
+// Type aliases
+
+// Traits

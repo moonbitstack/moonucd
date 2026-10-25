@@ -1,0 +1,3 @@
+import {
+  "moonbitstack/moonucd/script",
+} for "test"
