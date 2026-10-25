@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/width"
+
+// Values
+pub fn east_asian_width(Char) -> Eaw
+
+pub fn text_width(StringView) -> Int32
+
+pub fn version() -> String
+
+pub fn width(Char) -> Int32
+
+// Errors
+
+// Types and methods
+pub(all) enum Eaw {
+  A
+  F
+  H
+  N
+  Na
+  W
+} derive(Eq)
+pub fn Eaw::equal(Self, Self) -> Bool
+pub fn Eaw::not_equal(Self, Self) -> Bool
+pub fn Eaw::output(Self, &Logger) -> Unit
+pub fn Eaw::to_string(Self) -> String
+pub impl Show for Eaw
+
+// Type aliases
+
+// Traits
