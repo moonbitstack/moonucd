@@ -1,0 +1,4 @@
+import {
+  "moonbitstack/moonucd/segment",
+} for "test"
+

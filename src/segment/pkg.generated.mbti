@@ -1,0 +1,99 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/segment"
+
+// Values
+pub fn gcb_of_code(Int32) -> Gcb
+
+pub fn gcb_property(Char) -> Gcb
+
+pub fn grapheme_boundaries(Array[Int32]) -> Array[Bool]
+
+pub fn grapheme_clusters(StringView) -> Array[String]
+
+pub fn sb_of_code(Int32) -> Sb
+
+pub fn sb_property(Char) -> Sb
+
+pub fn sentence_boundaries(Array[Int32]) -> Array[Bool]
+
+pub fn sentences(StringView) -> Array[String]
+
+pub fn version() -> String
+
+pub fn wb_of_code(Int32) -> Wb
+
+pub fn wb_property(Char) -> Wb
+
+pub fn word_boundaries(Array[Int32]) -> Array[Bool]
+
+pub fn words(StringView) -> Array[String]
+
+// Errors
+
+// Types and methods
+pub(all) enum Gcb {
+  Other
+  CR
+  LF
+  Control
+  Extend
+  ZWJ
+  Regional_Indicator
+  Prepend
+  SpacingMark
+  L
+  V
+  T
+  LV
+  LVT
+} derive(Eq)
+pub fn Gcb::equal(Self, Self) -> Bool
+pub fn Gcb::not_equal(Self, Self) -> Bool
+
+pub(all) enum Sb {
+  Other
+  CR
+  LF
+  Sep
+  Extend
+  Format
+  Sp
+  Lower
+  Upper
+  OLetter
+  Numeric
+  ATerm
+  STerm
+  SContinue
+  Close
+} derive(Eq)
+pub fn Sb::equal(Self, Self) -> Bool
+pub fn Sb::not_equal(Self, Self) -> Bool
+
+pub(all) enum Wb {
+  Other
+  CR
+  LF
+  Newline
+  Extend
+  ZWJ
+  Format
+  Regional_Indicator
+  Katakana
+  ALetter
+  Hebrew_Letter
+  MidLetter
+  MidNumLet
+  MidNum
+  Numeric
+  ExtendNumLet
+  WSegSpace
+  Double_Quote
+  Single_Quote
+} derive(Eq)
+pub fn Wb::equal(Self, Self) -> Bool
+pub fn Wb::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits
