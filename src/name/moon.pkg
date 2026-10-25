@@ -1,0 +1,3 @@
+import {
+  "moonbitstack/moonucd/name",
+} for "test"

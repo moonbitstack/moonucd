@@ -71,9 +71,9 @@ def runs(values, default):
     return out
 
 
-def mbt_ints(name, values, per_line=12):
+def mbt_ints(name, values, per_line=12, typ="Int32"):
     """A `let` of a FixedArray of ints, wrapped for a readable width."""
-    lines = [f"let {name} : FixedArray[Int32] = ["]
+    lines = [f"let {name} : FixedArray[{typ}] = ["]
     for i in range(0, len(values), per_line):
         chunk = ", ".join(str(v) for v in values[i : i + per_line])
         lines.append(f"  {chunk},")
@@ -89,6 +89,73 @@ def mbt_strings(name, values, per_line=1):
         lines.append(f"  {chunk},")
     lines.append("]")
     return "\n".join(lines)
+
+
+def mbt_string_pool(name, text, width=60, per_chunk_chars=180000):
+    """A `let` holding `text` as a `String`, split into chunks small enough to
+    stay under MoonBit's per-value string-literal length limit and its
+    cumulative "text segment" line limit.
+
+    `text` is cut into `width`-char pieces (each its own quoted literal, joined
+    with `+`); the pieces are grouped into chunks whose total stays under
+    `per_chunk_chars`, each chunk its own `let` preceded by a `///|` segment
+    marker so MoonBit counts every chunk as its own text segment (it otherwise
+    merges contiguous string-literal `let`s into one and trips
+    `text_segment_excceed`), and the named value is the concatenation of every
+    chunk. The result is one `String` equal to `text`, but no single
+    literal—and no single segment—approaches the limit."""
+    pieces = []
+    i = 0
+    while i < len(text):
+        piece = text[i : i + width]
+        while piece.count("\\u{") != piece.count("}"):
+            piece = piece[:-1]
+        pieces.append(f'"{quote_raw(piece)}"')
+        i += len(piece)
+    chunks = []
+    cur = []
+    curlen = 0
+    for p in pieces:
+        if curlen + len(p) > per_chunk_chars and cur:
+            chunks.append(cur)
+            cur = []
+            curlen = 0
+        cur.append(p)
+        curlen += len(p)
+    if cur:
+        chunks.append(cur)
+    lines = []
+    varnames = []
+    for ci, ch in enumerate(chunks):
+        v = f"{name}_part{ci}"
+        body = "\n".join(
+            f"  {p} +" if idx < len(ch) - 1 else f"  {p}"
+            for idx, p in enumerate(ch)
+        )
+        lines.append(f"///|\nlet {v} : String =\n{body}")
+        varnames.append(v)
+    lines.append(f"///|\nlet {name} : String = " + " + ".join(varnames))
+    return "\n".join(lines)
+
+
+def quote_raw(text):
+    """A MoonBit string literal body (no surrounding quotes): escapes only what
+    MoonBit string syntax needs; everything else passes through verbatim."""
+    out = []
+    for ch in text:
+        if ch == '"':
+            out.append('\\"')
+        elif ch == "\\":
+            out.append("\\\\")
+        elif ch == "\n":
+            out.append("\\n")
+        elif ch == "\t":
+            out.append("\\t")
+        elif ch == "\r":
+            out.append("\\r")
+        else:
+            out.append(ch)
+    return "".join(out)
 
 
 def quote(text):
@@ -126,5 +193,6 @@ def header(script, version, extra=None):
 
 
 def write(path, lines):
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {path.relative_to(ROOT)}")
