@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/block"
+
+// Values
+pub fn block(Char) -> String?
+
+pub fn range(StringView) -> (Char, Char)?
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

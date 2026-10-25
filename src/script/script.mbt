@@ -298,7 +298,9 @@ fn compare_key(a : String, b : String) -> Int32 {
 }
 
 ///|
-/// The run holding `cp`, by binary search over sorted, disjoint runs.
+/// The run holding `cp`, by binary search over sorted, disjoint runs: the last
+/// run that starts at or before `cp`, then a check that it also ends at or
+/// after `cp`.
 fn find_run(
   starts : FixedArray[Int32],
   ends : FixedArray[Int32],
@@ -308,15 +310,17 @@ fn find_run(
   let mut b = starts.length()
   while a < b {
     let mid = (a + b) / 2
-    if ends[mid] < cp {
+    if starts[mid] <= cp {
       a = mid + 1
     } else {
       b = mid
     }
   }
-  if a < starts.length() && starts[a] <= cp {
-    Some(a)
-  } else {
-    None
+  if a > 0 {
+    let i = a - 1
+    if ends[i] >= cp {
+      return Some(i)
+    }
   }
+  None
 }
