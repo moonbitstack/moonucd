@@ -1,0 +1,5 @@
+import {
+  "moonbitstack/moonucd/normalize",
+}
+
+pkgtype(kind: "executable")

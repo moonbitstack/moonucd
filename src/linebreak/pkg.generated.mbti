@@ -68,6 +68,9 @@ pub(all) enum Lb {
 } derive(Eq)
 pub fn Lb::equal(Self, Self) -> Bool
 pub fn Lb::not_equal(Self, Self) -> Bool
+pub fn Lb::output(Self, &Logger) -> Unit
+pub fn Lb::to_string(Self) -> String
+pub impl Show for Lb
 
 // Type aliases
 

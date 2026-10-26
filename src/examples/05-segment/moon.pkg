@@ -1,0 +1,5 @@
+import {
+  "moonbitstack/moonucd/segment",
+}
+
+pkgtype(kind: "executable")

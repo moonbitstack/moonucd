@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>moonucd — the Unicode Character Database for MoonBit</title>
+<meta name="description" content="Query the Unicode Character Database from MoonBit: category, properties, case, normalization, scripts, segmentation, width and line breaking for every code point of Unicode 17.0.0.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Spectral:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4eee2;
+    --paper-2:#ece2d0;
+    --card:#fbf7ee;
+    --ink:#211e19;
+    --ink-soft:#5d564a;
+    --accent:#b23a2e;
+    --accent-deep:#8c2c22;
+    --teal:#2c5f57;
+    --line:#d9cdb6;
+    --shadow:0 18px 40px -22px rgba(33,30,25,.55);
+  }
+  *{box-sizing:border-box}
+  html{
+    scrollbar-width:thin;
+    scrollbar-color:var(--accent) var(--paper-2);
+  }
+  ::-webkit-scrollbar{width:14px;height:14px}
+  ::-webkit-scrollbar-track{background:var(--paper-2)}
+  ::-webkit-scrollbar-thumb{
+    background:var(--accent);
+    border:3px solid var(--paper-2);
+    border-radius:12px;
+  }
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent-deep)}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% -10%, #fff8ec 0%, rgba(255,248,236,0) 45%),
+      radial-gradient(circle at 100% 0%, #f0e6d2 0%, rgba(240,230,210,0) 40%),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Spectral", Georgia, "Times New Roman", serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace}
+
+  header.site{
+    border-bottom:1px solid var(--line);
+    background:rgba(244,238,226,.82);
+    backdrop-filter:blur(8px);
+    position:sticky;top:0;z-index:30;
+  }
+  .bar{
+    max-width:1080px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{font-family:"Playfair Display",serif;font-weight:900;font-size:24px;letter-spacing:.5px}
+  .brand small{font-family:"Spectral",serif;font-weight:400;font-size:13px;color:var(--ink-soft);margin-left:8px;letter-spacing:0}
+  nav.top{display:flex;gap:18px;font-family:"JetBrains Mono",monospace;font-size:13px;flex-wrap:wrap}
+  nav.top a{color:var(--ink-soft)}
+  nav.top a:hover{color:var(--accent)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  .hero{padding:54px 0 26px}
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:3px;
+    text-transform:uppercase;color:var(--accent);margin:0 0 10px;
+  }
+  h1{
+    font-family:"Playfair Display",serif;font-weight:900;
+    font-size:clamp(38px,6vw,68px);line-height:1.02;margin:.1em 0 .25em;
+  }
+  .lede{font-size:20px;max-width:60ch;color:var(--ink-soft);margin:0 0 22px}
+  .lede code{font-family:"JetBrains Mono",monospace;font-size:.85em;background:var(--paper-2);padding:1px 6px;border-radius:5px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{
+    font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.5px;
+    padding:11px 18px;border-radius:9px;border:1px solid var(--ink);
+    background:var(--ink);color:var(--paper);cursor:pointer;
+  }
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn:hover{text-decoration:none;opacity:.9}
+
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  h2{font-family:"Playfair Display",serif;font-weight:700;font-size:30px;margin:0 0 6px}
+  h3{font-family:"Playfair Display",serif;font-weight:700;font-size:21px;margin:26px 0 8px}
+  .sec-intro{color:var(--ink-soft);max-width:68ch;margin:0 0 18px}
+  p{margin:0 0 14px}
+
+  /* ---- Transit ticket ---- */
+  .ticket{
+    margin:22px 0;
+    display:grid;grid-template-columns:200px 1fr;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+  }
+  .ticket .stub{
+    background:linear-gradient(160deg,var(--accent),var(--accent-deep));
+    color:#fbe9e4;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:22px 12px;position:relative;
+  }
+  .ticket .glyph{
+    font-family:"Playfair Display",serif;font-weight:900;
+    font-size:96px;line-height:1;margin-bottom:8px;
+    text-shadow:0 2px 0 rgba(0,0,0,.15);
+  }
+  .ticket .stub .cp{font-family:"JetBrains Mono",monospace;font-size:14px;letter-spacing:1px}
+  .ticket .stub .kind{margin-top:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+  /* perforation between stub and body */
+  .ticket .perf{
+    position:absolute;left:200px;top:0;bottom:0;width:0;
+    border-left:2px dashed var(--card);
+    box-shadow:-6px 0 0 -1px var(--line);
+  }
+  .ticket .perf::before,.ticket .perf::after{
+    content:"";position:absolute;left:-9px;width:18px;height:18px;border-radius:50%;
+    background:var(--paper);
+  }
+  .ticket .perf::before{top:-9px}
+  .ticket .perf::after{bottom:-9px}
+  .ticket .body{padding:20px 24px 16px}
+  .ticket .row{
+    display:grid;grid-template-columns:130px 1fr;gap:8px;
+    padding:7px 0;border-bottom:1px dotted var(--line);align-items:baseline;
+  }
+  .ticket .row:last-child{border-bottom:0}
+  .ticket .row .k{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .ticket .row .v{font-size:17px}
+  .ticket .row .v small{color:var(--ink-soft);font-size:13px;font-style:italic}
+  .ticket .barcode{
+    height:34px;margin-top:12px;border-radius:6px;
+    background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 9px);
+    opacity:.85;
+  }
+  .ticket .serial{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);
+    margin-top:6px;letter-spacing:1px;
+  }
+
+  .inspector-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+  .inspector-controls label{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+  .char-input{
+    font-family:"Playfair Display",serif;font-size:30px;font-weight:700;
+    width:84px;text-align:center;padding:6px 8px;border-radius:10px;
+    border:1px solid var(--line);background:var(--paper);color:var(--ink);
+  }
+  .char-input:focus{outline:2px solid var(--accent);outline-offset:2px}
+  .hint{font-size:13px;color:var(--ink-soft)}
+
+  /* specimen grid (full detail) */
+  .specimen{
+    margin-top:18px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:6px 20px;box-shadow:var(--shadow);
+  }
+  .specimen .srow{
+    display:grid;grid-template-columns:170px 1fr;gap:10px;padding:9px 0;
+    border-bottom:1px dashed var(--line);align-items:baseline;
+  }
+  .specimen .srow:last-child{border-bottom:0}
+  .specimen .sk{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+  .specimen .sv{font-family:"JetBrains Mono",monospace;font-size:14px;word-break:break-word}
+  .badge{display:inline-block;padding:1px 8px;border-radius:20px;font-size:12px;border:1px solid var(--teal);color:var(--teal)}
+  .badge.no{border-color:var(--line);color:var(--ink-soft)}
+
+  /* string tools */
+  .string-tools{display:grid;grid-template-columns:1fr;gap:16px}
+  textarea.str{
+    width:100%;min-height:74px;resize:vertical;font-family:"JetBrains Mono",monospace;
+    font-size:15px;padding:12px;border-radius:12px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);
+  }
+  textarea.str:focus{outline:2px solid var(--accent);outline-offset:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{
+    font-family:"JetBrains Mono",monospace;font-size:13px;padding:6px 10px;
+    background:var(--card);border:1px solid var(--line);border-radius:8px;
+  }
+  .chip.g{background:#eef3ef;border-color:#cdd9cf}
+  .chip.b{background:#f7ece9;border-color:#e2c7bf}
+  .chip .lab{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:2px}
+  .sent{font-family:"Spectral",serif;background:var(--paper-2);border-radius:8px;padding:8px 12px;margin-top:6px;border-left:3px solid var(--teal)}
+
+  /* gallery */
+  .gallery{display:flex;flex-wrap:wrap;gap:12px}
+  .gal{
+    width:96px;height:96px;border-radius:14px;border:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s ease;
+  }
+  .gal:hover{transform:translateY(-3px)}
+  .gal .g{font-family:"Playfair Display",serif;font-weight:900;font-size:42px;line-height:1}
+  .gal .n{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);margin-top:6px;letter-spacing:1px}
+
+  /* package cards */
+  .pkgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:14px}
+  .pkg{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;box-shadow:var(--shadow);
+  }
+  .pkg h3{margin:0 0 4px;font-size:19px}
+  .pkg .route{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent);margin-bottom:8px}
+  .pkg code{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--paper-2);padding:1px 5px;border-radius:4px}
+  .pkg ul{margin:8px 0 0;padding-left:18px}
+  .pkg li{margin:3px 0;font-size:14.5px}
+  .pkg li b{font-family:"JetBrains Mono",monospace;font-weight:500}
+
+  table.api{width:100%;border-collapse:collapse;margin-top:10px;font-size:14.5px}
+  table.api th,table.api td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.api th{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+  table.api td code{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--paper-2);padding:1px 5px;border-radius:4px}
+  pre{
+    font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--ink);color:#f3ead7;
+    padding:16px 18px;border-radius:12px;overflow:auto;line-height:1.55;
+  }
+  pre .c{color:#b9a98a}
+  .example-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+  .example-list a{
+    display:flex;align-items:baseline;gap:8px;padding:12px 14px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);font-family:"JetBrains Mono",monospace;font-size:13px;
+  }
+  .example-list a:hover{text-decoration:none;border-color:var(--accent)}
+  .example-list a span{color:var(--ink-soft);font-family:"Spectral",serif}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:14px}
+  .postmark{
+    display:inline-block;border:2px solid var(--accent);color:var(--accent);
+    border-radius:50%;width:84px;height:84px;line-height:1.05;font-family:"Playfair Display",serif;
+    font-weight:700;font-size:12px;text-align:center;padding:14px 6px;transform:rotate(-9deg);
+    letter-spacing:1px;
+  }
+  .warn{background:#f7ece9;border:1px solid #e2c7bf;color:var(--accent-deep);padding:10px 14px;border-radius:10px;font-size:14px}
+  @media (max-width:640px){
+    .ticket{grid-template-columns:1fr}
+    .ticket .perf{display:none}
+    .ticket .stub{flex-direction:row;gap:16px;padding:16px}
+    .ticket .glyph{font-size:64px;margin:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <div class="brand">moonucd<small>Unicode for MoonBit</small></div>
+    <nav class="top">
+      <a href="#tour">Inspector</a>
+      <a href="#packages">Packages</a>
+      <a href="#strings">Segment</a>
+      <a href="#examples">Examples</a>
+      <a href="#tables">Tables</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" id="top" style="border-top:0">
+    <p class="eyebrow">Unicode 17.0.0 · MoonBit</p>
+    <h1>The character,<br>inspected like a ticket.</h1>
+    <p class="lede">
+      <strong>moonucd</strong> is the Unicode Character Database for MoonBit. Type a character and this
+      page asks the compiled library what it is — its category, script, block, age, width and line-break
+      class — for every code point of Unicode 17.0.0. No server, no guesswork: the same tables that ship
+      in the package run right here in your browser.
+    </p>
+    <div class="cta">
+      <a class="btn" href="#tour">Try the inspector</a>
+      <a class="btn ghost" href="https://github.com/moonbitstack/moonucd">View source</a>
+    </div>
+  </section>
+
+  <section id="tour">
+    <p class="eyebrow">Character inspector</p>
+    <h2>One character, the whole dossier</h2>
+    <p class="sec-intro">
+      Every value below comes from the real <span class="mono">moonucd</span> build via its JavaScript
+      target. The character travels on a transit ticket; the detailed fields are printed as a specimen.
+    </p>
+
+    <div class="inspector-controls">
+      <label for="charIn">Character</label>
+      <input id="charIn" class="char-input" value="中" maxlength="4" autocomplete="off" spellcheck="false">
+      <span class="hint">Type or paste any character — even emoji and astral code points.</span>
+    </div>
+
+    <div class="ticket" id="ticket">
+      <div class="stub">
+        <div class="glyph" id="tGlyph">中</div>
+        <div class="cp mono" id="tCp">U+4E2D</div>
+        <div class="kind">Passenger</div>
+      </div>
+      <div class="perf"></div>
+      <div class="body">
+        <div class="row"><div class="k">Class</div><div class="v"><span id="tCat">Lo</span> <small id="tCatName">Letter, other</small></div></div>
+        <div class="row"><div class="k">From</div><div class="v" id="tAge">Unicode 1.1</div></div>
+        <div class="row"><div class="k">To</div><div class="v" id="tBlock">CJK Unified Ideographs</div></div>
+        <div class="row"><div class="k">Gate</div><div class="v" id="tScript">Han</div></div>
+        <div class="row"><div class="k">Platform</div><div class="v" id="tBidi">L</div></div>
+        <div class="barcode" id="tBarcode"></div>
+        <div class="serial mono" id="tSerial">UTF-8 · E4 B8 AD</div>
+      </div>
+    </div>
+
+    <div class="specimen" id="specimen">
+      <div class="srow"><div class="sk">Codepoint</div><div class="sv" id="sCp">U+4E2D</div></div>
+      <div class="srow"><div class="sk">UTF-8</div><div class="sv" id="sU8">E4 B8 AD</div></div>
+      <div class="srow"><div class="sk">UTF-16</div><div class="sv" id="sU16">4E2D</div></div>
+      <div class="srow"><div class="sk">East Asian W.</div><div class="sv" id="sEaw">W</div></div>
+      <div class="srow"><div class="sk">Width</div><div class="sv" id="sWidth">2 cells</div></div>
+      <div class="srow"><div class="sk">Numeric</div><div class="sv" id="sNum">—</div></div>
+      <div class="srow"><div class="sk">Emoji</div><div class="sv" id="sEmoji">—</div></div>
+      <div class="srow"><div class="sk">Name</div><div class="sv" id="sName">CJK UNIFIED IDEOGRAPH-4E2D</div></div>
+      <div class="srow"><div class="sk">NFC / NFD</div><div class="sv" id="sNorm">中 / 中</div></div>
+      <div class="srow"><div class="sk">Already NFC</div><div class="sv" id="sIsNfc">yes</div></div>
+      <div class="srow"><div class="sk">Line break</div><div class="sv" id="sLb">ID</div></div>
+    </div>
+  </section>
+
+  <section id="gallery">
+    <p class="eyebrow">Quick picks</p>
+    <h2>Some passengers to try</h2>
+    <p class="sec-intro">Click a tile to load it into the inspector above.</p>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section id="strings">
+    <p class="eyebrow">Segmentation &amp; wrapping</p>
+    <h2>Break a string apart</h2>
+    <p class="sec-intro">
+      The same library applies UAX #29 and UAX #14 in the browser. Grapheme clusters keep a flag emoji or
+      an accented letter as one unit; line breaks show where a paragraph may wrap.
+    </p>
+    <div class="string-tools">
+      <div>
+        <textarea class="str" id="strIn" spellcheck="false">The quick 日本 🚀 fox jumps.</textarea>
+        <div style="margin-top:14px">
+          <div class="sk" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)">Grapheme clusters</div>
+          <div class="chips" id="grafChips"></div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="sk" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)">Words</div>
+          <div class="chips" id="wordChips"></div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="sk" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)">Sentences</div>
+          <div id="sentOut"></div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="sk" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)">Line breaks (UAX #14)</div>
+          <div class="chips" id="lbChips"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="packages">
+    <p class="eyebrow">What ships</p>
+    <h2>Nine small packages</h2>
+    <p class="sec-intro">
+      The root package holds the general character facts; the rest are opt-in sub-packages you import
+      only when you need them. Everything runs on every MoonBit backend — native, wasm, wasm-gc and js.
+    </p>
+    <div class="pkgs">
+      <div class="pkg">
+        <h3>moonucd</h3>
+        <div class="route">moonbitstack/moonucd</div>
+        <p>What a character is and how it changes case.</p>
+        <ul>
+          <li><b>category</b> · <b>bidi</b> · <b>numeric</b></li>
+          <li><b>has</b> — 50 binary properties</li>
+          <li><b>upper</b> · <b>lower</b> · <b>title</b> · <b>fold</b></li>
+        </ul>
+      </div>
+      <div class="pkg">
+        <h3>age</h3>
+        <div class="route">…/moonucd/age</div>
+        <p>The Unicode version that first assigned a code point.</p>
+        <ul><li><b>age(ch)</b> → (major, minor)?</li></ul>
+      </div>
+      <div class="pkg">
+        <h3>block</h3>
+        <div class="route">…/moonucd/block</div>
+        <p>The block a code point sits in, and a block's range.</p>
+        <ul><li><b>block(ch)</b> · <b>range(name)</b></li></ul>
+      </div>
+      <div class="pkg">
+        <h3>name</h3>
+        <div class="route">…/moonucd/name</div>
+        <p>A code point's name, and the code point a name names.</p>
+        <ul><li><b>name(ch)</b> · <b>lookup(name)</b></li></ul>
+      </div>
+      <div class="pkg">
+        <h3>normalize</h3>
+        <div class="route">…/moonucd/normalize</div>
+        <p>NFC / NFD / NFKC / NFKD, the UAX #15 way.</p>
+        <ul>
+          <li><b>normalize(form, s)</b></li>
+          <li><b>is_normalized</b> · <b>combining</b> · <b>decomposition</b></li>
+        </ul>
+      </div>
+      <div class="pkg">
+        <h3>script</h3>
+        <div class="route">…/moonucd/script</div>
+        <p>The script of a code point and its extensions.</p>
+        <ul><li><b>script(ch)</b> · <b>extensions(ch)</b> · <b>Script::of</b></li></ul>
+      </div>
+      <div class="pkg">
+        <h3>segment</h3>
+        <div class="route">…/moonucd/segment</div>
+        <p>Grapheme clusters, words and sentences (UAX #29).</p>
+        <ul>
+          <li><b>grapheme_clusters(s)</b></li>
+          <li><b>words(s)</b> · <b>sentences(s)</b></li>
+        </ul>
+      </div>
+      <div class="pkg">
+        <h3>width</h3>
+        <div class="route">…/moonucd/width</div>
+        <p>Terminal-cell width and East Asian Width.</p>
+        <ul><li><b>width(ch)</b> · <b>east_asian_width(ch)</b> · <b>text_width(s)</b></li></ul>
+      </div>
+      <div class="pkg">
+        <h3>linebreak</h3>
+        <div class="route">…/moonucd/linebreak</div>
+        <p>Line-break opportunities (UAX #14).</p>
+        <ul><li><b>lb_property(ch)</b> · <b>linebreaks(s)</b></li></ul>
+      </div>
+    </div>
+
+    <h3>The core package</h3>
+    <pre><span class="c">// what a character is</span>
+@moonucd.category('中')            <span class="c">// Lo</span>
+@moonucd.bidi('א')                <span class="c">// R</span>
+@moonucd.numeric('٣')              <span class="c">// Some(Decimal)</span>
+@moonucd.has('é', Alphabetic)      <span class="c">// true</span>
+
+<span class="c">// changing case</span>
+@moonucd.upper("straße")           <span class="c">// "STRASSE"</span>
+@moonucd.lower("ΟΔΟΣ")             <span class="c">// "οδος"</span></span></pre>
+
+    <h3>Line breaking, validated</h3>
+    <p class="sec-intro">
+      The linebreak package is checked against the full <span class="mono">LineBreakTest.txt</span> —
+      19,338 cases — at zero conformance errors, on all four backends.
+    </p>
+    <pre><span class="c">// where a line may wrap</span>
+@linebreak.linebreaks("The quick 日本 fox")
+<span class="c">// ["The ", "quick ", "日", "本 ", "fox"]</span>
+@linebreak.lb_property('中')        <span class="c">// ID</span></pre>
+  </section>
+
+  <section id="examples">
+    <p class="eyebrow">Examples</p>
+    <h2>Six runnable programs</h2>
+    <p class="sec-intro">One small program per package, in <span class="mono">src/examples</span>. Run any with <span class="mono">moon run src/examples/01-tour</span>.</p>
+    <div class="example-list">
+      <a href="#"><span>01</span> tour</a>
+      <a href="#"><span>02</span> scripts</a>
+      <a href="#"><span>03</span> width</a>
+      <a href="#"><span>04</span> normalize</a>
+      <a href="#"><span>05</span> segment</a>
+      <a href="#"><span>06</span> linebreak</a>
+    </div>
+  </section>
+
+  <section id="tables">
+    <p class="eyebrow">How it is made</p>
+    <h2>Generated from the UCD</h2>
+    <p class="sec-intro">
+      Every table is generated from the Unicode Character Database 17.0.0 by the scripts in
+      <span class="mono">scripts/</span>. They turn <span class="mono">UnicodeData.txt</span>,
+      <span class="mono">Scripts.txt</span>, <span class="monucd">LineBreak.txt</span>,
+      <span class="mono">EastAsianWidth.txt</span>, <span class="mono">emoji-data.txt</span>,
+      <span class="mono">NormalizationTest.txt</span> and the break tests into the run-length tables the
+      library searches at runtime. A new Unicode release is a regeneration — the algorithm code does not change.
+    </p>
+    <p><span class="mono">version()</span> returns <span class="mono">"17.0.0"</span> from every package.</p>
+  </section>
+
+  <footer>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+      <div class="postmark">moonucd<br>17.0.0</div>
+      <div>
+        <p style="margin:0"><strong>moonucd</strong> — the Unicode Character Database for MoonBit.</p>
+        <p style="margin:4px 0 0">This page runs the compiled library in your browser. Apache-2.0 licensed.</p>
+      </div>
+    </div>
+    <p style="margin:0">Install with <span class="mono">moon add moonbitstack/moonucd</span>.</p>
+  </footer>
+
+</main>
+
+<script src="moonucd.js"></script>
+<script>
+(function(){
+  "use strict";
+  var ready = (typeof globalThis.moonucd_inspect === "function");
+  if(!ready){
+    var w = document.getElementById("ticket");
+    if(w) w.insertAdjacentHTML("beforebegin",
+      '<div class="warn">The compiled library (moonucd.js) did not load, so the live inspector is off. ' +
+      'Everything else on this page still describes the package.</div>');
+    return;
+  }
+
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return c==="&"?"&amp;":c==="<"?"&lt;":">";});}
+
+  var charIn = document.getElementById("charIn");
+
+  function inspect(ch){
+    var cp = ch.codePointAt(0);
+    try { return JSON.parse(globalThis.moonucd_inspect(cp)); }
+    catch(e){ return null; }
+  }
+
+  function renderChar(){
+    var raw = charIn.value;
+    var ch = (Array.from(raw)[0]) || " ";
+    var d = inspect(ch);
+    if(!d){ return; }
+    set("tGlyph", d.char);
+    set("tCp", d.codepoint);
+    set("tCat", d.category);
+    set("tCatName", d.categoryName);
+    set("tAge", d.age ? "Unicode " + d.age : "unassigned");
+    set("tBlock", d.block || "no block");
+    set("tScript", d.script);
+    set("tBidi", d.bidi);
+    set("tSerial", "UTF-8 · " + d.utf8);
+    set("sCp", d.codepoint);
+    set("sU8", d.utf8);
+    set("sU16", d.utf16);
+    set("sEaw", d.eaw);
+    set("sWidth", d.width + (d.width===1?" cell":" cells"));
+    set("sNum", d.numeric || "—");
+    set("sEmoji", (d.emoji==="true"?"emoji":"not emoji") + (d.extPict==="true"?" · ext. pictographic":""));
+    set("sName", d.name || "no name");
+    set("sNorm", d.nfc + " / " + d.nfd);
+    set("sIsNfc", d.isNFC==="true"?"yes":"no");
+    set("sLb", d.lb);
+  }
+  function set(id,v){var el=document.getElementById(id); if(el) el.textContent=v;}
+
+  charIn.addEventListener("input", renderChar);
+
+  // gallery
+  var picks = [
+    ["中","中"],["A","A"],["🚀","🚀"],["é","é"],["Å","Å"],["ǅ","ǅ"],
+    ["٣","٣"],["あ","あ"],["⚠","⚠"],["🇯🇵","🇯🇵"],["—","—"],["©","©"]
+  ];
+  var gal = document.getElementById("gallery");
+  picks.forEach(function(p){
+    var a = document.createElement("div");
+    a.className = "gal";
+    a.innerHTML = '<div class="g">'+esc(p[0])+'</div><div class="n">'+esc(p[1])+'</div>';
+    a.addEventListener("click", function(){
+      charIn.value = p[0]; renderChar();
+      document.getElementById("tour").scrollIntoView({behavior:"smooth"});
+    });
+    gal.appendChild(a);
+  });
+
+  // string tools
+  var strIn = document.getElementById("strIn");
+  function chip(text,cls){var c=document.createElement("span");c.className="chip"+(cls?" "+cls:"");c.textContent=text;return c;}
+  function renderStr(){
+    var s = strIn.value;
+    var seg = JSON.parse(globalThis.moonucd_seg(s));
+    var lb = JSON.parse(globalThis.moonucd_lb(s));
+    var gc = document.getElementById("grafChips"); gc.innerHTML="";
+    seg.grapheme.forEach(function(g){gc.appendChild(chip(g,"g"));});
+    var wc = document.getElementById("wordChips"); wc.innerHTML="";
+    seg.words.forEach(function(w){wc.appendChild(chip(JSON.stringify(w)));});
+    var so = document.getElementById("sentOut"); so.innerHTML="";
+    seg.sentences.forEach(function(sn){var d=document.createElement("div");d.className="sent";d.textContent=sn;so.appendChild(d);});
+    var lbc = document.getElementById("lbChips"); lbc.innerHTML="";
+    lb.linebreaks.forEach(function(l){lbc.appendChild(chip(l,"b"));});
+  }
+  strIn.addEventListener("input", renderStr);
+
+  // initial paint
+  renderChar();
+  renderStr();
+})();
+</script>
+</body>
+</html>

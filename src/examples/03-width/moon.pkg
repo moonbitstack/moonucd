@@ -1,0 +1,5 @@
+import {
+  "moonbitstack/moonucd/width",
+}
+
+pkgtype(kind: "executable")

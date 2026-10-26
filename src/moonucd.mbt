@@ -138,6 +138,25 @@ pub(all) enum Bidi {
 pub extend Bidi with Eq::{equal, not_equal}
 
 ///|
+let bidi_names : FixedArray[String] = [
+  "L", "R", "AL", "EN", "ES", "ET", "AN", "CS", "NSM", "BN", "B", "S", "WS", "ON",
+  "LRE", "LRO", "RLE", "RLO", "PDF", "LRI", "RLI", "FSI", "PDI",
+]
+
+///|
+pub impl Show for Bidi with fn output(self, logger) {
+  for i, b in bidis {
+    if b == self {
+      logger.write_string(bidi_names[i])
+      return
+    }
+  }
+}
+
+///|
+pub extend Bidi with Show::{to_string, output}
+
+///|
 let bidis : FixedArray[Bidi] = [
   L,
   R,

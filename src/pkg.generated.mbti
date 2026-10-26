@@ -50,6 +50,9 @@ pub(all) enum Bidi {
 } derive(Eq)
 pub fn Bidi::equal(Self, Self) -> Bool
 pub fn Bidi::not_equal(Self, Self) -> Bool
+pub fn Bidi::output(Self, &Logger) -> Unit
+pub fn Bidi::to_string(Self) -> String
+pub impl Show for Bidi
 
 pub(all) enum Category {
   Lu
