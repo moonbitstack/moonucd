@@ -90,3 +90,12 @@ test "text_width on hand-picked strings" {
   assert_eq(@width.text_width("A\u{200D}"), 1)
   assert_eq(@width.text_width("🍵"), 2)
 }
+
+///|
+test "ambiguous characters take the width asked for" {
+  assert_eq(@width.width('α'), 1)
+  assert_eq(@width.width('α', ambiguous=2), 2)
+  assert_eq(@width.width('中', ambiguous=1), 2)
+  assert_eq(@width.text_width("α中", ambiguous=2), 4)
+  assert_eq(@width.text_width("α中"), 3)
+}

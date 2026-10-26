@@ -1,7 +1,7 @@
 ///|
 fn main {
   println("Line breaking — where a line may wrap (UAX #14).")
-  let text = "The quick 日本 fox"
+  let text = "The quick 中文 fox"
   println("  linebreaks(\"\{text}\"):")
   for seg in @linebreak.linebreaks(text) {
     println("    [\{seg}]")

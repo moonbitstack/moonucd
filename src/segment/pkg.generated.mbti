@@ -2,15 +2,13 @@
 package "moonbitstack/moonucd/segment"
 
 // Values
-pub fn gcb_of_code(Int32) -> Gcb
-
 pub fn gcb_property(Char) -> Gcb
+
+pub fn grapheme_at(StringView, Int32) -> (Int32, Int32)
 
 pub fn grapheme_boundaries(Array[Int32]) -> Array[Bool]
 
 pub fn grapheme_clusters(StringView) -> Array[String]
-
-pub fn sb_of_code(Int32) -> Sb
 
 pub fn sb_property(Char) -> Sb
 
@@ -20,9 +18,9 @@ pub fn sentences(StringView) -> Array[String]
 
 pub fn version() -> String
 
-pub fn wb_of_code(Int32) -> Wb
-
 pub fn wb_property(Char) -> Wb
+
+pub fn word_at(StringView, Int32) -> (Int32, Int32)
 
 pub fn word_boundaries(Array[Int32]) -> Array[Bool]
 
@@ -38,7 +36,7 @@ pub(all) enum Gcb {
   Control
   Extend
   ZWJ
-  Regional_Indicator
+  RegionalIndicator
   Prepend
   SpacingMark
   L
@@ -49,6 +47,9 @@ pub(all) enum Gcb {
 } derive(Eq)
 pub fn Gcb::equal(Self, Self) -> Bool
 pub fn Gcb::not_equal(Self, Self) -> Bool
+pub fn Gcb::output(Self, &Logger) -> Unit
+pub fn Gcb::to_string(Self) -> String
+pub impl Show for Gcb
 
 pub(all) enum Sb {
   Other
@@ -69,6 +70,9 @@ pub(all) enum Sb {
 } derive(Eq)
 pub fn Sb::equal(Self, Self) -> Bool
 pub fn Sb::not_equal(Self, Self) -> Bool
+pub fn Sb::output(Self, &Logger) -> Unit
+pub fn Sb::to_string(Self) -> String
+pub impl Show for Sb
 
 pub(all) enum Wb {
   Other
@@ -78,21 +82,24 @@ pub(all) enum Wb {
   Extend
   ZWJ
   Format
-  Regional_Indicator
+  RegionalIndicator
   Katakana
   ALetter
-  Hebrew_Letter
+  HebrewLetter
   MidLetter
   MidNumLet
   MidNum
   Numeric
   ExtendNumLet
   WSegSpace
-  Double_Quote
-  Single_Quote
+  DoubleQuote
+  SingleQuote
 } derive(Eq)
 pub fn Wb::equal(Self, Self) -> Bool
 pub fn Wb::not_equal(Self, Self) -> Bool
+pub fn Wb::output(Self, &Logger) -> Unit
+pub fn Wb::to_string(Self) -> String
+pub impl Show for Wb
 
 // Type aliases
 

@@ -17,7 +17,8 @@ pub fn block(ch : Char) -> String? {
 ///|
 /// The first and last code point of the block called `name`, matched the
 /// loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a
-/// leading "is" are ignored.
+/// leading "is" are ignored. The short aliases of PropertyValueAliases.txt
+/// (`ASCII`, `Greek`, `CJK`) name their blocks too.
 pub fn range(name : StringView) -> (Char, Char)? {
   match find_key(name) {
     Some(i) => {

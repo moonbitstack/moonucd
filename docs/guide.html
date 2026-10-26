@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide · moonucd</title>
+<meta name="description" content="A walk through moonucd: character facts, case, names, scripts, normalization, width, segmentation and line breaking.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <div class="brand"><a href="./">moonucd</a><small>Unicode for MoonBit</small></div>
+    <nav class="top">
+      <a href="./#tour">Inspector</a>
+      <a href="./#packages">Packages</a>
+      <a href="guide.html" aria-current="page">Guide</a>
+      <a href="api.html">API</a>
+      <a class="gh" href="https://github.com/moonbitstack/moonucd" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap doc">
+
+  <aside class="itinerary">
+    <p class="label">Itinerary</p>
+    <ol>
+      <li><a href="#start">Quick start</a></li>
+      <li><a href="#facts">What a character is</a></li>
+      <li><a href="#case">Changing case</a></li>
+      <li><a href="#names">Age, blocks and names</a></li>
+      <li><a href="#scripts">Scripts</a></li>
+      <li><a href="#normalize">Normalization</a></li>
+      <li><a href="#width">Width</a></li>
+      <li><a href="#segment">Segmentation</a></li>
+      <li><a href="#linebreak">Line breaking</a></li>
+      <li><a href="#versions">Versions</a></li>
+    </ol>
+    <p class="label">Elsewhere</p>
+    <ol>
+      <li><a href="api.html">API reference</a></li>
+      <li><a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples">Examples</a></li>
+    </ol>
+  </aside>
+
+  <article class="page">
+
+    <section id="start">
+      <p class="eyebrow">Quick start</p>
+      <h2>Add the module, import what you use</h2>
+      <pre>moon add moonbitstack/moonucd</pre>
+      <span class="file">moon.pkg</span>
+      <pre>import {
+  "moonbitstack/moonucd",
+  "moonbitstack/moonucd/width",
+}</pre>
+      <span class="file">main.mbt</span>
+      <pre>fn main {
+  println(@moonucd.category('<span class="w2">中</span>'))            <span class="c">// Lo</span>
+  println(@moonucd.upper("stra<span class="w1">ß</span>e"))           <span class="c">// STRASSE</span>
+  println(@width.text_width("Hello <span class="w2">世</span><span class="w2">界</span>"))    <span class="c">// 10</span>
+}</pre>
+      <p>
+        The root package answers what a character is and how it changes case. The other eight packages
+        each carry their own tables, so a program links only the tables of the packages it imports.
+        Every function is pure and runs on native, wasm, wasm-gc and js.
+      </p>
+      <table class="api">
+        <tr><th>Import</th><th>Answers</th></tr>
+        <tr><td><code>moonbitstack/moonucd</code></td><td>category, bidi class, numeric type, 50 binary properties, case mapping and folding</td></tr>
+        <tr><td><code>…/moonucd/age</code></td><td>the Unicode version that first assigned a code point</td></tr>
+        <tr><td><code>…/moonucd/block</code></td><td>the block a code point sits in, and the range of a block</td></tr>
+        <tr><td><code>…/moonucd/name</code></td><td>the name of a code point, and the code point a name names</td></tr>
+        <tr><td><code>…/moonucd/script</code></td><td>the script of a code point, and the scripts it is shared with</td></tr>
+        <tr><td><code>…/moonucd/normalize</code></td><td>NFC, NFD, NFKC and NFKD, combining classes, decompositions</td></tr>
+        <tr><td><code>…/moonucd/width</code></td><td>terminal cells, East Asian Width</td></tr>
+        <tr><td><code>…/moonucd/segment</code></td><td>grapheme clusters, words and sentences (UAX #29)</td></tr>
+        <tr><td><code>…/moonucd/linebreak</code></td><td>line-break opportunities (UAX #14)</td></tr>
+      </table>
+    </section>
+
+    <section id="facts">
+      <p class="eyebrow">moonbitstack/moonucd</p>
+      <h2>What a character is</h2>
+      <p>
+        <code>category</code> gives the General_Category, one of 30 two-letter values; unassigned code points
+        are <code>Cn</code>. <code>bidi</code> gives the Bidi_Class, with the defaults the Standard sets for
+        unassigned code points.
+      </p>
+      <pre>@moonucd.category('<span class="w1">ǅ</span>')          <span class="c">// Lt</span>
+@moonucd.category('\u{378}')    <span class="c">// Cn</span>
+@moonucd.bidi('<span class="w1">א</span>')              <span class="c">// R</span>
+@moonucd.bidi('<span class="w1">٣</span>')              <span class="c">// AN</span></pre>
+      <p><code>numeric</code> tells the three kinds of numeric character apart, and is <code>None</code> for the rest.</p>
+      <table class="api">
+        <tr><th>Value</th><th>Characters</th><th>Example</th></tr>
+        <tr><td><code>Decimal</code></td><td>digits of a positional decimal system</td><td><code>'٣'</code> <code>'7'</code></td></tr>
+        <tr><td><code>Digit</code></td><td>digits in a special form</td><td><code>'²'</code> <code>'①'</code></td></tr>
+        <tr><td><code>Numeric</code></td><td>other characters with a numeric value</td><td><code>'½'</code> <code>'五'</code></td></tr>
+      </table>
+      <p>
+        <code>has</code> answers 50 binary properties through one enum: identifiers (<code>XidStart</code>,
+        <code>XidContinue</code>, <code>PatternSyntax</code>), case (<code>Uppercase</code>, <code>Cased</code>,
+        <code>ChangesWhenCasefolded</code>), emoji (<code>Emoji</code>, <code>EmojiPresentation</code>,
+        <code>ExtendedPictographic</code>), and the shape of text (<code>WhiteSpace</code>, <code>Dash</code>,
+        <code>QuotationMark</code>, <code>Ideographic</code>, <code>Math</code>). An identifier check is two of them:
+      </p>
+      <pre>fn is_identifier(s : String) -> Bool {
+  let mut first = true
+  for ch in s {
+    let ok = if first {
+      @moonucd.has(ch, XidStart)
+    } else {
+      @moonucd.has(ch, XidContinue)
+    }
+    if !ok {
+      return false
+    }
+    first = false
+  }
+  !first
+}
+
+is_identifier("<span class="w2">变</span><span class="w2">量</span>_1")    <span class="c">// true</span>
+is_identifier("na<span class="w1">ï</span>ve")     <span class="c">// true</span>
+is_identifier("1st")       <span class="c">// false</span></pre>
+    </section>
+
+    <section id="case">
+      <p class="eyebrow">moonbitstack/moonucd</p>
+      <h2>Changing case</h2>
+      <p>
+        The mappings are the full ones, so a character can become several, and each function takes and
+        returns a string. <code>lower</code> turns a capital sigma that ends a word into ς.
+      </p>
+      <pre>@moonucd.upper("stra<span class="w1">ß</span>e")         <span class="c">// "STRASSE"</span>
+@moonucd.upper("<span class="w1">ﬃ</span>")              <span class="c">// "FFI"</span>
+@moonucd.lower("<span class="w1">Σ</span><span class="w1">Ο</span><span class="w1">Φ</span><span class="w1">Ο</span><span class="w1">Σ</span> <span class="w1">Σ</span><span class="w1">Ο</span><span class="w1">Φ</span><span class="w1">Ο</span><span class="w1">Σ</span>")    <span class="c">// "<span class="w1">σ</span><span class="w1">ο</span><span class="w1">φ</span><span class="w1">ο</span><span class="w1">ς</span> <span class="w1">σ</span><span class="w1">ο</span><span class="w1">φ</span><span class="w1">ο</span><span class="w1">ς</span>"</span>
+@moonucd.title("<span class="w1">ǆ</span>")              <span class="c">// "<span class="w1">ǅ</span>"</span>
+@moonucd.fold("Stra<span class="w1">ß</span>e")          <span class="c">// "strasse"</span></pre>
+      <p>
+        <code>title</code> maps every character to its titlecase form; which characters start a word is the
+        caller's choice, and <code>@segment.words</code> finds them. Rules that hold only in one language,
+        such as the Turkish dotless i, are left to the caller as well.
+      </p>
+      <p>To compare text regardless of case and of how accents are composed, fold between two normalizations:</p>
+      <pre>fn same_text(a : String, b : String) -> Bool {
+  let key = fn(s : String) {
+    @normalize.normalize(NFC, @moonucd.fold(@normalize.normalize(NFD, s)))
+  }
+  key(a) == key(b)
+}
+
+same_text("Stra<span class="w1">ß</span>e", "STRASSE")    <span class="c">// true</span>
+same_text("<span class="w1">Å</span>", "a\u{30A}")        <span class="c">// true</span></pre>
+    </section>
+
+    <section id="names">
+      <p class="eyebrow">…/age · …/block · …/name</p>
+      <h2>Age, blocks and names</h2>
+      <pre>@age.age('<span class="w1">€</span>')                     <span class="c">// Some((2, 1))</span>
+@age.age('\u{378}')               <span class="c">// None</span>
+@block.block('<span class="w2">中</span>')                <span class="c">// Some("CJK Unified Ideographs")</span>
+@block.range("Greek")             <span class="c">// Some(('\u{370}', '\u{3FF}'))</span>
+@name.name('<span class="w2">中</span>')                  <span class="c">// Some("CJK UNIFIED IDEOGRAPH-4E2D")</span>
+@name.name('<span class="w2">가</span>')                  <span class="c">// Some("HANGUL SYLLABLE GA")</span>
+@name.lookup("copyright sign")    <span class="c">// Some('<span class="w1">©</span>')</span>
+@name.lookup("NULL")              <span class="c">// Some('\u{0}')</span></pre>
+      <p>
+        <code>age</code> is the <code>(major, minor)</code> version that first assigned the code point.
+        <code>range</code> and <code>lookup</code> match names loosely: case, spaces, underscores and a hyphen
+        between two letters do not count. <code>range</code> also takes a leading "Is" and the short block
+        aliases (<code>ASCII</code>, <code>Greek</code>, <code>CJK</code>); <code>lookup</code> takes formal names
+        and the aliases of NameAliases.txt, and a formal name wins over an alias spelled the same.
+      </p>
+    </section>
+
+    <section id="scripts">
+      <p class="eyebrow">…/script</p>
+      <h2>Scripts</h2>
+      <pre>@script.script('<span class="w2">中</span>')          <span class="c">// Han</span>
+@script.script('1')           <span class="c">// Common</span>
+@script.script('\u{301}')     <span class="c">// Inherited</span>
+@script.extensions('<span class="w2">ー</span>')      <span class="c">// [Hiragana, Katakana]</span>
+@script.Script::of("latn")    <span class="c">// Some(Latin)</span></pre>
+      <p>
+        A character used across scripts is <code>Common</code>; a combining mark that takes the script of
+        its base is <code>Inherited</code>. <code>extensions</code> lists the scripts such a character is
+        used with, and is <code>[script(ch)]</code> for the rest. <code>Script::of</code> takes the long name
+        or the four-letter code, in any case.
+      </p>
+      <p>Mixed scripts in one word are a common sign of a lookalike:</p>
+      <pre>fn scripts_in(s : String) -> Array[@script.Script] {
+  let seen = []
+  for ch in s {
+    match @script.script(ch) {
+      Common | Inherited => ()
+      sc => if !seen.contains(sc) { seen.push(sc) }
+    }
+  }
+  seen
+}
+
+scripts_in("p<span class="w1">а</span>ypal")    <span class="c">// [Latin, Cyrillic]</span></pre>
+    </section>
+
+    <section id="normalize">
+      <p class="eyebrow">…/normalize</p>
+      <h2>Normalization</h2>
+      <pre>@normalize.normalize(NFD, "<span class="w1">Å</span>")               <span class="c">// "A\u{30A}"</span>
+@normalize.normalize(NFC, "A\u{30A}")        <span class="c">// "<span class="w1">Å</span>"</span>
+@normalize.normalize(NFKC, "<span class="w2">ｈ</span><span class="w2">ｅ</span><span class="w2">ｌ</span><span class="w2">ｌ</span><span class="w2">ｏ</span>")     <span class="c">// "hello"</span>
+@normalize.normalize(NFKC, "<span class="w2">㍿</span>")             <span class="c">// "<span class="w2">株</span><span class="w2">式</span><span class="w2">会</span><span class="w2">社</span>"</span>
+@normalize.is_normalized(NFC, "A\u{30A}")    <span class="c">// false</span>
+@normalize.combining('\u{301}')              <span class="c">// 230</span>
+@normalize.decomposition('<span class="w1">½</span>')                <span class="c">// "&lt;fraction&gt; 0031 2044 0032"</span></pre>
+      <p>
+        NFC is the form to store and compare text in. NFKC also folds compatibility variants (fullwidth
+        letters, ligatures, circled digits, squared words) and suits search keys and identifiers.
+        <code>decomposition</code> gives the field as the database writes it: hex code points, behind a tag
+        such as <code>&lt;compat&gt;</code> or <code>&lt;wide&gt;</code> for a compatibility mapping, and an
+        empty string when there is none. Hangul syllables decompose by rule, so their field is empty too.
+      </p>
+    </section>
+
+    <section id="width">
+      <p class="eyebrow">…/width</p>
+      <h2>Width</h2>
+      <pre>@width.width('A')                              <span class="c">// 1</span>
+@width.width('<span class="w2">中</span>')                             <span class="c">// 2</span>
+@width.width('\u{301}')                        <span class="c">// 0</span>
+@width.width('\u{7}')                          <span class="c">// -1</span>
+@width.text_width("Hello <span class="w2">世</span><span class="w2">界</span>")                <span class="c">// 10</span>
+@width.text_width("<span class="w2">👨</span>\u{200D}<span class="w2">👩</span>\u{200D}<span class="w2">👧</span>")    <span class="c">// 2</span>
+@width.east_asian_width('<span class="w1">α</span>')                   <span class="c">// A</span>
+@width.width('<span class="w1">α</span>', ambiguous=2)                 <span class="c">// 2</span></pre>
+      <p>
+        -1 marks a control character, and a string that holds one has no width. An emoji sequence joined by
+        Zero Width Joiners counts once. East Asian Ambiguous characters (Greek, Cyrillic, box drawing, some
+        punctuation) take one cell; pass <code>ambiguous=2</code> for a terminal set up for CJK.
+      </p>
+      <p>Padding by cells instead of by characters keeps columns straight:</p>
+      <pre>fn pad(s : String, cells : Int) -> String {
+  s + " ".repeat(cells - @width.text_width(s))
+}</pre>
+    </section>
+
+    <section id="segment">
+      <p class="eyebrow">…/segment</p>
+      <h2>Segmentation</h2>
+      <pre>let s = "<span class="w2">🇨🇳</span>e\u{301}<span class="w2">👨</span>\u{200D}<span class="w2">👩</span>\u{200D}<span class="w2">👧</span>!"
+s.length()                       <span class="c">// 15 UTF-16 code units</span>
+@segment.grapheme_clusters(s)    <span class="c">// ["<span class="w2">🇨🇳</span>", "<span class="w1">é</span>", "<span class="w2">👨‍👩‍👧</span>", "!"]</span>
+@segment.words("Mr. Smith's 3.14 cats.")
+<span class="c">// ["Mr", ".", " ", "Smith's", " ", "3.14", " ", "cats", "."]</span>
+@segment.sentences("Hello. Bye! Fine.")
+<span class="c">// ["Hello. ", "Bye! ", "Fine."]</span></pre>
+      <p>
+        A grapheme cluster is what a reader takes for one character: a flag, a letter with its accents, a
+        family emoji. <code>words</code> keeps the spaces and punctuation between words, so the pieces join
+        back into the text; keep the pieces that hold a letter or a digit to get the words alone. Ideographs
+        come out one per piece.
+      </p>
+      <p>
+        <code>grapheme_at</code> and <code>word_at</code> take a UTF-16 offset, the index MoonBit strings use,
+        and return the <code>(start, end)</code> of the piece that holds it: one cursor step, one double-click
+        selection.
+      </p>
+      <pre>@segment.grapheme_at("e\u{301}x", 1)    <span class="c">// (0, 2)</span>
+@segment.word_at("hello, world", 9)     <span class="c">// (7, 12)</span></pre>
+      <p>
+        For code that already works on code points, <code>grapheme_boundaries</code>,
+        <code>word_boundaries</code> and <code>sentence_boundaries</code> take an array of them and flag each
+        gap; <code>gcb_property</code>, <code>wb_property</code> and <code>sb_property</code> give the break
+        property of one character.
+      </p>
+      <pre>@segment.grapheme_boundaries([0x65, 0x301, 0x78])    <span class="c">// [false, true]</span>
+@segment.wb_property('\'')                           <span class="c">// Single_Quote</span></pre>
+    </section>
+
+    <section id="linebreak">
+      <p class="eyebrow">…/linebreak</p>
+      <h2>Line breaking</h2>
+      <pre>@linebreak.linebreaks("The quick <span class="w2">中</span><span class="w2">文</span> fox")
+<span class="c">// ["The ", "quick ", "<span class="w2">中</span>", "<span class="w2">文</span> ", "fox"]</span>
+@linebreak.breaks("one two\nthree")    <span class="c">// [(4, false), (8, true)]</span>
+@linebreak.lb_property('<span class="w2">。</span>')           <span class="c">// CL</span></pre>
+      <p>
+        <code>linebreaks</code> cuts the text after every break opportunity. <code>breaks</code> gives the
+        same places as UTF-16 offsets, each with whether the line must end there, after a hard line break,
+        or only may. A closing mark such as 。 never starts a line, so it stays with the character before it.
+      </p>
+      <p>A greedy wrap to a number of terminal cells is a short loop over <code>breaks</code>:</p>
+      <pre>fn wrap(text : String, columns : Int) -> Array[String] {
+  let lines = []
+  let mut start = 0
+  let mut fit = 0
+  let line = fn(a, b) { text.view(start_offset=a, end_offset=b).trim_end() }
+  for brk in [..@linebreak.breaks(text), (text.length(), true)] {
+    let (at, must) = brk
+    if fit > start && @width.text_width(line(start, at)) > columns {
+      lines.push(line(start, fit).to_owned())
+      start = fit
+    }
+    fit = at
+    if must {
+      lines.push(line(start, at).to_owned())
+      start = at
+    }
+  }
+  lines
+}</pre>
+      <p>
+        <code>src/examples/07-terminal</code> runs it, with a truncation that never splits a grapheme cluster:
+      </p>
+      <pre>+------------------------+
+|MoonBit <span class="w2">把</span> Unicode <span class="w2">的</span><span class="w2">断</span> |
+|<span class="w2">行</span><span class="w2">规</span><span class="w2">则</span><span class="w2">用</span><span class="w2">在</span><span class="w2">终</span><span class="w2">端</span><span class="w2">里</span><span class="w2">：</span>      |
+|English words wrap at   |
+|spaces, <span class="w2">中</span><span class="w2">文</span><span class="w2">在</span><span class="w2">字</span><span class="w2">与</span><span class="w2">字</span><span class="w2">之</span><span class="w2">间</span>|
+|<span class="w2">断</span><span class="w2">开</span><span class="w2">。</span>                  |
++------------------------+</pre>
+    </section>
+
+    <section id="versions">
+      <p class="eyebrow">Every package</p>
+      <h2>Versions</h2>
+      <pre>@moonucd.version()    <span class="c">// "17.0.0"</span>
+@width.version()      <span class="c">// "17.0.0"</span></pre>
+      <p>
+        Every package reports the Unicode version its tables come from, and they always agree. The tables
+        are generated from the Unicode Character Database by the scripts in <code>scripts/</code>; a new
+        Unicode version is a regeneration, and the interfaces stay as they are.
+      </p>
+    </section>
+
+  </article>
+</main>
+
+<footer class="wrap">
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+    <div class="postmark">moonucd<br>17.0.0</div>
+    <p style="margin:0"><strong>moonucd</strong> · the Unicode Character Database for MoonBit · Apache-2.0 ·
+      <a href="https://github.com/moonbitstack/moonucd">source</a></p>
+  </div>
+</footer>
+
+<script type="module" src="assets/page.js"></script>
+</body>
+</html>

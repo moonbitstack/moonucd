@@ -99,3 +99,16 @@ test "property values" {
   assert_eq(@segment.wb_property('a') == @segment.ALetter, true)
   assert_eq(@segment.sb_property('.') == @segment.ATerm, true)
 }
+
+///|
+test "the cluster and the word at an offset" {
+  let s = "e\u{0301}x 🇯🇵!"
+  assert_eq(@segment.grapheme_at(s, 0), (0, 2))
+  assert_eq(@segment.grapheme_at(s, 1), (0, 2))
+  assert_eq(@segment.grapheme_at(s, 4), (4, 8))
+  assert_eq(@segment.grapheme_at(s, 99), (99, 99))
+  let words = "hello, world"
+  assert_eq(@segment.word_at(words, 2), (0, 5))
+  assert_eq(@segment.word_at(words, 9), (7, 12))
+  assert_eq(@segment.word_at(words, 5), (5, 6))
+}

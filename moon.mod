@@ -1,6 +1,6 @@
 name = "moonbitstack/moonucd"
 
-version = "0.2.0"
+version = "0.1.1"
 
 readme = "README.md"
 
@@ -8,8 +8,8 @@ repository = "https://github.com/moonbitstack/moonucd"
 
 license = "Apache-2.0"
 
-keywords = [ "unicode", "ucd", "case", "category", "moonbit" ]
+keywords = [ "unicode", "ucd", "moonbit" ]
 
-description = "Unicode character database for MoonBit: general category, bidi class, numeric type, binary properties, full case mapping and folding, generated from the UCD."
+description = "The Unicode Character Database for MoonBit."
 
 source = "src"

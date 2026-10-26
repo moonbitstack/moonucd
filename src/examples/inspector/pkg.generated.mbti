@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/examples/inspector"
+
+// Values
+pub fn inspect(Int32) -> String
+
+pub fn pieces(String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

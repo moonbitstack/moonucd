@@ -4,7 +4,7 @@
 DerivedAge.txt says when each code point was first assigned; a code point
 that is still unassigned has no age at all.
 
-    python scripts/gen_age.py
+    python scripts/tables/gen_age.py
 """
 
 import argparse

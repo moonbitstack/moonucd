@@ -1,6 +1,5 @@
 ///|
-/// The version of the Unicode Character Database (and the wcwidth table) the
-/// width data comes from.
+/// The version of the Unicode Character Database the width data comes from.
 pub fn version() -> String {
   ucd_version
 }
@@ -9,7 +8,7 @@ pub fn version() -> String {
 /// The East Asian Width of `ch`, the UCD `ea` property: a code point is Wide
 /// (W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one,
 /// Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned
-/// code points and surrogates are Neutral, as unicodedata reports.
+/// code points and surrogates are Neutral.
 pub(all) enum Eaw {
   A // Ambiguous
   F // Fullwidth
@@ -49,19 +48,32 @@ pub fn east_asian_width(ch : Char) -> Eaw {
 }
 
 ///|
-/// The number of terminal cells `ch` occupies, exactly wcwidth 0.2.14: -1 for
-/// non-printable control characters, 0 for combining and other zero-width
-/// marks, 2 for Wide and Fullwidth code points, and 1 otherwise.
-pub fn width(ch : Char) -> Int32 {
-  width_char(ch.to_int())
+/// The number of terminal cells `ch` occupies: -1 for C0 and C1 control
+/// characters, 0 for NUL, combining marks and other zero-width code points, 2
+/// for Wide and Fullwidth code points, and 1 otherwise.
+///
+/// `ambiguous` is the width an East Asian Ambiguous character takes where it
+/// would otherwise take one cell; a CJK terminal draws them two wide.
+pub fn width(ch : Char, ambiguous? : Int32) -> Int32 {
+  cells(ch, ambiguous)
 }
 
 ///|
-/// The number of terminal cells `s` occupies, exactly wcwidth 0.2.14's
-/// wcswidth: Zero Width Joiners are skipped, and a Variation Selector 16
-/// (U+FE0F) following a character that gained an emoji presentation widens it
-/// by one cell.
-pub fn text_width(s : StringView) -> Int32 {
+fn cells(ch : Char, ambiguous : Int32?) -> Int32 {
+  let w = width_char(ch.to_int())
+  match ambiguous {
+    Some(a) if w == 1 && east_asian_width(ch) == Eaw::A => a
+    _ => w
+  }
+}
+
+///|
+/// The number of terminal cells `s` occupies, or -1 when it holds a control
+/// character. A Zero Width Joiner hides the character after it, so an emoji
+/// sequence counts once, and a Variation Selector 16 (U+FE0F) after a
+/// character that takes an emoji presentation widens it by one cell.
+/// `ambiguous` is as for `width`.
+pub fn text_width(s : StringView, ambiguous? : Int32) -> Int32 {
   let mut width = 0
   let mut last = -1
   let mut skip = false
@@ -82,7 +94,7 @@ pub fn text_width(s : StringView) -> Int32 {
       last = -1
       continue
     }
-    let w = width_char(ucs)
+    let w = cells(ch, ambiguous)
     if w < 0 {
       return w
     }
@@ -97,7 +109,7 @@ pub fn text_width(s : StringView) -> Int32 {
 // ---- internals -----------------------------------------------------------
 
 ///|
-/// wcwidth 0.2.14 for an ordinal value.
+/// `width` for a code point value.
 fn width_char(ucs : Int32) -> Int32 {
   if 32 <= ucs && ucs < 0x7F {
     return 1
@@ -151,7 +163,7 @@ fn find_eaw(cp : Int32) -> Int32? {
 
 ///|
 /// Binary search a sorted, disjoint range table; true when `ucs` is inside any
-/// range (Markus Kuhn's `_bisearch`, which assumes the table is ordered).
+/// range.
 fn bisearch(
   ucs : Int32,
   starts : FixedArray[Int32],

@@ -4,7 +4,7 @@ clusters, words, and sentences. Tables come from the UCD 17.0.0 break-property
 files; conformance is checked by replaying the official GraphemeBreakTest,
 WordBreakTest and SentenceBreakTest files.
 
-Run `python3 scripts/gen_segment.py --check` to validate the rule engine
+Run `python3 scripts/tables/gen_segment.py --check` to validate the rule engine
 against the test files before emitting anything.
 """
 
@@ -14,7 +14,7 @@ import sys
 import ucd
 
 VERSION = "17.0.0"
-SRC = pathlib.Path(__file__).resolve().parent.parent / "src" / "segment"
+SRC = pathlib.Path(__file__).resolve().parents[2] / "src" / "segment"
 
 UCD = "https://www.unicode.org/Public/{v}/ucd/{f}"
 AUX = "https://www.unicode.org/Public/{v}/ucd/auxiliary/{f}"
@@ -1167,16 +1167,26 @@ def emit_enums():
         out.append(f"///|\n/// A {label} property value.")
         out.append(f"pub(all) enum {name} {{")
         for v in values:
-            out.append(f"  {v}")
+            out.append(f"  {v.replace('_', '')}")
         out.append("} derive(Eq)")
         out.append("///|")
         out.append(f"pub extend {name} with Eq::{{equal, not_equal}}")
         out.append("///|")
+        out.append(f"/// Writes the UCD short name of the {label} value.")
+        out.append(f"pub impl Show for {name} with fn output(self, logger) {{")
+        out.append("  match self {")
+        for v in values:
+            out.append(f'    {v.replace("_", "")} => logger.write_string("{v}")')
+        out.append("  }")
+        out.append("}")
+        out.append("///|")
+        out.append(f"pub extend {name} with Show::{{to_string, output}}")
+        out.append("///|")
         out.append(f"/// The {name} value of a stored {label} code.")
-        out.append(f"pub fn {kind}_of_code(code : Int32) -> {name} {{")
+        out.append(f"fn {kind}_of_code(code : Int32) -> {name} {{")
         out.append("  match code {")
         for i, v in enumerate(values):
-            out.append(f"    {i} => {v}")
+            out.append(f"    {i} => {v.replace('_', '')}")
         out.append(f"    _ => {values[0]}")
         out.append("  }")
         out.append("}")

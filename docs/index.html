@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>moonucd — the Unicode Character Database for MoonBit</title>
+<meta name="description" content="Query the Unicode Character Database from MoonBit: category, properties, case, normalization, scripts, segmentation, width and line breaking for every code point of Unicode 17.0.0.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <div class="brand"><a href="./">moonucd</a><small>Unicode for MoonBit</small></div>
+    <nav class="top">
+      <a href="#tour">Inspector</a>
+      <a href="#packages">Packages</a>
+      <a href="guide.html">Guide</a>
+      <a href="api.html">API</a>
+      <a class="gh" href="https://github.com/moonbitstack/moonucd" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" id="top" style="border-top:0">
+    <p class="eyebrow">Unicode 17.0.0 · the world's characters</p>
+    <h1>Every character,<br>a ticket to everywhere.</h1>
+    <p class="lede">
+      <strong>moonucd</strong> is the Unicode Character Database for MoonBit — a passport office for
+      every code point of Unicode 17.0.0, from Hangul to Devanagari, emoji to the unassigned. Type a
+      character and this page asks the compiled library what it is: its category, script, block, age,
+      width and line-break class. No server, no guesswork: the very tables that ship in the package
+      run right here in your browser.
+    </p>
+    <div class="cta">
+      <a class="btn" href="#tour">Try the inspector</a>
+      <a class="btn ghost" href="guide.html">Read the guide</a>
+    </div>
+  </section>
+
+  <section id="tour">
+    <p class="eyebrow">Character inspector</p>
+    <h2>One character, the whole dossier</h2>
+    <p class="sec-intro">
+      Every value below comes from the real <span class="mono">moonucd</span> build via its JavaScript
+      target. The character travels on a transit ticket; the detailed fields are printed as a specimen.
+    </p>
+
+    <div class="inspector-controls">
+      <label for="charIn">Character</label>
+      <input id="charIn" class="char-input" value="中" maxlength="4" autocomplete="off" spellcheck="false">
+      <span class="hint">Type or paste any character — even emoji and astral code points.</span>
+    </div>
+
+    <div class="ticket" id="ticket">
+      <div class="stub">
+        <div class="glyph" id="tGlyph">中</div>
+        <div class="cp mono" id="tCp">U+4E2D</div>
+        <div class="kind">Passenger</div>
+      </div>
+      <div class="perf"></div>
+      <div class="body">
+        <div class="tk-head"><span>Passenger ticket</span><span>International</span></div>
+        <div class="row"><div class="k">Class</div><div class="v"><span id="tCat">Lo</span> <small id="tCatName">Letter, other</small></div></div>
+        <div class="row"><div class="k">From</div><div class="v" id="tAge">Unicode 1.1</div></div>
+        <div class="row"><div class="k">To</div><div class="v" id="tBlock">CJK Unified Ideographs</div></div>
+        <div class="row"><div class="k">Gate</div><div class="v" id="tScript">Han</div></div>
+        <div class="row"><div class="k">Platform</div><div class="v" id="tBidi">L</div></div>
+        <div class="barcode" id="tBarcode"></div>
+        <div class="serial mono" id="tSerial">UTF-8 · E4 B8 AD</div>
+      </div>
+    </div>
+
+    <div class="specimen" id="specimen">
+      <div class="spec-head"><span>Full specimen</span><span class="mono">src/examples/inspector</span></div>
+      <div class="srow"><div class="sk">Codepoint</div><div class="sv" id="sCp">U+4E2D</div></div>
+      <div class="srow"><div class="sk">UTF-8</div><div class="sv" id="sU8">E4 B8 AD</div></div>
+      <div class="srow"><div class="sk">UTF-16</div><div class="sv" id="sU16">4E2D</div></div>
+      <div class="srow"><div class="sk">East Asian W.</div><div class="sv" id="sEaw">W</div></div>
+      <div class="srow"><div class="sk">Width</div><div class="sv" id="sWidth">2 cells</div></div>
+      <div class="srow"><div class="sk">Numeric</div><div class="sv" id="sNum">—</div></div>
+      <div class="srow"><div class="sk">Emoji</div><div class="sv" id="sEmoji">—</div></div>
+      <div class="srow"><div class="sk">Name</div><div class="sv" id="sName">CJK UNIFIED IDEOGRAPH-4E2D</div></div>
+      <div class="srow"><div class="sk">NFC / NFD</div><div class="sv" id="sNorm">中 / 中</div></div>
+      <div class="srow"><div class="sk">Already NFC</div><div class="sv" id="sIsNfc">yes</div></div>
+      <div class="srow"><div class="sk">Line break</div><div class="sv" id="sLb">ID</div></div>
+    </div>
+  </section>
+
+  <section id="gallery-section">
+    <p class="eyebrow">From every script</p>
+    <h2>Some passengers to try</h2>
+    <p class="sec-intro">Click a tile to load it into the inspector above.</p>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section id="strings">
+    <p class="eyebrow">Segmentation &amp; wrapping</p>
+    <h2>Break a string apart</h2>
+    <p class="sec-intro">
+      The same library applies UAX #29 and UAX #14 in the browser. Grapheme clusters keep a flag emoji or
+      an accented letter as one unit; line breaks show where a paragraph may wrap.
+    </p>
+    <div class="string-tools">
+      <div>
+        <textarea class="str" id="strIn" spellcheck="false">The quick 中文 🚀 fox jumps.</textarea>
+        <div style="margin-top:14px">
+          <div class="field-label">Grapheme clusters</div>
+          <div class="chips" id="grafChips"></div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="field-label">Words</div>
+          <div class="chips" id="wordChips"></div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="field-label">Sentences</div>
+          <div id="sentOut"></div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="field-label">Line breaks (UAX #14)</div>
+          <div class="chips" id="lbChips"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="packages">
+    <p class="eyebrow">What ships</p>
+    <h2>Nine small packages</h2>
+    <p class="sec-intro">
+      The root package holds the general character facts; the rest are opt-in sub-packages you import
+      only when you need them. Everything runs on every MoonBit backend — native, wasm, wasm-gc and js.
+    </p>
+    <div class="pkgs">
+      <div class="pkg">
+        <div class="band"><h3>moonucd</h3><span class="tag">UCD</span></div>
+        <div class="body">
+          <div class="route">moonbitstack/moonucd</div>
+          <p>What a character is and how it changes case.</p>
+          <ul>
+            <li><b>category</b> · <b>bidi</b> · <b>numeric</b></li>
+            <li><b>has</b> — 50 binary properties</li>
+            <li><b>upper</b> · <b>lower</b> · <b>title</b> · <b>fold</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>age</h3><span class="tag">AGE</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/age</div>
+          <p>The Unicode version that first assigned a code point.</p>
+          <ul><li><b>age(ch)</b> → (major, minor)?</li></ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>block</h3><span class="tag">BLK</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/block</div>
+          <p>The block a code point sits in, and a block's range by name or alias.</p>
+          <ul><li><b>block(ch)</b> · <b>range(name)</b></li></ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>name</h3><span class="tag">NAM</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/name</div>
+          <p>A code point's name, and the code point a name names.</p>
+          <ul><li><b>name(ch)</b> · <b>lookup(name)</b></li></ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>normalize</h3><span class="tag">NF</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/normalize</div>
+          <p>NFC / NFD / NFKC / NFKD, the UAX #15 way.</p>
+          <ul>
+            <li><b>normalize(form, s)</b></li>
+            <li><b>is_normalized</b> · <b>combining</b> · <b>decomposition</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>script</h3><span class="tag">SCR</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/script</div>
+          <p>The script of a code point and its extensions.</p>
+          <ul><li><b>script(ch)</b> · <b>extensions(ch)</b> · <b>Script::of</b></li></ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>segment</h3><span class="tag">SEG</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/segment</div>
+          <p>Grapheme clusters, words and sentences (UAX #29).</p>
+          <ul>
+            <li><b>grapheme_clusters(s)</b> · <b>words(s)</b> · <b>sentences(s)</b></li>
+            <li><b>grapheme_at</b> · <b>word_at</b> — the piece under an offset</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>width</h3><span class="tag">WDT</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/width</div>
+          <p>Terminal-cell width and East Asian Width.</p>
+          <ul>
+            <li><b>width(ch)</b> · <b>text_width(s)</b> · <b>east_asian_width(ch)</b></li>
+            <li><b>ambiguous=2</b> for CJK terminals</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pkg">
+        <div class="band"><h3>linebreak</h3><span class="tag">LB</span></div>
+        <div class="body">
+          <div class="route">…/moonucd/linebreak</div>
+          <p>Line-break opportunities (UAX #14).</p>
+          <ul>
+            <li><b>linebreaks(s)</b> · <b>lb_property(ch)</b></li>
+            <li><b>breaks(s)</b> — offsets, and which breaks are mandatory</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>The core package</h3>
+    <pre><span class="c">// what a character is</span>
+@moonucd.category('<span class="w2">中</span>')          <span class="c">// Lo</span>
+@moonucd.bidi('<span class="w1">א</span>')               <span class="c">// R</span>
+@moonucd.numeric('<span class="w1">٣</span>')            <span class="c">// Some(Decimal)</span>
+@moonucd.has('<span class="w1">é</span>', Alphabetic)    <span class="c">// true</span>
+
+<span class="c">// changing case</span>
+@moonucd.upper("stra<span class="w1">ß</span>e")         <span class="c">// "STRASSE"</span>
+@moonucd.lower("<span class="w1">Ο</span><span class="w1">Δ</span><span class="w1">Ο</span><span class="w1">Σ</span>")           <span class="c">// "<span class="w1">ο</span><span class="w1">δ</span><span class="w1">ο</span><span class="w1">ς</span>"</span></pre>
+
+    <h3>Line breaking, validated</h3>
+    <p class="sec-intro">
+      The linebreak package is checked against the full <span class="mono">LineBreakTest.txt</span> —
+      19,338 cases — at zero conformance errors, on all four backends.
+    </p>
+    <pre><span class="c">// where a line may wrap</span>
+@linebreak.linebreaks("The quick <span class="w2">中</span><span class="w2">文</span> fox")
+<span class="c">// ["The ", "quick ", "<span class="w2">中</span>", "<span class="w2">文</span> ", "fox"]</span>
+@linebreak.lb_property('<span class="w2">中</span>')    <span class="c">// ID</span></pre>
+  </section>
+
+  <section id="examples">
+    <p class="eyebrow">Examples</p>
+    <h2>Seven runnable programs</h2>
+    <p class="sec-intro">One small program per package, and one that puts width, segmentation and line breaking to work in a terminal. Run any with <span class="mono">moon run src/examples/07-terminal</span>.</p>
+    <div class="example-list">
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/01-tour"><span class="num">01</span><span class="name">tour</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/02-scripts"><span class="num">02</span><span class="name">scripts</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/03-width"><span class="num">03</span><span class="name">width</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/04-normalize"><span class="num">04</span><span class="name">normalize</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/05-segment"><span class="num">05</span><span class="name">segment</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/06-linebreak"><span class="num">06</span><span class="name">linebreak</span></a>
+      <a href="https://github.com/moonbitstack/moonucd/tree/master/src/examples/07-terminal"><span class="num">07</span><span class="name">terminal</span></a>
+    </div>
+  </section>
+
+  <section id="tables">
+    <p class="eyebrow">How it is made</p>
+    <h2>Generated from the UCD</h2>
+    <p class="sec-intro">
+      Every table is generated from the Unicode Character Database 17.0.0 by the scripts in
+      <span class="mono">scripts/tables</span>. They turn <span class="mono">UnicodeData.txt</span>,
+      <span class="mono">Scripts.txt</span>, <span class="mono">LineBreak.txt</span>,
+      <span class="mono">EastAsianWidth.txt</span>, <span class="mono">emoji-data.txt</span>,
+      <span class="mono">NormalizationTest.txt</span> and the break tests into the run-length tables the
+      library searches at runtime. A new Unicode release is a regeneration — the algorithm code does not change.
+    </p>
+    <p><span class="mono">version()</span> returns <span class="mono">"17.0.0"</span> from every package.</p>
+  </section>
+
+  <footer>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+      <div class="postmark">moonucd<br>17.0.0</div>
+      <div>
+        <div class="airmail">MoonBit Stack · Signed</div>
+        <p style="margin:0"><strong>moonucd</strong> — the Unicode Character Database for MoonBit.</p>
+        <p style="margin:4px 0 0">This page runs the compiled library in your browser. Apache-2.0 licensed. <a href="https://github.com/moonbitstack/moonucd">Source</a> · <a href="guide.html">Guide</a> · <a href="api.html">API</a></p>
+      </div>
+    </div>
+    <p style="margin:0 0 6px;font-family:var(--hand);font-size:24px;line-height:1;color:var(--accent);font-weight:600">Bon voyage — from every script</p>
+    <p style="margin:0">Install with <span class="mono">moon add moonbitstack/moonucd</span>.</p>
+  </footer>
+
+</main>
+
+<script type="module" src="assets/inspector.js"></script>
+</body>
+</html>

@@ -6,7 +6,7 @@ scripts a code point can belong to, and PropertyValueAliases.txt the long
 name and four-letter code of each. The script enum is ordered by long
 name; the tables index into that order.
 
-    python scripts/gen_script.py
+    python scripts/tables/gen_script.py
 """
 
 import argparse

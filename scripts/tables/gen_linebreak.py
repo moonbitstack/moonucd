@@ -4,7 +4,7 @@
 Tables come from the UCD 17.0.0 LineBreak.txt; conformance is checked by
 replaying the official LineBreakTest.txt.
 
-Run `python3 scripts/gen_linebreak.py --check` to validate the rule engine
+Run `python3 scripts/tables/gen_linebreak.py --check` to validate the rule engine
 against the test file before emitting anything.
 """
 
@@ -14,7 +14,7 @@ import sys
 import ucd
 
 VERSION = "17.0.0"
-SRC = pathlib.Path(__file__).resolve().parent.parent / "src" / "linebreak"
+SRC = pathlib.Path(__file__).resolve().parents[2] / "src" / "linebreak"
 
 UCD = "https://www.unicode.org/Public/{v}/ucd/{f}"
 
@@ -638,7 +638,7 @@ def emit_enums():
     out.append("pub extend Lb with Show::{to_string, output}")
     out.append("///|")
     out.append("/// The Lb value of a stored class code.")
-    out.append("pub fn lb_of_code(code : Int32) -> Lb {")
+    out.append("fn lb_of_code(code : Int32) -> Lb {")
     out.append("  match code {")
     for i, v in enumerate(CLASSES):
         out.append(f"    {i} => {v}")

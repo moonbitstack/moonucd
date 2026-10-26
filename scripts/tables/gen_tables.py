@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Write src/tables.mbt from the Unicode Character Database.
 
-The UCD files are fetched once into scripts/.ucd/<version>/ and reused, so a
+The UCD files are fetched once into scripts/tables/.ucd/<version>/ and reused, so a
 second run works offline. The same version always writes the same bytes.
 
-    python scripts/gen_tables.py               # Unicode 17.0.0
-    python scripts/gen_tables.py --version 16.0.0
+    python scripts/tables/gen_tables.py               # Unicode 17.0.0
+    python scripts/tables/gen_tables.py --version 16.0.0
 """
 
 import argparse

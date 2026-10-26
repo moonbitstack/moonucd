@@ -1,0 +1,16 @@
+import {
+  "moonbitstack/moonucd",
+  "moonbitstack/moonucd/age",
+  "moonbitstack/moonucd/block",
+  "moonbitstack/moonucd/name",
+  "moonbitstack/moonucd/normalize",
+  "moonbitstack/moonucd/script",
+  "moonbitstack/moonucd/segment",
+  "moonbitstack/moonucd/width",
+  "moonbitstack/moonucd/linebreak",
+  "moonbitlang/core/encoding/utf8",
+}
+
+options(
+  link: { "js": { "exports": [ "inspect", "pieces" ], "format": "esm" } },
+)

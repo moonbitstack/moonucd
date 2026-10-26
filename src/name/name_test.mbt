@@ -61,9 +61,23 @@ test "name on the usual suspects" {
 }
 
 ///|
-test "name gives no name to Tangut ideographs and unassigned code points" {
-  assert_eq(@name.name('\u{17000}'), None)
+test "name spells the ideograph-like scripts by rule NR2" {
+  assert_eq(@name.name('\u{17000}'), Some("TANGUT IDEOGRAPH-17000"))
+  assert_eq(@name.name('\u{18D00}'), Some("TANGUT IDEOGRAPH-18D00"))
+  assert_eq(
+    @name.name('\u{18B00}'),
+    Some("KHITAN SMALL SCRIPT CHARACTER-18B00"),
+  )
+  assert_eq(@name.name('\u{1B170}'), Some("NUSHU CHARACTER-1B170"))
+  assert_eq(@name.name('\u{F900}'), Some("CJK COMPATIBILITY IDEOGRAPH-F900"))
+  assert_eq(@name.name('\u{13460}'), Some("EGYPTIAN HIEROGLYPH-13460"))
+  assert_eq(@name.name('\u{18800}'), Some("TANGUT COMPONENT-001"))
+}
+
+///|
+test "name gives no name to unassigned and private-use code points" {
   assert_eq(@name.name('\u{0378}'), None)
+  assert_eq(@name.name('\u{E000}'), None)
   assert_eq(@name.name('\u{10FFFD}'), None)
 }
 
@@ -90,15 +104,47 @@ test "lookup resolves canonical names, aliases, and loose variants" {
     @name.lookup("KHITAN SMALL SCRIPT CHARACTER-18B00"),
     Some('\u{18B00}'),
   )
+  assert_eq(@name.lookup("tangut ideograph-17000"), Some('\u{17000}'))
+  assert_eq(@name.lookup("NULL"), Some('\u{0}'))
+}
+
+///|
+test "lookup refuses derived names outside their runs or badly spelled" {
+  assert_eq(@name.lookup("CJK UNIFIED IDEOGRAPH-04E00"), None)
+  assert_eq(@name.lookup("CJK UNIFIED IDEOGRAPH-9FFF0"), None)
+  assert_eq(@name.lookup("TANGUT IDEOGRAPH-18800"), None)
+  assert_eq(@name.lookup("HANGUL SYLLABLE GAX"), None)
+  assert_eq(@name.lookup("HANGUL SYLLABLE"), None)
+}
+
+///|
+test "lookup reads back every name name gives" {
+  for cp in 0..<0x110000 {
+    if cp >= 0xD800 && cp <= 0xDFFF {
+      continue
+    }
+    let ch = cp.unsafe_to_char()
+    if @name.name(ch) is Some(n) {
+      assert_eq(@name.lookup(n), Some(ch))
+    }
+  }
 }
 
 ///|
 test "lookup keeps the significant hyphen in U+1180's name" {
   assert_eq(@name.lookup("HANGUL JUNGSEONG O-E"), Some('\u{1180}'))
   assert_eq(@name.lookup("HANGUL JUNGSEONG OE"), Some('\u{116C}'))
-  // Spaces are ignored like hyphens elsewhere, so the spaced form also lands
-  // on U+116C (the hyphen is significant only against the hyphenated name).
   assert_eq(@name.lookup("HANGUL JUNGSEONG O E"), Some('\u{116C}'))
+}
+
+///|
+test "lookup keeps a hyphen that is not between two letters" {
+  assert_eq(@name.lookup("TIBETAN LETTER -A"), Some('\u{0F60}'))
+  assert_eq(@name.lookup("TIBETAN LETTER A"), Some('\u{0F68}'))
+  assert_eq(
+    @name.lookup("TIBETAN MARK BKA- SHOG GI MGO RGYAN"),
+    Some('\u{0FD0}'),
+  )
 }
 
 ///|

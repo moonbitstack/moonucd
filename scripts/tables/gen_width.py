@@ -6,7 +6,7 @@ is the UCD `ea` property, checked against CPython's unicodedata. `width` is
 Markus Kuhn's wcwidth as shipped by wcwidth 0.2.14 — its latest table is the
 Unicode 17.0.0 one — and `text_width` is wcswidth from the same source.
 
-    python scripts/gen_width.py
+    python scripts/tables/gen_width.py
 """
 
 import argparse

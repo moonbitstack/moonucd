@@ -4,11 +4,11 @@ package "moonbitstack/moonucd/width"
 // Values
 pub fn east_asian_width(Char) -> Eaw
 
-pub fn text_width(StringView) -> Int32
+pub fn text_width(StringView, ambiguous? : Int32) -> Int32
 
 pub fn version() -> String
 
-pub fn width(Char) -> Int32
+pub fn width(Char, ambiguous? : Int32) -> Int32
 
 // Errors
 

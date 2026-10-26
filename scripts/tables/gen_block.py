@@ -4,7 +4,7 @@
 Blocks.txt names every block of the code space; `block` reads it, and
 `range` reads it backwards, by name, the loose way of UAX #44 (LM3).
 
-    python scripts/gen_block.py
+    python scripts/tables/gen_block.py
 """
 
 import argparse
@@ -47,6 +47,14 @@ def main():
         if key in pairs_by_key:
             sys.exit(f"two blocks share the loose key {key!r}")
         pairs_by_key[key] = i
+    for f in ucd.records(ucd.fetch(version, "PropertyValueAliases.txt")):
+        if f[0] != "blk" or f[2] == "No_Block":
+            continue
+        target = pairs_by_key.get(loose_key(f[2]))
+        if target is None:
+            sys.exit(f"the block alias {f[1]!r} names no block")
+        for alias in [f[1], *f[3:]]:
+            pairs_by_key.setdefault(loose_key(alias), target)
     pairs_by_key = sorted(pairs_by_key.items())
 
     lines = ucd.header("gen_block.py", version) + [

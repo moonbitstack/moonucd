@@ -2,7 +2,7 @@
 package "moonbitstack/moonucd/linebreak"
 
 // Values
-pub fn lb_of_code(Int32) -> Lb
+pub fn breaks(StringView) -> Array[(Int32, Bool)]
 
 pub fn lb_property(Char) -> Lb
 

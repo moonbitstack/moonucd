@@ -12,7 +12,7 @@ generator-side pass replays the real NormalizationTest source lines so the
 MoonBit side can prove it matches the suite without shipping 20k expected
 strings.
 
-    python scripts/gen_normalize.py
+    python scripts/tables/gen_normalize.py
 """
 
 import argparse

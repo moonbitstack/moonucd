@@ -1,7 +1,7 @@
 ///|
 fn main {
   println("Segmentation — grapheme clusters, words, sentences (UAX #29).")
-  let flag = "🇯🇵"
+  let flag = "🇨🇳"
   println("  grapheme_clusters(\"\{flag}a\"):")
   for g in @segment.grapheme_clusters("\{flag}a") {
     println("    [\{g}]")

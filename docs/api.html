@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API · moonucd</title>
+<meta name="description" content="Every public function and type of the nine moonucd packages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <div class="brand"><a href="./">moonucd</a><small>Unicode for MoonBit</small></div>
+    <nav class="top">
+      <a href="./#tour">Inspector</a>
+      <a href="./#packages">Packages</a>
+      <a href="guide.html">Guide</a>
+      <a href="api.html" aria-current="page">API</a>
+      <a class="gh" href="https://github.com/moonbitstack/moonucd" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap doc">
+
+  <aside class="itinerary">
+    <p class="label">Packages</p>
+    <ol>
+<li><a href="#moonucd-top">moonucd</a><ol class="sub">
+<li><a href="#moonucd-bidi">bidi</a></li>
+<li><a href="#moonucd-category">category</a></li>
+<li><a href="#moonucd-fold">fold</a></li>
+<li><a href="#moonucd-has">has</a></li>
+<li><a href="#moonucd-lower">lower</a></li>
+<li><a href="#moonucd-numeric">numeric</a></li>
+<li><a href="#moonucd-title">title</a></li>
+<li><a href="#moonucd-upper">upper</a></li>
+<li><a href="#moonucd-version">version</a></li>
+<li><a href="#moonucd-bidi">Bidi</a></li>
+<li><a href="#moonucd-category">Category</a></li>
+<li><a href="#moonucd-numeric">Numeric</a></li>
+<li><a href="#moonucd-property">Property</a></li>
+</ol></li>
+<li><a href="#age-top">age</a><ol class="sub">
+<li><a href="#age-age">age</a></li>
+<li><a href="#age-version">version</a></li>
+</ol></li>
+<li><a href="#block-top">block</a><ol class="sub">
+<li><a href="#block-block">block</a></li>
+<li><a href="#block-range">range</a></li>
+<li><a href="#block-version">version</a></li>
+</ol></li>
+<li><a href="#name-top">name</a><ol class="sub">
+<li><a href="#name-lookup">lookup</a></li>
+<li><a href="#name-name">name</a></li>
+<li><a href="#name-version">version</a></li>
+</ol></li>
+<li><a href="#script-top">script</a><ol class="sub">
+<li><a href="#script-extensions">extensions</a></li>
+<li><a href="#script-script">script</a></li>
+<li><a href="#script-version">version</a></li>
+<li><a href="#script-script">Script</a></li>
+</ol></li>
+<li><a href="#normalize-top">normalize</a><ol class="sub">
+<li><a href="#normalize-combining">combining</a></li>
+<li><a href="#normalize-decomposition">decomposition</a></li>
+<li><a href="#normalize-is_normalized">is_normalized</a></li>
+<li><a href="#normalize-normalize">normalize</a></li>
+<li><a href="#normalize-version">version</a></li>
+<li><a href="#normalize-form">Form</a></li>
+</ol></li>
+<li><a href="#width-top">width</a><ol class="sub">
+<li><a href="#width-east_asian_width">east_asian_width</a></li>
+<li><a href="#width-text_width">text_width</a></li>
+<li><a href="#width-version">version</a></li>
+<li><a href="#width-width">width</a></li>
+<li><a href="#width-eaw">Eaw</a></li>
+</ol></li>
+<li><a href="#segment-top">segment</a><ol class="sub">
+<li><a href="#segment-gcb_property">gcb_property</a></li>
+<li><a href="#segment-grapheme_at">grapheme_at</a></li>
+<li><a href="#segment-grapheme_boundaries">grapheme_boundaries</a></li>
+<li><a href="#segment-grapheme_clusters">grapheme_clusters</a></li>
+<li><a href="#segment-sb_property">sb_property</a></li>
+<li><a href="#segment-sentence_boundaries">sentence_boundaries</a></li>
+<li><a href="#segment-sentences">sentences</a></li>
+<li><a href="#segment-version">version</a></li>
+<li><a href="#segment-wb_property">wb_property</a></li>
+<li><a href="#segment-word_at">word_at</a></li>
+<li><a href="#segment-word_boundaries">word_boundaries</a></li>
+<li><a href="#segment-words">words</a></li>
+<li><a href="#segment-gcb">Gcb</a></li>
+<li><a href="#segment-sb">Sb</a></li>
+<li><a href="#segment-wb">Wb</a></li>
+</ol></li>
+<li><a href="#linebreak-top">linebreak</a><ol class="sub">
+<li><a href="#linebreak-breaks">breaks</a></li>
+<li><a href="#linebreak-lb_property">lb_property</a></li>
+<li><a href="#linebreak-linebreak_boundaries">linebreak_boundaries</a></li>
+<li><a href="#linebreak-linebreaks">linebreaks</a></li>
+<li><a href="#linebreak-version">version</a></li>
+<li><a href="#linebreak-lb">Lb</a></li>
+</ol></li>
+    </ol>
+  </aside>
+
+  <article class="page reference">
+<section id="moonucd-top">
+<div class="band-head"><h2>moonucd</h2><span class="route">moonbitstack/moonucd</span></div>
+<p>What a character is and how it changes case.</p>
+<div class="entry" id="moonucd-bidi">
+<h3><span class="kind">fn</span>bidi</h3>
+<pre class="sig">pub fn bidi(Char) -&gt; Bidi</pre><p>The bidirectional class of <code>ch</code>, with the defaults the UCD assigns to unassigned code points.</p></div>
+<div class="entry" id="moonucd-category">
+<h3><span class="kind">fn</span>category</h3>
+<pre class="sig">pub fn category(Char) -&gt; Category</pre><p>The category of <code>ch</code>; unassigned code points are <code>Cn</code>.</p></div>
+<div class="entry" id="moonucd-fold">
+<h3><span class="kind">fn</span>fold</h3>
+<pre class="sig">pub fn fold(StringView) -&gt; String</pre><p><code>text</code> case-folded with the full foldings, for caseless comparison.</p></div>
+<div class="entry" id="moonucd-has">
+<h3><span class="kind">fn</span>has</h3>
+<pre class="sig">pub fn has(Char, Property) -&gt; Bool</pre><p>Whether <code>ch</code> has <code>property</code>.</p></div>
+<div class="entry" id="moonucd-lower">
+<h3><span class="kind">fn</span>lower</h3>
+<pre class="sig">pub fn lower(StringView) -&gt; String</pre><p><code>text</code> in lowercase, with the full mappings; a capital sigma at the end of a word becomes <code>ς</code>.</p></div>
+<div class="entry" id="moonucd-numeric">
+<h3><span class="kind">fn</span>numeric</h3>
+<pre class="sig">pub fn numeric(Char) -&gt; Numeric?</pre><p>The numeric type of <code>ch</code>; <code>None</code> for characters without a numeric value.</p></div>
+<div class="entry" id="moonucd-title">
+<h3><span class="kind">fn</span>title</h3>
+<pre class="sig">pub fn title(StringView) -&gt; String</pre><p>Every character of <code>text</code> mapped to its titlecase form. Words are not found here: callers decide which characters start one.</p></div>
+<div class="entry" id="moonucd-upper">
+<h3><span class="kind">fn</span>upper</h3>
+<pre class="sig">pub fn upper(StringView) -&gt; String</pre><p><code>text</code> in uppercase, with the full mappings: <code>ß</code> becomes <code>SS</code>.</p></div>
+<div class="entry" id="moonucd-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+<div class="entry" id="moonucd-bidi">
+<h3><span class="kind">enum</span>Bidi</h3>
+<p>Bidi_Class.</p>
+<pre class="sig">pub(all) enum Bidi {</pre>
+<ul class="variants"><li>L</li><li>R</li><li>AL</li><li>EN</li><li>ES</li><li>ET</li><li>AN</li><li>CS</li><li>NSM</li><li>BN</li><li>B</li><li>S</li><li>WS</li><li>ON</li><li>LRE</li><li>LRO</li><li>RLE</li><li>RLO</li><li>PDF</li><li>LRI</li><li>RLI</li><li>FSI</li><li>PDI</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+<div class="entry" id="moonucd-category">
+<h3><span class="kind">enum</span>Category</h3>
+<p>General_Category.</p>
+<pre class="sig">pub(all) enum Category {</pre>
+<ul class="variants"><li>Lu</li><li>Ll</li><li>Lt</li><li>Lm</li><li>Lo</li><li>Mn</li><li>Mc</li><li>Me</li><li>Nd</li><li>Nl</li><li>No</li><li>Pc</li><li>Pd</li><li>Ps</li><li>Pe</li><li>Pi</li><li>Pf</li><li>Po</li><li>Sm</li><li>Sc</li><li>Sk</li><li>So</li><li>Zs</li><li>Zl</li><li>Zp</li><li>Cc</li><li>Cf</li><li>Cs</li><li>Co</li><li>Cn</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+<div class="entry" id="moonucd-numeric">
+<h3><span class="kind">enum</span>Numeric</h3>
+<p>Numeric_Type, for characters that have one.</p>
+<pre class="sig">pub(all) enum Numeric {</pre>
+<ul class="variants"><li>Decimal</li><li>Digit</li><li>Numeric</li></ul>
+</div>
+<div class="entry" id="moonucd-property">
+<h3><span class="kind">enum</span>Property</h3>
+<p>A binary property from PropList, DerivedCoreProperties and emoji-data.</p>
+<pre class="sig">pub(all) enum Property {</pre>
+<ul class="variants"><li>Alphabetic</li><li>Lowercase</li><li>Uppercase</li><li>Cased</li><li>CaseIgnorable</li><li>ChangesWhenLowercased</li><li>ChangesWhenUppercased</li><li>ChangesWhenTitlecased</li><li>ChangesWhenCasefolded</li><li>ChangesWhenCasemapped</li><li>IdStart</li><li>IdContinue</li><li>XidStart</li><li>XidContinue</li><li>DefaultIgnorableCodePoint</li><li>GraphemeExtend</li><li>GraphemeBase</li><li>Math</li><li>WhiteSpace</li><li>BidiControl</li><li>JoinControl</li><li>Dash</li><li>Hyphen</li><li>QuotationMark</li><li>TerminalPunctuation</li><li>HexDigit</li><li>AsciiHexDigit</li><li>Ideographic</li><li>Diacritic</li><li>Extender</li><li>NoncharacterCodePoint</li><li>IdsBinaryOperator</li><li>IdsTrinaryOperator</li><li>Radical</li><li>UnifiedIdeograph</li><li>Deprecated</li><li>SoftDotted</li><li>LogicalOrderException</li><li>SentenceTerminal</li><li>VariationSelector</li><li>PatternWhiteSpace</li><li>PatternSyntax</li><li>PrependedConcatenationMark</li><li>RegionalIndicator</li><li>Emoji</li><li>EmojiPresentation</li><li>EmojiModifier</li><li>EmojiModifierBase</li><li>EmojiComponent</li><li>ExtendedPictographic</li></ul>
+</div>
+</section>
+<section id="age-top">
+<div class="band-head"><h2>age</h2><span class="route">moonbitstack/moonucd/age</span></div>
+<p>The Unicode version that first assigned a code point.</p>
+<div class="entry" id="age-age">
+<h3><span class="kind">fn</span>age</h3>
+<pre class="sig">pub fn age(Char) -&gt; (Int32, Int32)?</pre><p>When <code>ch</code> was first assigned, as the (major, minor) Unicode version — <code>(1, 1)</code> for the original repertoire, <code>(17, 0)</code> for the newest — or <code>None</code> for code points that are still unassigned.</p></div>
+<div class="entry" id="age-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+</section>
+<section id="block-top">
+<div class="band-head"><h2>block</h2><span class="route">moonbitstack/moonucd/block</span></div>
+<p>The block a code point sits in, and the range of a block.</p>
+<div class="entry" id="block-block">
+<h3><span class="kind">fn</span>block</h3>
+<pre class="sig">pub fn block(Char) -&gt; String?</pre><p>The block <code>ch</code> belongs to, or <code>None</code> for the code points that sit in no block at all.</p></div>
+<div class="entry" id="block-range">
+<h3><span class="kind">fn</span>range</h3>
+<pre class="sig">pub fn range(StringView) -&gt; (Char, Char)?</pre><p>The first and last code point of the block called <code>name</code>, matched the loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a leading "is" are ignored. The short aliases of PropertyValueAliases.txt (<code>ASCII</code>, <code>Greek</code>, <code>CJK</code>) name their blocks too.</p></div>
+<div class="entry" id="block-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+</section>
+<section id="name-top">
+<div class="band-head"><h2>name</h2><span class="route">moonbitstack/moonucd/name</span></div>
+<p>The name of a code point, and the code point a name names.</p>
+<div class="entry" id="name-lookup">
+<h3><span class="kind">fn</span>lookup</h3>
+<pre class="sig">pub fn lookup(StringView) -&gt; Char?</pre><p>The code point named <code>name</code>, matched the loose way of UAX #44 (LM2): case, spaces, underscores and medial hyphens ignored, except the hyphen in U+1180's name. Formal names and every NameAliases alias resolve; a formal name wins over an alias spelled the same.</p></div>
+<div class="entry" id="name-name">
+<h3><span class="kind">fn</span>name</h3>
+<pre class="sig">pub fn name(Char) -&gt; String?</pre><p>The name of <code>ch</code>, or <code>None</code> when the code point has none: unassigned code points, surrogates, private use and noncharacters. Hangul syllables and the ideograph-like scripts named <code>PREFIX-XXXX</code> (CJK, Tangut, Khitan, Nushu, Egyptian hieroglyphs) are spelled by the Standard's rules NR1 and NR2.</p></div>
+<div class="entry" id="name-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+</section>
+<section id="script-top">
+<div class="band-head"><h2>script</h2><span class="route">moonbitstack/moonucd/script</span></div>
+<p>The script of a code point, and the scripts it is shared with.</p>
+<div class="entry" id="script-extensions">
+<h3><span class="kind">fn</span>extensions</h3>
+<pre class="sig">pub fn extensions(Char) -&gt; Array[Script]</pre><p>The scripts <code>ch</code> can belong to: the ScriptExtensions.txt list when it has one, and <code>[script(ch)]</code> when it does not.</p></div>
+<div class="entry" id="script-script">
+<h3><span class="kind">fn</span>script</h3>
+<pre class="sig">pub fn script(Char) -&gt; Script</pre><p>The script of <code>ch</code>; unassigned and unknown code points are <code>Unknown</code>.</p></div>
+<div class="entry" id="script-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+<div class="entry" id="script-script">
+<h3><span class="kind">enum</span>Script</h3>
+<p>Script, the writing system a character belongs to. The long name is what <code>Show</code> writes; <code>Script::of</code> reads both it and the four-letter code.</p>
+<pre class="sig">pub(all) enum Script {</pre>
+<ul class="variants"><li>Adlam</li><li>Ahom</li><li>AnatolianHieroglyphs</li><li>Arabic</li><li>Armenian</li><li>Avestan</li><li>Balinese</li><li>Bamum</li><li>BassaVah</li><li>Batak</li><li>Bengali</li><li>BeriaErfe</li><li>Bhaiksuki</li><li>Bopomofo</li><li>Brahmi</li><li>Braille</li><li>Buginese</li><li>Buhid</li><li>CanadianAboriginal</li><li>Carian</li><li>CaucasianAlbanian</li><li>Chakma</li><li>Cham</li><li>Cherokee</li><li>Chorasmian</li><li>Common</li><li>Coptic</li><li>Cuneiform</li><li>Cypriot</li><li>CyproMinoan</li><li>Cyrillic</li><li>Deseret</li><li>Devanagari</li><li>DivesAkuru</li><li>Dogra</li><li>Duployan</li><li>EgyptianHieroglyphs</li><li>Elbasan</li><li>Elymaic</li><li>Ethiopic</li><li>Garay</li><li>Georgian</li><li>Glagolitic</li><li>Gothic</li><li>Grantha</li><li>Greek</li><li>Gujarati</li><li>GunjalaGondi</li><li>Gurmukhi</li><li>GurungKhema</li><li>Han</li><li>Hangul</li><li>HanifiRohingya</li><li>Hanunoo</li><li>Hatran</li><li>Hebrew</li><li>Hiragana</li><li>ImperialAramaic</li><li>Inherited</li><li>InscriptionalPahlavi</li><li>InscriptionalParthian</li><li>Javanese</li><li>Kaithi</li><li>Kannada</li><li>Katakana</li><li>KatakanaOrHiragana</li><li>Kawi</li><li>KayahLi</li><li>Kharoshthi</li><li>KhitanSmallScript</li><li>Khmer</li><li>Khojki</li><li>Khudawadi</li><li>KiratRai</li><li>Lao</li><li>Latin</li><li>Lepcha</li><li>Limbu</li><li>LinearA</li><li>LinearB</li><li>Lisu</li><li>Lycian</li><li>Lydian</li><li>Mahajani</li><li>Makasar</li><li>Malayalam</li><li>Mandaic</li><li>Manichaean</li><li>Marchen</li><li>MasaramGondi</li><li>Medefaidrin</li><li>MeeteiMayek</li><li>MendeKikakui</li><li>MeroiticCursive</li><li>MeroiticHieroglyphs</li><li>Miao</li><li>Modi</li><li>Mongolian</li><li>Mro</li><li>Multani</li><li>Myanmar</li><li>Nabataean</li><li>NagMundari</li><li>Nandinagari</li><li>NewTaiLue</li><li>Newa</li><li>Nko</li><li>Nushu</li><li>NyiakengPuachueHmong</li><li>Ogham</li><li>OlChiki</li><li>OlOnal</li><li>OldHungarian</li><li>OldItalic</li><li>OldNorthArabian</li><li>OldPermic</li><li>OldPersian</li><li>OldSogdian</li><li>OldSouthArabian</li><li>OldTurkic</li><li>OldUyghur</li><li>Oriya</li><li>Osage</li><li>Osmanya</li><li>PahawhHmong</li><li>Palmyrene</li><li>PauCinHau</li><li>PhagsPa</li><li>Phoenician</li><li>PsalterPahlavi</li><li>Rejang</li><li>Runic</li><li>Samaritan</li><li>Saurashtra</li><li>Sharada</li><li>Shavian</li><li>Siddham</li><li>Sidetic</li><li>SignWriting</li><li>Sinhala</li><li>Sogdian</li><li>SoraSompeng</li><li>Soyombo</li><li>Sundanese</li><li>Sunuwar</li><li>SylotiNagri</li><li>Syriac</li><li>Tagalog</li><li>Tagbanwa</li><li>TaiLe</li><li>TaiTham</li><li>TaiViet</li><li>TaiYo</li><li>Takri</li><li>Tamil</li><li>Tangsa</li><li>Tangut</li><li>Telugu</li><li>Thaana</li><li>Thai</li><li>Tibetan</li><li>Tifinagh</li><li>Tirhuta</li><li>Todhri</li><li>TolongSiki</li><li>Toto</li><li>TuluTigalari</li><li>Ugaritic</li><li>Unknown</li><li>Vai</li><li>Vithkuqi</li><li>Wancho</li><li>WarangCiti</li><li>Yezidi</li><li>Yi</li><li>ZanabazarSquare</li></ul>
+<p>Implements <code>Show</code>.</p>
+<div class="member" id="script-script-of"><pre class="sig">pub fn Script::of(StringView) -&gt; Self?</pre><p>The script called <code>name</code> — a long name ("Latin", "Old Italic") or a four-letter code ("Latn", "Ital"), matched the loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a leading "is" are ignored.</p></div>
+</div>
+</section>
+<section id="normalize-top">
+<div class="band-head"><h2>normalize</h2><span class="route">moonbitstack/moonucd/normalize</span></div>
+<p>The four normalization forms of UAX #15, combining classes and decompositions.</p>
+<div class="entry" id="normalize-combining">
+<h3><span class="kind">fn</span>combining</h3>
+<pre class="sig">pub fn combining(Char) -&gt; Int32</pre><p>The Canonical_Combining_Class of <code>ch</code> (0 when it has none).</p></div>
+<div class="entry" id="normalize-decomposition">
+<h3><span class="kind">fn</span>decomposition</h3>
+<pre class="sig">pub fn decomposition(Char) -&gt; String</pre><p>The first-level decomposition mapping of <code>ch</code>, as the UCD lists it: a space separated, upper-case, four-digit-hex sequence, or <code>""</code> when <code>ch</code> has none.</p></div>
+<div class="entry" id="normalize-is_normalized">
+<h3><span class="kind">fn</span>is_normalized</h3>
+<pre class="sig">pub fn is_normalized(Form, StringView) -&gt; Bool</pre><p>True when <code>s</code> is already in <code>form</code> (no change under <code>normalize</code>).</p></div>
+<div class="entry" id="normalize-normalize">
+<h3><span class="kind">fn</span>normalize</h3>
+<pre class="sig">pub fn normalize(Form, StringView) -&gt; String</pre><p><code>s</code> in <code>form</code> — NFC, NFD, NFKC or NFKD — exactly as Unicode defines it: decompose recursively, put the sequence in canonical order, then compose the decomposed form when <code>form</code> is a composed one.</p></div>
+<div class="entry" id="normalize-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+<div class="entry" id="normalize-form">
+<h3><span class="kind">enum</span>Form</h3>
+<p>A Unicode normalization form. NFC and NFKC are the composed forms; NFD and NFKD are the decomposed forms.</p>
+<pre class="sig">pub(all) enum Form {</pre>
+<ul class="variants"><li>NFC</li><li>NFD</li><li>NFKC</li><li>NFKD</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+</section>
+<section id="width-top">
+<div class="band-head"><h2>width</h2><span class="route">moonbitstack/moonucd/width</span></div>
+<p>Terminal cells and East Asian Width.</p>
+<div class="entry" id="width-east_asian_width">
+<h3><span class="kind">fn</span>east_asian_width</h3>
+<pre class="sig">pub fn east_asian_width(Char) -&gt; Eaw</pre><p>The East Asian Width of <code>ch</code> (see <code>Eaw</code>).</p></div>
+<div class="entry" id="width-text_width">
+<h3><span class="kind">fn</span>text_width</h3>
+<pre class="sig">pub fn text_width(StringView, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>s</code> occupies, or -1 when it holds a control character. A Zero Width Joiner hides the character after it, so an emoji sequence counts once, and a Variation Selector 16 (U+FE0F) after a character that takes an emoji presentation widens it by one cell. <code>ambiguous</code> is as for <code>width</code>.</p></div>
+<div class="entry" id="width-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the width data comes from.</p></div>
+<div class="entry" id="width-width">
+<h3><span class="kind">fn</span>width</h3>
+<pre class="sig">pub fn width(Char, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>ch</code> occupies: -1 for C0 and C1 control characters, 0 for NUL, combining marks and other zero-width code points, 2 for Wide and Fullwidth code points, and 1 otherwise.  <code>ambiguous</code> is the width an East Asian Ambiguous character takes where it would otherwise take one cell; a CJK terminal draws them two wide.</p></div>
+<div class="entry" id="width-eaw">
+<h3><span class="kind">enum</span>Eaw</h3>
+<p>The East Asian Width of <code>ch</code>, the UCD <code>ea</code> property: a code point is Wide (W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one, Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned code points and surrogates are Neutral.</p>
+<pre class="sig">pub(all) enum Eaw {</pre>
+<ul class="variants"><li>A<small>Ambiguous</small></li><li>F<small>Fullwidth</small></li><li>H<small>Halfwidth</small></li><li>N<small>Neutral (the default)</small></li><li>Na<small>Narrow</small></li><li>W<small>Wide</small></li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+</section>
+<section id="segment-top">
+<div class="band-head"><h2>segment</h2><span class="route">moonbitstack/moonucd/segment</span></div>
+<p>Grapheme clusters, words and sentences, by UAX #29.</p>
+<div class="entry" id="segment-gcb_property">
+<h3><span class="kind">fn</span>gcb_property</h3>
+<pre class="sig">pub fn gcb_property(Char) -&gt; Gcb</pre><p>The Grapheme_Cluster_Break property value of a character.</p></div>
+<div class="entry" id="segment-grapheme_at">
+<h3><span class="kind">fn</span>grapheme_at</h3>
+<pre class="sig">pub fn grapheme_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The grapheme cluster holding the UTF-16 offset <code>at</code>, as <code>(start, end)</code>: where a cursor lands when it moves one user-perceived character.</p></div>
+<div class="entry" id="segment-grapheme_boundaries">
+<h3><span class="kind">fn</span>grapheme_boundaries</h3>
+<pre class="sig">pub fn grapheme_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Grapheme cluster boundaries: <code>result[i]</code> is true when a boundary falls between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #29.</p></div>
+<div class="entry" id="segment-grapheme_clusters">
+<h3><span class="kind">fn</span>grapheme_clusters</h3>
+<pre class="sig">pub fn grapheme_clusters(StringView) -&gt; Array[String]</pre><p>The extended grapheme clusters of a string.</p></div>
+<div class="entry" id="segment-sb_property">
+<h3><span class="kind">fn</span>sb_property</h3>
+<pre class="sig">pub fn sb_property(Char) -&gt; Sb</pre><p>The Sentence_Break property value of a character.</p></div>
+<div class="entry" id="segment-sentence_boundaries">
+<h3><span class="kind">fn</span>sentence_boundaries</h3>
+<pre class="sig">pub fn sentence_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Sentence boundaries, following UAX #29.</p></div>
+<div class="entry" id="segment-sentences">
+<h3><span class="kind">fn</span>sentences</h3>
+<pre class="sig">pub fn sentences(StringView) -&gt; Array[String]</pre><p>The sentences of a string.</p></div>
+<div class="entry" id="segment-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+<div class="entry" id="segment-wb_property">
+<h3><span class="kind">fn</span>wb_property</h3>
+<pre class="sig">pub fn wb_property(Char) -&gt; Wb</pre><p>The Word_Break property value of a character.</p></div>
+<div class="entry" id="segment-word_at">
+<h3><span class="kind">fn</span>word_at</h3>
+<pre class="sig">pub fn word_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The word, or run of spaces or punctuation, holding the UTF-16 offset <code>at</code>, as <code>(start, end)</code>: what a double click selects.</p></div>
+<div class="entry" id="segment-word_boundaries">
+<h3><span class="kind">fn</span>word_boundaries</h3>
+<pre class="sig">pub fn word_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Word boundaries, following UAX #29.</p></div>
+<div class="entry" id="segment-words">
+<h3><span class="kind">fn</span>words</h3>
+<pre class="sig">pub fn words(StringView) -&gt; Array[String]</pre><p>The words of a string.</p></div>
+<div class="entry" id="segment-gcb">
+<h3><span class="kind">enum</span>Gcb</h3>
+<p>A Grapheme_Cluster_Break property value.</p>
+<pre class="sig">pub(all) enum Gcb {</pre>
+<ul class="variants"><li>Other</li><li>CR</li><li>LF</li><li>Control</li><li>Extend</li><li>ZWJ</li><li>RegionalIndicator</li><li>Prepend</li><li>SpacingMark</li><li>L</li><li>V</li><li>T</li><li>LV</li><li>LVT</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+<div class="entry" id="segment-sb">
+<h3><span class="kind">enum</span>Sb</h3>
+<p>A Sentence_Break property value.</p>
+<pre class="sig">pub(all) enum Sb {</pre>
+<ul class="variants"><li>Other</li><li>CR</li><li>LF</li><li>Sep</li><li>Extend</li><li>Format</li><li>Sp</li><li>Lower</li><li>Upper</li><li>OLetter</li><li>Numeric</li><li>ATerm</li><li>STerm</li><li>SContinue</li><li>Close</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+<div class="entry" id="segment-wb">
+<h3><span class="kind">enum</span>Wb</h3>
+<p>A Word_Break property value.</p>
+<pre class="sig">pub(all) enum Wb {</pre>
+<ul class="variants"><li>Other</li><li>CR</li><li>LF</li><li>Newline</li><li>Extend</li><li>ZWJ</li><li>Format</li><li>RegionalIndicator</li><li>Katakana</li><li>ALetter</li><li>HebrewLetter</li><li>MidLetter</li><li>MidNumLet</li><li>MidNum</li><li>Numeric</li><li>ExtendNumLet</li><li>WSegSpace</li><li>DoubleQuote</li><li>SingleQuote</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+</section>
+<section id="linebreak-top">
+<div class="band-head"><h2>linebreak</h2><span class="route">moonbitstack/moonucd/linebreak</span></div>
+<p>Line-break opportunities, by UAX #14.</p>
+<div class="entry" id="linebreak-breaks">
+<h3><span class="kind">fn</span>breaks</h3>
+<pre class="sig">pub fn breaks(StringView) -&gt; Array[(Int32, Bool)]</pre><p>The break opportunities inside <code>s</code>, as the UTF-16 offset each line may end at and whether the line must end there (after a hard line break) or only may.</p></div>
+<div class="entry" id="linebreak-lb_property">
+<h3><span class="kind">fn</span>lb_property</h3>
+<pre class="sig">pub fn lb_property(Char) -&gt; Lb</pre><p>The line-break class of a character.</p></div>
+<div class="entry" id="linebreak-linebreak_boundaries">
+<h3><span class="kind">fn</span>linebreak_boundaries</h3>
+<pre class="sig">pub fn linebreak_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>The line-break boundaries of a code point sequence: <code>result[i]</code> is true when a break opportunity falls between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #14.</p></div>
+<div class="entry" id="linebreak-linebreaks">
+<h3><span class="kind">fn</span>linebreaks</h3>
+<pre class="sig">pub fn linebreaks(StringView) -&gt; Array[String]</pre><p>The line-break opportunities of a string.</p></div>
+<div class="entry" id="linebreak-version">
+<h3><span class="kind">fn</span>version</h3>
+<pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
+<div class="entry" id="linebreak-lb">
+<h3><span class="kind">enum</span>Lb</h3>
+<p>A line-break class, after the LB1 resolution the algorithm applies.</p>
+<pre class="sig">pub(all) enum Lb {</pre>
+<ul class="variants"><li>XX</li><li>AI</li><li>AK</li><li>AL</li><li>AP</li><li>AS</li><li>B2</li><li>BA</li><li>BB</li><li>BK</li><li>CB</li><li>CJ</li><li>CL</li><li>CM</li><li>CP</li><li>CR</li><li>EB</li><li>EM</li><li>EX</li><li>GL</li><li>H2</li><li>H3</li><li>HH</li><li>HL</li><li>HY</li><li>ID</li><li>IN</li><li>IS</li><li>JL</li><li>JT</li><li>JV</li><li>LF</li><li>NL</li><li>NS</li><li>NU</li><li>OP</li><li>PO</li><li>PR</li><li>QU</li><li>RI</li><li>SA</li><li>SG</li><li>SP</li><li>SY</li><li>VF</li><li>VI</li><li>WJ</li><li>ZW</li><li>ZWJ</li></ul>
+<p>Implements <code>Show</code>.</p>
+</div>
+</section>
+  </article>
+</main>
+
+<footer class="wrap">
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+    <div class="postmark">moonucd<br>17.0.0</div>
+    <p style="margin:0"><strong>moonucd</strong> · the Unicode Character Database for MoonBit · Apache-2.0 ·
+      <a href="https://github.com/moonbitstack/moonucd">source</a></p>
+  </div>
+</footer>
+
+<script type="module" src="assets/page.js"></script>
+</body>
+</html>

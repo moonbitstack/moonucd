@@ -1,0 +1,7 @@
+import {
+  "moonbitstack/moonucd/linebreak",
+  "moonbitstack/moonucd/segment",
+  "moonbitstack/moonucd/width",
+}
+
+pkgtype(kind: "executable")
