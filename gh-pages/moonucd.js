@@ -5224,7 +5224,7 @@ function _M0FP412moonbitstack7moonucd8examples3web7inspect(ch) {
   _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "nfc", _M0FP312moonbitstack7moonucd9normalize9normalize(0, new _M0TPC16string10StringView(s, 0, s.length)));
   _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "nfd", _M0FP312moonbitstack7moonucd9normalize9normalize(1, new _M0TPC16string10StringView(s, 0, s.length)));
   _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "nfkc", _M0FP312moonbitstack7moonucd9normalize9normalize(2, new _M0TPC16string10StringView(s, 0, s.length)));
-  _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "nfkd", _M0FP312moonbitstack7moonucd9normalize9normalize(2, new _M0TPC16string10StringView(s, 0, s.length)));
+  _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "nfkd", _M0FP312moonbitstack7moonucd9normalize9normalize(3, new _M0TPC16string10StringView(s, 0, s.length)));
   _M0FP412moonbitstack7moonucd8examples3web7inspectN5fieldS692(_env, "isNFC", _M0FP312moonbitstack7moonucd9normalize14is__normalized(0, new _M0TPC16string10StringView(s, 0, s.length)) ? "true" : "false");
   _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "lb", _M0IP016_24default__implPB4Show10to__stringGRP312moonbitstack7moonucd9linebreak2LbE(_M0FP312moonbitstack7moonucd9linebreak12lb__property(ch)));
   _M0FP412moonbitstack7moonucd8examples3web7inspectN4strfS693(_env, "linebreaks", _M0MPC15array5Array4joinGsE(_M0FP312moonbitstack7moonucd9linebreak10linebreaks(new _M0TPC16string10StringView(s, 0, s.length)), _M0FP412moonbitstack7moonucd8examples3web7inspectN6recordS694));

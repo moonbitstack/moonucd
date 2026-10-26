@@ -70,7 +70,7 @@ pub fn inspect(ch : Char) -> String {
   strf("nfc", @normalize.normalize(@normalize.NFC, s))
   strf("nfd", @normalize.normalize(@normalize.NFD, s))
   strf("nfkc", @normalize.normalize(@normalize.NFKC, s))
-  strf("nfkd", @normalize.normalize(@normalize.NFKC, s))
+  strf("nfkd", @normalize.normalize(@normalize.NFKD, s))
   field(
     "isNFC",
     if @normalize.is_normalized(@normalize.NFC, s) {

@@ -548,10 +548,10 @@
     set("sEaw", d.eaw);
     set("sWidth", d.width + (d.width===1?" cell":" cells"));
     set("sNum", d.numeric || "—");
-    set("sEmoji", (d.emoji==="true"?"emoji":"not emoji") + (d.extPict==="true"?" · ext. pictographic":""));
+    set("sEmoji", (d.emoji?"emoji":"not emoji") + (d.extPict?" · ext. pictographic":""));
     set("sName", d.name || "no name");
     set("sNorm", d.nfc + " / " + d.nfd);
-    set("sIsNfc", d.isNFC==="true"?"yes":"no");
+    set("sIsNfc", d.isNFC?"yes":"no");
     set("sLb", d.lb);
   }
   function set(id,v){var el=document.getElementById(id); if(el) el.textContent=v;}
