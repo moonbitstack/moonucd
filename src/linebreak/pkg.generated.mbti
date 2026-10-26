@@ -1,0 +1,74 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbitstack/moonucd/linebreak"
+
+// Values
+pub fn lb_of_code(Int32) -> Lb
+
+pub fn lb_property(Char) -> Lb
+
+pub fn linebreak_boundaries(Array[Int32]) -> Array[Bool]
+
+pub fn linebreaks(StringView) -> Array[String]
+
+pub fn version() -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum Lb {
+  XX
+  AI
+  AK
+  AL
+  AP
+  AS
+  B2
+  BA
+  BB
+  BK
+  CB
+  CJ
+  CL
+  CM
+  CP
+  CR
+  EB
+  EM
+  EX
+  GL
+  H2
+  H3
+  HH
+  HL
+  HY
+  ID
+  IN
+  IS
+  JL
+  JT
+  JV
+  LF
+  NL
+  NS
+  NU
+  OP
+  PO
+  PR
+  QU
+  RI
+  SA
+  SG
+  SP
+  SY
+  VF
+  VI
+  WJ
+  ZW
+  ZWJ
+} derive(Eq)
+pub fn Lb::equal(Self, Self) -> Bool
+pub fn Lb::not_equal(Self, Self) -> Bool
+
+// Type aliases
+
+// Traits

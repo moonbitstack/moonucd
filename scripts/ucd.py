@@ -110,8 +110,10 @@ def mbt_string_pool(name, text, width=60, per_chunk_chars=180000, escaper=None):
     i = 0
     while i < len(text):
         piece = text[i : i + width]
-        while piece.count("\\u{") != piece.count("}"):
-            piece = piece[:-1]
+        # Escape each piece as a whole: no escape can be split across a piece
+        # boundary, so no balancing of `\u{`/`}` against the raw text is needed
+        # (and doing so would loop forever when the content contains a literal
+        # `}` that is unrelated to an escape).
         pieces.append(f'"{escaper(piece)}"')
         i += len(piece)
     chunks = []
