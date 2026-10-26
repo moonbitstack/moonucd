@@ -30,21 +30,38 @@ pub impl Show for Form with fn output(self, logger) {
 ///|
 pub extend Form with Show::{to_string, output}
 
+///|
 /// Hangul algorithmic constants (UAX #15, derived from the SBase math).
-let hangul_sbase : Int = 0xAC00
-let hangul_lbase : Int = 0x1100
-let hangul_vbase : Int = 0x1161
-let hangul_tbase : Int = 0x11A7
-let hangul_lcount : Int = 19
-let hangul_vcount : Int = 21
-let hangul_tcount : Int = 28
-let hangul_ncount : Int = 588 // vcount * tcount
-let hangul_scount : Int = 11172 // lcount * ncount
+let hangul_sbase : Int32 = 0xAC00
+
+///|
+let hangul_lbase : Int32 = 0x1100
+
+///|
+let hangul_vbase : Int32 = 0x1161
+
+///|
+let hangul_tbase : Int32 = 0x11A7
+
+///|
+let hangul_lcount : Int32 = 19
+
+///|
+let hangul_vcount : Int32 = 21
+
+///|
+let hangul_tcount : Int32 = 28
+
+///|
+let hangul_ncount : Int32 = 588 // vcount * tcount
+
+///|
+let hangul_scount : Int32 = 11172 // lcount * ncount
 
 ///|
 priv struct CC {
-  cp : Int
-  ccc : Int
+  cp : Int32
+  ccc : Int32
 }
 
 ///|
@@ -74,24 +91,24 @@ pub fn is_normalized(form : Form, s : StringView) -> Bool {
 /// Recursively expand `cp` into `(code point, ccc)` pairs, appending to `out`.
 /// A Hangul syllable is expanded algorithmically; everything else is looked up
 /// in the decomposed forms table.
-fn decompose(cp : Int, compat : Bool, out : Array[CC]) -> Unit {
+fn decompose(cp : Int32, compat : Bool, out : Array[CC]) -> Unit {
   if hangul_sbase <= cp && cp < hangul_sbase + hangul_scount {
     let sindex = cp - hangul_sbase
     let l = hangul_lbase + sindex / hangul_ncount
-    let v = hangul_vbase + (sindex % hangul_ncount) / hangul_tcount
+    let v = hangul_vbase + sindex % hangul_ncount / hangul_tcount
     let t = sindex % hangul_tcount
-    out.push(CC::{ cp: l, ccc: 0 })
-    out.push(CC::{ cp: v, ccc: 0 })
+    out.push(CC::{ cp: l, ccc: 0, })
+    out.push(CC::{ cp: v, ccc: 0, })
     if t > 0 {
-      out.push(CC::{ cp: hangul_tbase + t, ccc: 0 })
+      out.push(CC::{ cp: hangul_tbase + t, ccc: 0, })
     }
     return
   }
   match find_decomp(cp) {
-    None => out.push(CC::{ cp: cp, ccc: ccc_of(cp) })
+    None => out.push(CC::{ cp, ccc: ccc_of(cp), })
     Some((tag_idx, start, len)) =>
       if !compat && tag_idx != 0 {
-        out.push(CC::{ cp: cp, ccc: ccc_of(cp) })
+        out.push(CC::{ cp, ccc: ccc_of(cp), })
       } else {
         for i in 0..<len {
           decompose(dec_targets[start + i], compat, out)
@@ -137,7 +154,7 @@ fn compose(buf : Array[CC]) -> String {
         if out.length() - 1 == starter_idx {
           match compose_pair(out[starter_idx].cp, c.cp) {
             Some(comp) => {
-              out[starter_idx] = CC::{ cp: comp, ccc: 0 }
+              out[starter_idx] = CC::{ cp: comp, ccc: 0, }
               placed = true
             }
             None => ()
@@ -147,7 +164,7 @@ fn compose(buf : Array[CC]) -> String {
         // A non-starter composes unless a higher-or-equal class blocks it.
         match compose_pair(out[starter_idx].cp, c.cp) {
           Some(comp) => {
-            out[starter_idx] = CC::{ cp: comp, ccc: 0 }
+            out[starter_idx] = CC::{ cp: comp, ccc: 0, }
             placed = true
           }
           None => ()
@@ -176,15 +193,21 @@ fn buf_to_string(buf : Array[CC]) -> String {
 ///|
 /// The composite of `a` and `b`: the Hangul rules first, then the stored
 /// canonical composition pairs.
-fn compose_pair(a : Int, b : Int) -> Int? {
-  if hangul_lbase <= a && a < hangul_lbase + hangul_lcount &&
-     hangul_vbase <= b && b < hangul_vbase + hangul_vcount {
-    let lv = hangul_sbase + (a - hangul_lbase) * hangul_ncount + (b - hangul_vbase) * hangul_tcount
+fn compose_pair(a : Int32, b : Int32) -> Int32? {
+  if hangul_lbase <= a &&
+    a < hangul_lbase + hangul_lcount &&
+    hangul_vbase <= b &&
+    b < hangul_vbase + hangul_vcount {
+    let lv = hangul_sbase +
+      (a - hangul_lbase) * hangul_ncount +
+      (b - hangul_vbase) * hangul_tcount
     return Some(lv)
   }
-  if hangul_sbase <= a && a < hangul_sbase + hangul_scount &&
-     (a - hangul_sbase) % hangul_tcount == 0 &&
-     hangul_tbase < b && b < hangul_tbase + hangul_tcount {
+  if hangul_sbase <= a &&
+    a < hangul_sbase + hangul_scount &&
+    (a - hangul_sbase) % hangul_tcount == 0 &&
+    hangul_tbase < b &&
+    b < hangul_tbase + hangul_tcount {
     return Some(a + (b - hangul_tbase))
   }
   find_compose(a, b)
@@ -192,7 +215,7 @@ fn compose_pair(a : Int, b : Int) -> Int? {
 
 ///|
 /// The stored composition pair (A, B) -> C, or `None`.
-fn find_compose(a : Int, b : Int) -> Int? {
+fn find_compose(a : Int32, b : Int32) -> Int32? {
   let n = comp_a.length()
   let mut lo = 0
   let mut hi = n
@@ -215,7 +238,7 @@ fn find_compose(a : Int, b : Int) -> Int? {
 
 ///|
 /// The Canonical_Combining_Class of `ch` (0 when it has none).
-pub fn combining(ch : Char) -> Int {
+pub fn combining(ch : Char) -> Int32 {
   ccc_of(ch.to_int())
 }
 
@@ -241,7 +264,7 @@ pub fn decomposition(ch : Char) -> String {
 }
 
 ///|
-fn hex4(v : Int) -> String {
+fn hex4(v : Int32) -> String {
   let mut x = v
   let mut digits = ""
   if x == 0 {
@@ -260,7 +283,7 @@ fn hex4(v : Int) -> String {
 }
 
 ///|
-fn hex_digit(d : Int) -> String {
+fn hex_digit(d : Int32) -> String {
   match d {
     0 => "0"
     1 => "1"
@@ -282,7 +305,7 @@ fn hex_digit(d : Int) -> String {
 }
 
 ///|
-fn find_decomp(cp : Int) -> (Int, Int, Int)? {
+fn find_decomp(cp : Int32) -> (Int32, Int32, Int32)? {
   let mut a = 0
   let mut b = dec_keys.length()
   while a < b {
@@ -293,7 +316,11 @@ fn find_decomp(cp : Int) -> (Int, Int, Int)? {
       b = mid
     } else {
       return Some(
-        (dec_tag[mid], dec_offsets[mid], dec_offsets[mid + 1] - dec_offsets[mid]),
+        (
+          dec_tag[mid],
+          dec_offsets[mid],
+          dec_offsets[mid + 1] - dec_offsets[mid],
+        ),
       )
     }
   }
@@ -301,7 +328,7 @@ fn find_decomp(cp : Int) -> (Int, Int, Int)? {
 }
 
 ///|
-fn ccc_of(cp : Int) -> Int {
+fn ccc_of(cp : Int32) -> Int32 {
   let mut a = 0
   let mut b = ccc_starts.length()
   while a < b {

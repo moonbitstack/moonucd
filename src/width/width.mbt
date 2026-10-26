@@ -52,7 +52,7 @@ pub fn east_asian_width(ch : Char) -> Eaw {
 /// The number of terminal cells `ch` occupies, exactly wcwidth 0.2.14: -1 for
 /// non-printable control characters, 0 for combining and other zero-width
 /// marks, 2 for Wide and Fullwidth code points, and 1 otherwise.
-pub fn width(ch : Char) -> Int {
+pub fn width(ch : Char) -> Int32 {
   width_char(ch.to_int())
 }
 
@@ -61,7 +61,7 @@ pub fn width(ch : Char) -> Int {
 /// wcswidth: Zero Width Joiners are skipped, and a Variation Selector 16
 /// (U+FE0F) following a character that gained an emoji presentation widens it
 /// by one cell.
-pub fn text_width(s : StringView) -> Int {
+pub fn text_width(s : StringView) -> Int32 {
   let mut width = 0
   let mut last = -1
   let mut skip = false
@@ -98,7 +98,7 @@ pub fn text_width(s : StringView) -> Int {
 
 ///|
 /// wcwidth 0.2.14 for an ordinal value.
-fn width_char(ucs : Int) -> Int {
+fn width_char(ucs : Int32) -> Int32 {
   if 32 <= ucs && ucs < 0x7F {
     return 1
   }
@@ -108,7 +108,11 @@ fn width_char(ucs : Int) -> Int {
   if bisearch(ucs, zero_starts, zero_ends) {
     return 0
   }
-  if bisearch(ucs, wide_starts, wide_ends) { 2 } else { 1 }
+  if bisearch(ucs, wide_starts, wide_ends) {
+    2
+  } else {
+    1
+  }
 }
 
 ///|
@@ -125,7 +129,7 @@ fn eaw_of(code : Int32) -> Eaw {
 
 ///|
 /// The index of the `ea` range holding `cp`, or `None` when it is Neutral.
-fn find_eaw(cp : Int) -> Int? {
+fn find_eaw(cp : Int32) -> Int32? {
   let mut a = 0
   let mut b = eaw_starts.length()
   while a < b {
@@ -148,7 +152,11 @@ fn find_eaw(cp : Int) -> Int? {
 ///|
 /// Binary search a sorted, disjoint range table; true when `ucs` is inside any
 /// range (Markus Kuhn's `_bisearch`, which assumes the table is ordered).
-fn bisearch(ucs : Int, starts : FixedArray[Int32], ends : FixedArray[Int32]) -> Bool {
+fn bisearch(
+  ucs : Int32,
+  starts : FixedArray[Int32],
+  ends : FixedArray[Int32],
+) -> Bool {
   let n = starts.length()
   if n == 0 {
     return false

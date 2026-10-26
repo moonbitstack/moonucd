@@ -12,48 +12,13 @@ let eaw_digest : UInt32 = 3728788956
 /// Strings text_width is checked against, in order, paired with the
 /// width wcswidth gives them (see text_width_expect).
 let text_width_probes : Array[String] = [
-  "",
-  "A",
-  "hello",
-  "hello, world",
-  "日本語",
-  "日本語のテスト",
-  "A‍B",
-  "1️",
-  "©",
-  "😀",
-  "ὠ0ὠ0",
-  "Aὠ0",
-  "abć",
-  "क़",
-  "→",
-  "　",
-  "Café",
-  "☕",
-  "🫶",
+  "", "A", "hello", "hello, world", "日本語", "日本語のテスト", "A‍B",
+  "1️", "©", "😀", "ὠ0ὠ0", "Aὠ0", "abć", "क़", "→", "　", "Café",
+  "☕", "🫶",
 ]
 
 ///|
 /// The widths wcswidth assigns the probe strings above.
-let text_width_expect : Array[Int] = [
-  0,
-  1,
-  5,
-  12,
-  6,
-  14,
-  1,
-  2,
-  1,
-  2,
-  4,
-  3,
-  3,
-  1,
-  1,
-  2,
-  4,
-  2,
-  2,
+let text_width_expect : Array[Int32] = [
+  0, 1, 5, 12, 6, 14, 1, 2, 1, 2, 4, 3, 3, 1, 1, 2, 4, 2, 2,
 ]
-

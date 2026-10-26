@@ -108,7 +108,7 @@ fn lm2(name : StringView) -> String {
 ///|
 /// Code-point lexicographic order of two LM2 keys. MoonBit's `String` `<`
 /// does not order by code point, so the lookup binary search needs this.
-fn key_cmp(a : String, b : String) -> Int {
+fn key_cmp(a : String, b : String) -> Int32 {
   let n = a.length()
   let m = b.length()
   let limit = if n < m { n } else { m }
@@ -119,7 +119,13 @@ fn key_cmp(a : String, b : String) -> Int {
       return if ca < cb { -1 } else { 1 }
     }
   }
-  if n < m { -1 } else if n > m { 1 } else { 0 }
+  if n < m {
+    -1
+  } else if n > m {
+    1
+  } else {
+    0
+  }
 }
 
 ///|

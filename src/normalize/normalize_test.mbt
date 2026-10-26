@@ -33,7 +33,7 @@ test "normalize matches unicodedata on the NormalizationTest sources" {
   // The concatenated pool contains supplementary-plane characters; string
   // slicing is unreliable for such constants in this MoonBit version, so we
   // expand it to a code-point array once and slice that by code-point offset.
-  let cps : Array[Int] = []
+  let cps : Array[Int32] = []
   for ch in nt_sources_concat {
     cps.push(ch.to_int())
   }
@@ -103,7 +103,10 @@ test "Hangul composition and decomposition" {
   assert_eq(@normalize.normalize(NFC, "\u{1100}\u{1161}"), "\u{AC00}")
   assert_eq(@normalize.normalize(NFD, "\u{AC00}"), "\u{1100}\u{1161}")
   // The trailing filler U+11A7 does not compose; it survives unchanged.
-  assert_eq(@normalize.normalize(NFC, "\u{1100}\u{1161}\u{11A7}"), "\u{AC00}\u{11A7}")
+  assert_eq(
+    @normalize.normalize(NFC, "\u{1100}\u{1161}\u{11A7}"),
+    "\u{AC00}\u{11A7}",
+  )
   assert_eq(@normalize.normalize(NFD, "\u{AC01}"), "\u{1100}\u{1161}\u{11A8}")
 }
 
