@@ -369,3 +369,12 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
   .itinerary{position:static;max-height:none;border-bottom:1px solid var(--line)}
   .itinerary .sub{display:none}
 }
+
+/* The page scroll bar shows while the page moves or under the pointer and
+   hides a moment after; it keeps its place, so nothing shifts. */
+@supports selector(::-webkit-scrollbar) {
+  html:not(.scrolling)::-webkit-scrollbar-thumb { background: transparent; border-color: transparent; box-shadow: none; }
+}
+@supports not selector(::-webkit-scrollbar) {
+  html:not(.scrolling) { scrollbar-color: transparent transparent; }
+}
