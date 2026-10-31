@@ -21,10 +21,11 @@ SRC = ROOT / "src" / "script"
 
 FILES = ["Scripts.txt", "ScriptExtensions.txt", "PropertyValueAliases.txt"]
 
-# U+1CF5..1CF6 are `Beng Deva` in ScriptExtensions.txt; ICU's tables still
-# answer Bengali alone. The file is the specification, so the table follows
-# it, and the two are named here rather than hidden in a broken comparison.
-ICU_DISAGREES = {(0x1CF5, "Deva"), (0x1CF6, "Deva")}
+# U+1CF5..1CF6 are `Beng Deva` in ScriptExtensions.txt; the regex module's
+# tables, built from an earlier UCD, still answer Bengali alone. The file is the
+# specification, so the table follows it, and the two are named here rather than
+# hidden in a broken comparison.
+REGEX_DISAGREES = {(0x1CF5, "Deva"), (0x1CF6, "Deva")}
 
 
 def aliases(text):
@@ -54,18 +55,18 @@ def loose_key(name):
 
 
 def cross_check(long_names, codes, script_buckets, scx_buckets):
-    """Compare the ranges with a second implementation — `regex`, whose tables
-    come from ICU rather than from the UCD files — at the ends and the middle
-    of every range. Nothing is written; a disagreement stops the run."""
+    """Compare the ranges with a second implementation — the `regex` module,
+    whose tables its own generator builds — at the ends and the middle of every
+    range. Nothing is written; a disagreement stops the run."""
     try:
         import regex
     except ImportError:
-        print("  regex is not installed: no ICU cross-check")
+        print("  regex is not installed: no second opinion on scripts")
         return
     checked, excused = 0, 0
     for i, long in enumerate(long_names):
         if long == "Unknown":
-            # ICU leaves some unassigned code points out of its script sets
+            # regex leaves some unassigned code points out of its script sets
             # and keeps them in others, so it cannot judge this one; the file
             # is the only witness, and every other script is checked here.
             continue
@@ -75,13 +76,13 @@ def cross_check(long_names, codes, script_buckets, scx_buckets):
                 for cp in {a, b, a + (b - a) // 2}:
                     if 0xD800 <= cp <= 0xDFFF:
                         continue
-                    if (cp, codes[i]) in ICU_DISAGREES:
+                    if (cp, codes[i]) in REGEX_DISAGREES:
                         excused += 1
                         continue
                     if not pattern.fullmatch(chr(cp)):
-                        sys.exit(f"{long} at U+{cp:04X}: ICU disagrees")
+                        sys.exit(f"{long} at U+{cp:04X}: regex disagrees")
                     checked += 1
-    print(f"  {checked} code points agree with ICU, {excused} known to differ")
+    print(f"  {checked} code points agree with regex, {excused} known to differ")
 
 
 def main():
