@@ -21,6 +21,11 @@ SRC = ROOT / "src" / "script"
 
 FILES = ["Scripts.txt", "ScriptExtensions.txt", "PropertyValueAliases.txt"]
 
+# U+1CF5..1CF6 are `Beng Deva` in ScriptExtensions.txt; ICU's tables still
+# answer Bengali alone. The file is the specification, so the table follows
+# it, and the two are named here rather than hidden in a broken comparison.
+ICU_DISAGREES = {(0x1CF5, "Deva"), (0x1CF6, "Deva")}
+
 
 def aliases(text):
     """(code, long name) for every script, from the `sc` section."""
@@ -46,6 +51,37 @@ def loose_key(name):
     if key.startswith("is"):
         key = key[2:]
     return key
+
+
+def cross_check(long_names, codes, script_buckets, scx_buckets):
+    """Compare the ranges with a second implementation — `regex`, whose tables
+    come from ICU rather than from the UCD files — at the ends and the middle
+    of every range. Nothing is written; a disagreement stops the run."""
+    try:
+        import regex
+    except ImportError:
+        print("  regex is not installed: no ICU cross-check")
+        return
+    checked, excused = 0, 0
+    for i, long in enumerate(long_names):
+        if long == "Unknown":
+            # ICU leaves some unassigned code points out of its script sets
+            # and keeps them in others, so it cannot judge this one; the file
+            # is the only witness, and every other script is checked here.
+            continue
+        for table, kind in ((script_buckets[i], "Script"), (scx_buckets[i], "scx")):
+            pattern = regex.compile(rf"\p{{{kind}={codes[i]}}}")
+            for a, b in table:
+                for cp in {a, b, a + (b - a) // 2}:
+                    if 0xD800 <= cp <= 0xDFFF:
+                        continue
+                    if (cp, codes[i]) in ICU_DISAGREES:
+                        excused += 1
+                        continue
+                    if not pattern.fullmatch(chr(cp)):
+                        sys.exit(f"{long} at U+{cp:04X}: ICU disagrees")
+                    checked += 1
+    print(f"  {checked} code points agree with ICU, {excused} known to differ")
 
 
 def main():
@@ -107,10 +143,40 @@ def main():
         flat += seq
         offsets.append(len(flat))
 
-    enum_name = lambda long: "".join(
-        part.capitalize() if part.islower() else part
-        for part in long.replace("-", "_").split("_")
-    )
+    # The ranges of a script cover the code space between them, so Unknown
+    # takes the unassigned gaps and the runs above keep it out.
+    script_buckets = {i: [] for i in range(len(long_names))}
+    for a, b, long in ucd.runs_all(scripts, "Unknown"):
+        script_buckets[index[long]].append((a, b))
+
+    # Script_Extensions: a code point with no entry of its own belongs to the
+    # script Scripts.txt gives it, and to nothing else.
+    scx_buckets = {i: [] for i in range(len(long_names))}
+    prev, start = None, 0
+    for cp in range(0x110000):
+        seq = extensions.get(cp)
+        key = tuple(seq) if seq is not None else (index[scripts.get(cp, "Unknown")],)
+        if key != prev:
+            if prev is not None:
+                for s in prev:
+                    scx_buckets[s].append((start, cp - 1))
+            prev, start = key, cp
+    for s in prev:
+        scx_buckets[s].append((start, 0x10FFFF))
+    for s in scx_buckets:
+        scx_buckets[s] = ucd.merge(scx_buckets[s])
+
+    script_flat, script_offsets = [], [0]
+    scx_flat, scx_offsets = [], [0]
+    for i in range(len(long_names)):
+        for a, b in script_buckets[i]:
+            script_flat += [a, b]
+        for a, b in scx_buckets[i]:
+            scx_flat += [a, b]
+        script_offsets.append(len(script_flat))
+        scx_offsets.append(len(scx_flat))
+
+    cross_check(long_names, codes, script_buckets, scx_buckets)
 
     lines = ucd.header("gen_script.py", version) + [
         "",
@@ -133,8 +199,16 @@ def main():
         "///|",
         "/// The Script value of each index, in the same order.",
         "let scripts : FixedArray[Script] = [",
-        *[f"  {enum_name(long)}," for long in long_names],
+        *[f"  {ucd.camel(long)}," for long in long_names],
         "]",
+        "",
+        "///|",
+        "/// Ranges of every script, start and end interleaved; script `i`",
+        "/// owns `script_ranges[script_ranges_offsets[i]:script_ranges_offsets[i + 1]]`.",
+        ucd.mbt_ints("script_ranges", script_flat),
+        "",
+        "///|",
+        ucd.mbt_ints("script_ranges_offsets", script_offsets),
         "",
         "///|",
         "/// Code points with script extensions: ranges, then the script indices",
@@ -149,6 +223,15 @@ def main():
         "",
         "///|",
         ucd.mbt_ints("ext_values", flat),
+        "",
+        "///|",
+        "/// Ranges of every script under Script_Extensions, start and end",
+        "/// interleaved; script `i` owns",
+        "/// `scx_ranges[scx_ranges_offsets[i]:scx_ranges_offsets[i + 1]]`.",
+        ucd.mbt_ints("scx_ranges", scx_flat),
+        "",
+        "///|",
+        ucd.mbt_ints("scx_ranges_offsets", scx_offsets),
         "",
         "///|",
         "/// Every loose key (UAX #44 LM3) with the script it names, sorted by",
@@ -186,17 +269,46 @@ def main():
     h, h2 = fnv(script_seq), fnv(ext_seq)
     print(f"  script digest {h}, extensions digest {h2}")
 
+    def ranges_digest(buckets):
+        seq = []
+        for i in range(len(long_names)):
+            for a, b in buckets[i]:
+                seq += [a, b]
+        return fnv(seq)
+
+    h3, h4 = ranges_digest(script_buckets), ranges_digest(scx_buckets)
+
     of_pairs = [(long, long) for long in long_names] + [
         (code, long) for code, long in zip(codes, long_names)
     ]
 
+    variants = ucd.enum_variants(SRC / "script.mbt", "Script")
+    if variants != [ucd.camel(long) for long in long_names]:
+        sys.exit("the enum and the table order no longer agree")
+
     vectors = ucd.header("gen_script.py", version, "Test vectors only; not part of the package.") + [
+        "",
+        "///|",
+        "/// Every script in the order the enum declares them, the order the range",
+        "/// digests were taken in.",
+        "let script_ranges_order : FixedArray[@script.Script] = [",
+        *[f"  {v}," for v in variants],
+        "]",
         "",
         "///|",
         f"let script_digest : UInt32 = {h}",
         "",
         "///|",
         f"let extensions_digest : UInt32 = {h2}",
+        "",
+        "///|",
+        "/// Every script's ranges, in the order the enum declares them, each as",
+        "/// its start and then its end.",
+        f"let script_ranges_digest : UInt32 = {h3}",
+        "",
+        "///|",
+        "/// The same over Script_Extensions.",
+        f"let scx_ranges_digest : UInt32 = {h4}",
         "",
         "///|",
         "/// Every long name and four-letter code, with the long name it names.",

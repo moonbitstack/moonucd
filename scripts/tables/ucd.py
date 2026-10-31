@@ -55,20 +55,24 @@ def merge(pairs):
     return out
 
 
-def runs(values, default):
-    """(start, end, value) runs over the whole code space, the default left out."""
+def runs_all(values, default):
+    """(start, end, value) runs over the whole code space, the default included:
+    together they cover every code point exactly once."""
     out = []
     start = 0
     current = values.get(0, default)
     for cp in range(1, 0x110000):
         v = values.get(cp, default)
         if v != current:
-            if current != default:
-                out.append((start, cp - 1, current))
+            out.append((start, cp - 1, current))
             start, current = cp, v
-    if current != default:
-        out.append((start, 0x10FFFF, current))
+    out.append((start, 0x10FFFF, current))
     return out
+
+
+def runs(values, default):
+    """(start, end, value) runs over the whole code space, the default left out."""
+    return [r for r in runs_all(values, default) if r[2] != default]
 
 
 def mbt_ints(name, values, per_line=12, typ="Int32"):
@@ -208,6 +212,27 @@ def quote(text):
             out.append(ch)
     out.append('"')
     return "".join(out)
+
+
+def camel(name):
+    """The enum variant a UCD long name is written as: `Case_Ignorable` is
+    `CaseIgnorable`, `ID_Start` is `IdStart`, and `SignWriting` keeps its
+    shape."""
+    parts = []
+    for part in name.replace("-", "_").split("_"):
+        parts.append(part.capitalize() if part.isupper() or part.islower() else part)
+    return "".join(parts)
+
+
+def enum_variants(path, name):
+    """The variants of `enum <name>`, in the order the source declares them, so
+    a test vector can say the order instead of guessing it."""
+    text = path.read_text(encoding="utf-8")
+    try:
+        block = text.split(f"enum {name} {{", 1)[1].split("}", 1)[0]
+    except IndexError:
+        raise SystemExit(f"{path.name} declares no enum {name}")
+    return [line.strip() for line in block.splitlines() if line.strip()]
 
 
 def header(script, version, extra=None):

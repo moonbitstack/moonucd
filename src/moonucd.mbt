@@ -339,8 +339,8 @@ pub fn has(ch : Char, property : Property) -> Bool {
   while properties[index] != property {
     index += 1
   }
-  let lo = property_offsets[index] / 2
-  let hi = property_offsets[index + 1] / 2
+  let lo = property_ranges_offsets[index] / 2
+  let hi = property_ranges_offsets[index + 1] / 2
   let cp = ch.to_int()
   let mut a = lo
   let mut b = hi
@@ -400,6 +400,51 @@ pub fn fold(text : StringView) -> String {
     map_into(out, ch, fold_keys, fold_offsets, fold_values)
   }
   out.to_string()
+}
+
+///|
+/// The simple case folding of `ch`: the one character it turns into when case
+/// stops counting, from the C and S classes of CaseFolding.txt. A code point
+/// that only has a longer fold, `ß` to `ss`, folds to itself, since one
+/// character cannot become two.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.simple_fold('A'), 'a')
+///   assert_eq(@moonucd.simple_fold('ς'), 'σ')
+///   assert_eq(@moonucd.simple_fold('ß'), 'ß')
+///   assert_eq(@moonucd.simple_fold('1'), '1')
+/// }
+/// ```
+pub fn simple_fold(ch : Char) -> Char {
+  match find_index(simple_fold_keys, ch.to_int()) {
+    Some(i) => simple_fold_values[i].unsafe_to_char()
+    None => ch
+  }
+}
+
+///|
+/// Every character that folds to or from `ch`, itself included, ascending:
+/// the class a caseless match of one character has to cover.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.fold_orbit('K'), ['K', 'k', '\u{212A}'])
+///   assert_eq(@moonucd.fold_orbit('ς'), ['Σ', 'ς', 'σ'])
+///   assert_eq(@moonucd.fold_orbit('中'), ['中'])
+/// }
+/// ```
+pub fn fold_orbit(ch : Char) -> Array[Char] {
+  match find_index(fold_orbit_keys, ch.to_int()) {
+    Some(i) => {
+      let out = []
+      for k in fold_orbit_offsets[i]..<fold_orbit_offsets[i + 1] {
+        out.push(fold_orbit_values[k].unsafe_to_char())
+      }
+      out
+    }
+    None => [ch]
+  }
 }
 
 ///|
@@ -466,6 +511,26 @@ fn find_run(
     }
   }
   if a < starts.length() && starts[a] <= cp {
+    Some(a)
+  } else {
+    None
+  }
+}
+
+///|
+/// Where `cp` sits in a table sorted by code point.
+fn find_index(keys : FixedArray[Int32], cp : Int32) -> Int32? {
+  let mut a = 0
+  let mut b = keys.length()
+  while a < b {
+    let mid = (a + b) / 2
+    if keys[mid] < cp {
+      a = mid + 1
+    } else {
+      b = mid
+    }
+  }
+  if a < keys.length() && keys[a] == cp {
     Some(a)
   } else {
     None

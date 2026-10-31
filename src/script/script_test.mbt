@@ -27,6 +27,18 @@ fn spelled(s : String, out : Array[Int32]) -> Unit {
 }
 
 ///|
+/// Whether a list of ranges holds `cp` — the question a matcher asks of the
+/// answer, and the one a test has to ask too.
+fn holds(ranges : Array[(Int32, Int32)], cp : Int32) -> Bool {
+  for (a, b) in ranges {
+    if a <= cp && cp <= b {
+      return true
+    }
+  }
+  false
+}
+
+///|
 test "script agrees with Scripts.txt on every code point" {
   let d = digest((ch, out) => spelled(@script.script(ch).to_string(), out))
   assert_eq(d, script_digest)
@@ -97,4 +109,111 @@ test "scripts and extensions on the usual suspects" {
 ///|
 test "version" {
   assert_true(@script.version() == "17.0.0")
+}
+
+///|
+test "script ranges agree with Scripts.txt on every code point" {
+  let mut h : UInt32 = 0x811C9DC5
+  for s in script_ranges_order {
+    for (a, b) in s.ranges() {
+      h = (h ^ a.reinterpret_as_uint()) * 0x01000193
+      h = (h ^ b.reinterpret_as_uint()) * 0x01000193
+    }
+  }
+  assert_eq(h, script_ranges_digest)
+}
+
+///|
+test "script extension ranges agree with ScriptExtensions.txt" {
+  let mut h : UInt32 = 0x811C9DC5
+  for s in script_ranges_order {
+    for (a, b) in s.extended_ranges() {
+      h = (h ^ a.reinterpret_as_uint()) * 0x01000193
+      h = (h ^ b.reinterpret_as_uint()) * 0x01000193
+    }
+  }
+  assert_eq(h, scx_ranges_digest)
+}
+
+///|
+test "every script's ranges are in order, apart, and within the code space" {
+  for s in script_ranges_order {
+    let ranges = s.ranges()
+    let mut prev : Int32 = -2
+    for (a, b) in ranges {
+      assert_true(a <= b)
+      assert_true(b <= 0x10FFFF)
+      assert_true(a > prev + 1)
+      prev = b
+    }
+  }
+}
+
+///|
+test "the scripts between them account for every code point once" {
+  let mut covered : Int32 = 0
+  for s in script_ranges_order {
+    for (a, b) in s.ranges() {
+      covered += b - a + 1
+    }
+  }
+  assert_eq(covered, 0x110000)
+}
+
+///|
+test "a range holds characters of its script at both ends" {
+  for s in script_ranges_order {
+    for (a, b) in s.ranges() {
+      assert_true(@script.script(a.unsafe_to_char()) == s)
+      assert_true(@script.script(b.unsafe_to_char()) == s)
+    }
+  }
+}
+
+///|
+test "an extension range lists its script among the scripts of both ends" {
+  for s in script_ranges_order {
+    for (a, b) in s.extended_ranges() {
+      assert_true(@script.extensions(a.unsafe_to_char()).contains(s))
+      assert_true(@script.extensions(b.unsafe_to_char()).contains(s))
+    }
+  }
+}
+
+///|
+/// The plain table and the shared one are two answers to the same question, so
+/// between them the extension ranges hold a character exactly as often as its
+/// extensions list it.
+test "the extension ranges cover each character as often as its extensions" {
+  let mut shared : Int32 = 0
+  for s in script_ranges_order {
+    for (a, b) in s.extended_ranges() {
+      shared += b - a + 1
+    }
+  }
+  let mut expected : Int32 = 0
+  for cp in 0..<0x110000 {
+    for _ in @script.extensions(cp.unsafe_to_char()) {
+      expected += 1
+    }
+  }
+  assert_eq(shared, expected)
+}
+
+///|
+test "ranges on the usual suspects" {
+  assert_eq(@script.Latin.ranges()[0], (0x41, 0x5A))
+  assert_true(@script.Greek.ranges().length() > 30)
+  assert_true(@script.Han.ranges().contains((0x4E00, 0x9FFF)))
+}
+
+///|
+test "a script shared with another one shows in both extension tables" {
+  let mark = '\u{30FC}'
+  let hiragana = @script.Hiragana.extended_ranges()
+  let katakana = @script.Katakana.extended_ranges()
+  assert_true(holds(katakana, 0x30FC))
+  assert_true(holds(hiragana, 0x30FC))
+  assert_true(!holds(@script.Katakana.ranges(), 0x30FC))
+  assert_true(@script.script(mark) == @script.Common)
 }

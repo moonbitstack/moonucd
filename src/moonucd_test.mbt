@@ -148,3 +148,68 @@ test "bidi and category" {
   assert_eq(@moonucd.category('ǅ').to_string(), "Lt")
   assert_true(@moonucd.version() == "17.0.0")
 }
+
+///|
+test "simple folding agrees with CaseFolding.txt on every code point" {
+  let d = digest((ch, out) => out.push(@moonucd.simple_fold(ch).to_int()))
+  assert_eq(d, simple_fold_digest)
+}
+
+///|
+test "every C and S entry folds as the file writes it" {
+  for i, from in simple_fold_from {
+    let ch = from.unsafe_to_char()
+    assert_eq(@moonucd.simple_fold(ch).to_int(), simple_fold_to[i])
+  }
+}
+
+///|
+test "every fold class agrees with the file on every code point" {
+  let d = digest((ch, out) => {
+    let orbit = @moonucd.fold_orbit(ch)
+    out.push(orbit.length())
+    for c in orbit {
+      out.push(c.to_int())
+    }
+  })
+  assert_eq(d, fold_orbit_digest)
+}
+
+///|
+test "both ends of a fold are in one class, which they share" {
+  for i, from in simple_fold_from {
+    let a = from.unsafe_to_char()
+    let b = simple_fold_to[i].unsafe_to_char()
+    let orbit = @moonucd.fold_orbit(a)
+    assert_true(orbit.contains(a))
+    assert_true(orbit.contains(b))
+    assert_eq(orbit, @moonucd.fold_orbit(b))
+  }
+}
+
+///|
+test "folding on the usual suspects" {
+  assert_eq(@moonucd.simple_fold('A'), 'a')
+  assert_eq(@moonucd.simple_fold('a'), 'a')
+  assert_eq(@moonucd.simple_fold('ς'), 'σ')
+  assert_eq(@moonucd.simple_fold('ß'), 'ß')
+  assert_eq(@moonucd.simple_fold('İ'), 'İ')
+  assert_eq(@moonucd.fold_orbit('K'), ['K', 'k', '\u{212A}'])
+  assert_eq(@moonucd.fold_orbit('ς'), ['Σ', 'ς', 'σ'])
+  assert_eq(@moonucd.fold_orbit('中'), ['中'])
+}
+
+///|
+test "a fold class is ascending, holds its own member, and each of its members answers the same" {
+  for from in simple_fold_from {
+    let orbit = @moonucd.fold_orbit(from.unsafe_to_char())
+    let mut prev : Int32 = -1
+    for c in orbit {
+      assert_true(c.to_int() > prev)
+      prev = c.to_int()
+    }
+    for c in orbit {
+      assert_eq(@moonucd.fold_orbit(c), orbit)
+    }
+  }
+}

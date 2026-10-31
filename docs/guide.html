@@ -36,6 +36,7 @@
       <li><a href="#case">Changing case</a></li>
       <li><a href="#names">Age, blocks and names</a></li>
       <li><a href="#scripts">Scripts</a></li>
+      <li><a href="#ranges">Ranges</a></li>
       <li><a href="#normalize">Normalization</a></li>
       <li><a href="#width">Width</a></li>
       <li><a href="#segment">Segmentation</a></li>
@@ -208,6 +209,47 @@ same_text("<span class="w1">Å</span>", "a\u{30A}")        <span class="c">// tr
 }
 
 scripts_in("p<span class="w1">а</span>ypal")    <span class="c">// [Latin, Cyrillic]</span></pre>
+    </section>
+
+    <section id="ranges">
+      <p class="eyebrow">moonbitstack/moonucd · …/script</p>
+      <h2>Ranges and simple folding</h2>
+      <pre>@moonucd.Nd.ranges()[0]                      <span class="c">// (0x30, 0x39)</span>
+@moonucd.Nd.ranges().length()                <span class="c">// 72</span>
+@moonucd.Dash.ranges().length()              <span class="c">// 24</span>
+@moonucd.simple_fold('<span class="w1">ς</span>')                    <span class="c">// '<span class="w1">σ</span>'</span>
+@moonucd.fold_orbit('K')                     <span class="c">// ['K', 'k', '\u{212A}']</span>
+@script.Greek.ranges()[0]                    <span class="c">// (0x370, 0x373)</span>
+@script.Katakana.ranges().length()           <span class="c">// 14</span>
+@script.Katakana.extended_ranges().length()  <span class="c">// 22</span></pre>
+      <p>
+        A set of characters is easier to work with as intervals than as a predicate: a pattern
+        engine, a tokenizer or a character map all keep <code>(start, end)</code> pairs. The ranges
+        are closed, ascending and already joined, so two sets meet by walking them once. Every
+        category, every binary property and every script answers with its ranges.
+      </p>
+      <p>
+        <code>Script::ranges</code> follows the script a character is listed under;
+        <code>Script::extended_ranges</code> follows Script_Extensions, the scripts it is shared
+        with, so the prolonged sound mark is in both Hiragana and Katakana there, and in neither
+        one plainly.
+      </p>
+      <p>
+        For matching that ignores case one character at a time, <code>simple_fold</code> is the C and
+        S classes of CaseFolding.txt and <code>fold_orbit</code> is the whole class a character folds
+        with, so a set closes under case without a walk of the code space:
+      </p>
+      <pre>fn caseless_set(chars : Array[Char]) -> Array[(Int32, Int32)] {
+  let out = []
+  for c in chars {
+    for folded in @moonucd.fold_orbit(c) {
+      out.push((folded.to_int(), folded.to_int()))
+    }
+  }
+  out
+}
+
+caseless_set(['k'])  <span class="c">// [(0x4B, 0x4B), (0x6B, 0x6B), (0x212A, 0x212A)]</span></pre>
     </section>
 
     <section id="normalize">

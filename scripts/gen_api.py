@@ -43,7 +43,7 @@ def docs_of(folder):
             m = DECL.match(line)
             if m:
                 if pending:
-                    out[m.group(2)] = " ".join(pending)
+                    out[m.group(2)] = "\n".join(pending)
                 owner = m.group(2) if m.group(1) == "enum" and line.rstrip().endswith("{") else None
                 pending = []
                 continue
@@ -91,11 +91,29 @@ def items_of(folder):
     return items
 
 
-def prose(text):
+FENCE = re.compile(r"```[^\n`]*\n(.*?)```", re.S)
+
+
+def inline(text):
     if not text:
         return ""
     text = re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text, quote=False))
     return f"<p>{text}</p>"
+
+
+def prose(text):
+    """A doc comment: its prose as paragraphs, and the example it carries as a
+    code block, which is what `mbt check` comments are written for."""
+    if not text:
+        return ""
+    out, pos = [], 0
+    for m in FENCE.finditer(text):
+        out.append(inline(text[pos : m.start()].strip()))
+        code = html.escape(m.group(1).strip("\n"), quote=False)
+        out.append(f'<pre class="code">{code}</pre>')
+        pos = m.end()
+    out.append(inline(text[pos:].strip()))
+    return "".join(part for part in out if part)
 
 
 def sig(text):

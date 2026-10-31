@@ -35,9 +35,11 @@
 <li><a href="#moonucd-bidi">bidi</a></li>
 <li><a href="#moonucd-category">category</a></li>
 <li><a href="#moonucd-fold">fold</a></li>
+<li><a href="#moonucd-fold_orbit">fold_orbit</a></li>
 <li><a href="#moonucd-has">has</a></li>
 <li><a href="#moonucd-lower">lower</a></li>
 <li><a href="#moonucd-numeric">numeric</a></li>
+<li><a href="#moonucd-simple_fold">simple_fold</a></li>
 <li><a href="#moonucd-title">title</a></li>
 <li><a href="#moonucd-upper">upper</a></li>
 <li><a href="#moonucd-version">version</a></li>
@@ -115,25 +117,47 @@
 <p>What a character is and how it changes case.</p>
 <div class="entry" id="moonucd-bidi">
 <h3><span class="kind">fn</span>bidi</h3>
-<pre class="sig">pub fn bidi(Char) -&gt; Bidi</pre><p>The bidirectional class of <code>ch</code>, with the defaults the UCD assigns to unassigned code points.</p></div>
+<pre class="sig">pub fn bidi(Char) -&gt; Bidi</pre><p>The bidirectional class of <code>ch</code>, with the defaults the UCD assigns to
+unassigned code points.</p></div>
 <div class="entry" id="moonucd-category">
 <h3><span class="kind">fn</span>category</h3>
 <pre class="sig">pub fn category(Char) -&gt; Category</pre><p>The category of <code>ch</code>; unassigned code points are <code>Cn</code>.</p></div>
 <div class="entry" id="moonucd-fold">
 <h3><span class="kind">fn</span>fold</h3>
 <pre class="sig">pub fn fold(StringView) -&gt; String</pre><p><code>text</code> case-folded with the full foldings, for caseless comparison.</p></div>
+<div class="entry" id="moonucd-fold_orbit">
+<h3><span class="kind">fn</span>fold_orbit</h3>
+<pre class="sig">pub fn fold_orbit(Char) -&gt; Array[Char]</pre><p>Every character that folds to or from <code>ch</code>, itself included, ascending:
+the class a caseless match of one character has to cover.</p><pre class="code">test {
+assert_eq(@moonucd.fold_orbit('K'), ['K', 'k', '\u{212A}'])
+assert_eq(@moonucd.fold_orbit('ς'), ['Σ', 'ς', 'σ'])
+assert_eq(@moonucd.fold_orbit('中'), ['中'])
+}</pre></div>
 <div class="entry" id="moonucd-has">
 <h3><span class="kind">fn</span>has</h3>
 <pre class="sig">pub fn has(Char, Property) -&gt; Bool</pre><p>Whether <code>ch</code> has <code>property</code>.</p></div>
 <div class="entry" id="moonucd-lower">
 <h3><span class="kind">fn</span>lower</h3>
-<pre class="sig">pub fn lower(StringView) -&gt; String</pre><p><code>text</code> in lowercase, with the full mappings; a capital sigma at the end of a word becomes <code>ς</code>.</p></div>
+<pre class="sig">pub fn lower(StringView) -&gt; String</pre><p><code>text</code> in lowercase, with the full mappings; a capital sigma at the end
+of a word becomes <code>ς</code>.</p></div>
 <div class="entry" id="moonucd-numeric">
 <h3><span class="kind">fn</span>numeric</h3>
 <pre class="sig">pub fn numeric(Char) -&gt; Numeric?</pre><p>The numeric type of <code>ch</code>; <code>None</code> for characters without a numeric value.</p></div>
+<div class="entry" id="moonucd-simple_fold">
+<h3><span class="kind">fn</span>simple_fold</h3>
+<pre class="sig">pub fn simple_fold(Char) -&gt; Char</pre><p>The simple case folding of <code>ch</code>: the one character it turns into when case
+stops counting, from the C and S classes of CaseFolding.txt. A code point
+that only has a longer fold, <code>ß</code> to <code>ss</code>, folds to itself, since one
+character cannot become two.</p><pre class="code">test {
+assert_eq(@moonucd.simple_fold('A'), 'a')
+assert_eq(@moonucd.simple_fold('ς'), 'σ')
+assert_eq(@moonucd.simple_fold('ß'), 'ß')
+assert_eq(@moonucd.simple_fold('1'), '1')
+}</pre></div>
 <div class="entry" id="moonucd-title">
 <h3><span class="kind">fn</span>title</h3>
-<pre class="sig">pub fn title(StringView) -&gt; String</pre><p>Every character of <code>text</code> mapped to its titlecase form. Words are not found here: callers decide which characters start one.</p></div>
+<pre class="sig">pub fn title(StringView) -&gt; String</pre><p>Every character of <code>text</code> mapped to its titlecase form. Words are not
+found here: callers decide which characters start one.</p></div>
 <div class="entry" id="moonucd-upper">
 <h3><span class="kind">fn</span>upper</h3>
 <pre class="sig">pub fn upper(StringView) -&gt; String</pre><p><code>text</code> in uppercase, with the full mappings: <code>ß</code> becomes <code>SS</code>.</p></div>
@@ -153,6 +177,13 @@
 <pre class="sig">pub(all) enum Category {</pre>
 <ul class="variants"><li>Lu</li><li>Ll</li><li>Lt</li><li>Lm</li><li>Lo</li><li>Mn</li><li>Mc</li><li>Me</li><li>Nd</li><li>Nl</li><li>No</li><li>Pc</li><li>Pd</li><li>Ps</li><li>Pe</li><li>Pi</li><li>Pf</li><li>Po</li><li>Sm</li><li>Sc</li><li>Sk</li><li>So</li><li>Zs</li><li>Zl</li><li>Zp</li><li>Cc</li><li>Cf</li><li>Cs</li><li>Co</li><li>Cn</li></ul>
 <p>Implements <code>Show</code>.</p>
+<div class="member" id="moonucd-category-ranges"><pre class="sig">pub fn Category::ranges(Self) -&gt; Array[(Int32, Int32)]</pre><p>The ranges the category covers: closed intervals, ascending by their
+start, neighbours joined, so that a matcher can hold a set of characters
+as a list instead of a predicate.</p><pre class="code">test {
+let digits = @moonucd.Nd.ranges()
+assert_eq(digits[0], (0x30, 0x39))
+assert_eq(digits[1], (0x660, 0x669))
+}</pre></div>
 </div>
 <div class="entry" id="moonucd-numeric">
 <h3><span class="kind">enum</span>Numeric</h3>
@@ -165,6 +196,12 @@
 <p>A binary property from PropList, DerivedCoreProperties and emoji-data.</p>
 <pre class="sig">pub(all) enum Property {</pre>
 <ul class="variants"><li>Alphabetic</li><li>Lowercase</li><li>Uppercase</li><li>Cased</li><li>CaseIgnorable</li><li>ChangesWhenLowercased</li><li>ChangesWhenUppercased</li><li>ChangesWhenTitlecased</li><li>ChangesWhenCasefolded</li><li>ChangesWhenCasemapped</li><li>IdStart</li><li>IdContinue</li><li>XidStart</li><li>XidContinue</li><li>DefaultIgnorableCodePoint</li><li>GraphemeExtend</li><li>GraphemeBase</li><li>Math</li><li>WhiteSpace</li><li>BidiControl</li><li>JoinControl</li><li>Dash</li><li>Hyphen</li><li>QuotationMark</li><li>TerminalPunctuation</li><li>HexDigit</li><li>AsciiHexDigit</li><li>Ideographic</li><li>Diacritic</li><li>Extender</li><li>NoncharacterCodePoint</li><li>IdsBinaryOperator</li><li>IdsTrinaryOperator</li><li>Radical</li><li>UnifiedIdeograph</li><li>Deprecated</li><li>SoftDotted</li><li>LogicalOrderException</li><li>SentenceTerminal</li><li>VariationSelector</li><li>PatternWhiteSpace</li><li>PatternSyntax</li><li>PrependedConcatenationMark</li><li>RegionalIndicator</li><li>Emoji</li><li>EmojiPresentation</li><li>EmojiModifier</li><li>EmojiModifierBase</li><li>EmojiComponent</li><li>ExtendedPictographic</li></ul>
+<div class="member" id="moonucd-property-ranges"><pre class="sig">pub fn Property::ranges(Self) -&gt; Array[(Int32, Int32)]</pre><p>The ranges the binary property covers: closed intervals, ascending by their
+start, neighbours joined.</p><pre class="code">test {
+let dashes = @moonucd.Dash.ranges()
+assert_eq(dashes[0], (0x2D, 0x2D))
+assert_true(dashes.contains((0x2010, 0x2015)))
+}</pre></div>
 </div>
 </section>
 <section id="age-top">
@@ -172,7 +209,9 @@
 <p>The Unicode version that first assigned a code point.</p>
 <div class="entry" id="age-age">
 <h3><span class="kind">fn</span>age</h3>
-<pre class="sig">pub fn age(Char) -&gt; (Int32, Int32)?</pre><p>When <code>ch</code> was first assigned, as the (major, minor) Unicode version — <code>(1, 1)</code> for the original repertoire, <code>(17, 0)</code> for the newest — or <code>None</code> for code points that are still unassigned.</p></div>
+<pre class="sig">pub fn age(Char) -&gt; (Int32, Int32)?</pre><p>When <code>ch</code> was first assigned, as the (major, minor) Unicode version —
+<code>(1, 1)</code> for the original repertoire, <code>(17, 0)</code> for the newest — or
+<code>None</code> for code points that are still unassigned.</p></div>
 <div class="entry" id="age-version">
 <h3><span class="kind">fn</span>version</h3>
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
@@ -182,10 +221,14 @@
 <p>The block a code point sits in, and the range of a block.</p>
 <div class="entry" id="block-block">
 <h3><span class="kind">fn</span>block</h3>
-<pre class="sig">pub fn block(Char) -&gt; String?</pre><p>The block <code>ch</code> belongs to, or <code>None</code> for the code points that sit in no block at all.</p></div>
+<pre class="sig">pub fn block(Char) -&gt; String?</pre><p>The block <code>ch</code> belongs to, or <code>None</code> for the code points that sit in no
+block at all.</p></div>
 <div class="entry" id="block-range">
 <h3><span class="kind">fn</span>range</h3>
-<pre class="sig">pub fn range(StringView) -&gt; (Char, Char)?</pre><p>The first and last code point of the block called <code>name</code>, matched the loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a leading "is" are ignored. The short aliases of PropertyValueAliases.txt (<code>ASCII</code>, <code>Greek</code>, <code>CJK</code>) name their blocks too.</p></div>
+<pre class="sig">pub fn range(StringView) -&gt; (Char, Char)?</pre><p>The first and last code point of the block called <code>name</code>, matched the
+loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a
+leading "is" are ignored. The short aliases of PropertyValueAliases.txt
+(<code>ASCII</code>, <code>Greek</code>, <code>CJK</code>) name their blocks too.</p></div>
 <div class="entry" id="block-version">
 <h3><span class="kind">fn</span>version</h3>
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
@@ -195,10 +238,16 @@
 <p>The name of a code point, and the code point a name names.</p>
 <div class="entry" id="name-lookup">
 <h3><span class="kind">fn</span>lookup</h3>
-<pre class="sig">pub fn lookup(StringView) -&gt; Char?</pre><p>The code point named <code>name</code>, matched the loose way of UAX #44 (LM2): case, spaces, underscores and medial hyphens ignored, except the hyphen in U+1180's name. Formal names and every NameAliases alias resolve; a formal name wins over an alias spelled the same.</p></div>
+<pre class="sig">pub fn lookup(StringView) -&gt; Char?</pre><p>The code point named <code>name</code>, matched the loose way of UAX #44 (LM2): case,
+spaces, underscores and medial hyphens ignored, except the hyphen in
+U+1180's name. Formal names and every NameAliases alias resolve; a formal
+name wins over an alias spelled the same.</p></div>
 <div class="entry" id="name-name">
 <h3><span class="kind">fn</span>name</h3>
-<pre class="sig">pub fn name(Char) -&gt; String?</pre><p>The name of <code>ch</code>, or <code>None</code> when the code point has none: unassigned code points, surrogates, private use and noncharacters. Hangul syllables and the ideograph-like scripts named <code>PREFIX-XXXX</code> (CJK, Tangut, Khitan, Nushu, Egyptian hieroglyphs) are spelled by the Standard's rules NR1 and NR2.</p></div>
+<pre class="sig">pub fn name(Char) -&gt; String?</pre><p>The name of <code>ch</code>, or <code>None</code> when the code point has none: unassigned code
+points, surrogates, private use and noncharacters. Hangul syllables and the
+ideograph-like scripts named <code>PREFIX-XXXX</code> (CJK, Tangut, Khitan, Nushu,
+Egyptian hieroglyphs) are spelled by the Standard's rules NR1 and NR2.</p></div>
 <div class="entry" id="name-version">
 <h3><span class="kind">fn</span>version</h3>
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
@@ -208,7 +257,8 @@
 <p>The script of a code point, and the scripts it is shared with.</p>
 <div class="entry" id="script-extensions">
 <h3><span class="kind">fn</span>extensions</h3>
-<pre class="sig">pub fn extensions(Char) -&gt; Array[Script]</pre><p>The scripts <code>ch</code> can belong to: the ScriptExtensions.txt list when it has one, and <code>[script(ch)]</code> when it does not.</p></div>
+<pre class="sig">pub fn extensions(Char) -&gt; Array[Script]</pre><p>The scripts <code>ch</code> can belong to: the ScriptExtensions.txt list when it has
+one, and <code>[script(ch)]</code> when it does not.</p></div>
 <div class="entry" id="script-script">
 <h3><span class="kind">fn</span>script</h3>
 <pre class="sig">pub fn script(Char) -&gt; Script</pre><p>The script of <code>ch</code>; unassigned and unknown code points are <code>Unknown</code>.</p></div>
@@ -217,11 +267,38 @@
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
 <div class="entry" id="script-script">
 <h3><span class="kind">enum</span>Script</h3>
-<p>Script, the writing system a character belongs to. The long name is what <code>Show</code> writes; <code>Script::of</code> reads both it and the four-letter code.</p>
+<p>Script, the writing system a character belongs to. The long name is what
+<code>Show</code> writes; <code>Script::of</code> reads both it and the four-letter code.</p>
 <pre class="sig">pub(all) enum Script {</pre>
 <ul class="variants"><li>Adlam</li><li>Ahom</li><li>AnatolianHieroglyphs</li><li>Arabic</li><li>Armenian</li><li>Avestan</li><li>Balinese</li><li>Bamum</li><li>BassaVah</li><li>Batak</li><li>Bengali</li><li>BeriaErfe</li><li>Bhaiksuki</li><li>Bopomofo</li><li>Brahmi</li><li>Braille</li><li>Buginese</li><li>Buhid</li><li>CanadianAboriginal</li><li>Carian</li><li>CaucasianAlbanian</li><li>Chakma</li><li>Cham</li><li>Cherokee</li><li>Chorasmian</li><li>Common</li><li>Coptic</li><li>Cuneiform</li><li>Cypriot</li><li>CyproMinoan</li><li>Cyrillic</li><li>Deseret</li><li>Devanagari</li><li>DivesAkuru</li><li>Dogra</li><li>Duployan</li><li>EgyptianHieroglyphs</li><li>Elbasan</li><li>Elymaic</li><li>Ethiopic</li><li>Garay</li><li>Georgian</li><li>Glagolitic</li><li>Gothic</li><li>Grantha</li><li>Greek</li><li>Gujarati</li><li>GunjalaGondi</li><li>Gurmukhi</li><li>GurungKhema</li><li>Han</li><li>Hangul</li><li>HanifiRohingya</li><li>Hanunoo</li><li>Hatran</li><li>Hebrew</li><li>Hiragana</li><li>ImperialAramaic</li><li>Inherited</li><li>InscriptionalPahlavi</li><li>InscriptionalParthian</li><li>Javanese</li><li>Kaithi</li><li>Kannada</li><li>Katakana</li><li>KatakanaOrHiragana</li><li>Kawi</li><li>KayahLi</li><li>Kharoshthi</li><li>KhitanSmallScript</li><li>Khmer</li><li>Khojki</li><li>Khudawadi</li><li>KiratRai</li><li>Lao</li><li>Latin</li><li>Lepcha</li><li>Limbu</li><li>LinearA</li><li>LinearB</li><li>Lisu</li><li>Lycian</li><li>Lydian</li><li>Mahajani</li><li>Makasar</li><li>Malayalam</li><li>Mandaic</li><li>Manichaean</li><li>Marchen</li><li>MasaramGondi</li><li>Medefaidrin</li><li>MeeteiMayek</li><li>MendeKikakui</li><li>MeroiticCursive</li><li>MeroiticHieroglyphs</li><li>Miao</li><li>Modi</li><li>Mongolian</li><li>Mro</li><li>Multani</li><li>Myanmar</li><li>Nabataean</li><li>NagMundari</li><li>Nandinagari</li><li>NewTaiLue</li><li>Newa</li><li>Nko</li><li>Nushu</li><li>NyiakengPuachueHmong</li><li>Ogham</li><li>OlChiki</li><li>OlOnal</li><li>OldHungarian</li><li>OldItalic</li><li>OldNorthArabian</li><li>OldPermic</li><li>OldPersian</li><li>OldSogdian</li><li>OldSouthArabian</li><li>OldTurkic</li><li>OldUyghur</li><li>Oriya</li><li>Osage</li><li>Osmanya</li><li>PahawhHmong</li><li>Palmyrene</li><li>PauCinHau</li><li>PhagsPa</li><li>Phoenician</li><li>PsalterPahlavi</li><li>Rejang</li><li>Runic</li><li>Samaritan</li><li>Saurashtra</li><li>Sharada</li><li>Shavian</li><li>Siddham</li><li>Sidetic</li><li>SignWriting</li><li>Sinhala</li><li>Sogdian</li><li>SoraSompeng</li><li>Soyombo</li><li>Sundanese</li><li>Sunuwar</li><li>SylotiNagri</li><li>Syriac</li><li>Tagalog</li><li>Tagbanwa</li><li>TaiLe</li><li>TaiTham</li><li>TaiViet</li><li>TaiYo</li><li>Takri</li><li>Tamil</li><li>Tangsa</li><li>Tangut</li><li>Telugu</li><li>Thaana</li><li>Thai</li><li>Tibetan</li><li>Tifinagh</li><li>Tirhuta</li><li>Todhri</li><li>TolongSiki</li><li>Toto</li><li>TuluTigalari</li><li>Ugaritic</li><li>Unknown</li><li>Vai</li><li>Vithkuqi</li><li>Wancho</li><li>WarangCiti</li><li>Yezidi</li><li>Yi</li><li>ZanabazarSquare</li></ul>
 <p>Implements <code>Show</code>.</p>
-<div class="member" id="script-script-of"><pre class="sig">pub fn Script::of(StringView) -&gt; Self?</pre><p>The script called <code>name</code> — a long name ("Latin", "Old Italic") or a four-letter code ("Latn", "Ital"), matched the loose way of UAX #44 (LM3): case, spaces, underscores, hyphens and a leading "is" are ignored.</p></div>
+<div class="member" id="script-script-extended_ranges"><pre class="sig">pub fn Script::extended_ranges(Self) -&gt; Array[(Int32, Int32)]</pre><p>The ranges where the script is one of the scripts a character is used
+with: Script_Extensions where the database writes one, and the script the
+character is listed under where it does not. A character shared between
+scripts changes hands, so this is not <code>ranges</code> plus more: the prolonged
+sound mark is Common on its own, and here it belongs to Hiragana and
+Katakana instead.</p><pre class="code">test {
+let holds = fn(ranges : Array[(Int32, Int32)], cp : Int32) -&gt; Bool {
+for (a, b) in ranges {
+if a &lt;= cp &amp;&amp; cp &lt;= b {
+return true
+}
+}
+false
+}
+assert_true(holds(@script.Katakana.extended_ranges(), 0x30FC))
+assert_true(holds(@script.Hiragana.extended_ranges(), 0x30FC))
+assert_true(!holds(@script.Katakana.ranges(), 0x30FC))
+}</pre></div>
+<div class="member" id="script-script-of"><pre class="sig">pub fn Script::of(StringView) -&gt; Self?</pre><p>The script called <code>name</code> — a long name ("Latin", "Old Italic") or a
+four-letter code ("Latn", "Ital"), matched the loose way of UAX #44
+(LM3): case, spaces, underscores, hyphens and a leading "is" are ignored.</p></div>
+<div class="member" id="script-script-ranges"><pre class="sig">pub fn Script::ranges(Self) -&gt; Array[(Int32, Int32)]</pre><p>The ranges the script covers: closed intervals, ascending by their start,
+neighbours joined.</p><pre class="code">test {
+let greek = @script.Greek.ranges()
+assert_eq(greek[0], (0x370, 0x373))
+assert_true(greek.length() &gt; 30)
+}</pre></div>
 </div>
 </section>
 <section id="normalize-top">
@@ -232,19 +309,23 @@
 <pre class="sig">pub fn combining(Char) -&gt; Int32</pre><p>The Canonical_Combining_Class of <code>ch</code> (0 when it has none).</p></div>
 <div class="entry" id="normalize-decomposition">
 <h3><span class="kind">fn</span>decomposition</h3>
-<pre class="sig">pub fn decomposition(Char) -&gt; String</pre><p>The first-level decomposition mapping of <code>ch</code>, as the UCD lists it: a space separated, upper-case, four-digit-hex sequence, or <code>""</code> when <code>ch</code> has none.</p></div>
+<pre class="sig">pub fn decomposition(Char) -&gt; String</pre><p>The first-level decomposition mapping of <code>ch</code>, as the UCD lists it: a space
+separated, upper-case, four-digit-hex sequence, or <code>""</code> when <code>ch</code> has none.</p></div>
 <div class="entry" id="normalize-is_normalized">
 <h3><span class="kind">fn</span>is_normalized</h3>
 <pre class="sig">pub fn is_normalized(Form, StringView) -&gt; Bool</pre><p>True when <code>s</code> is already in <code>form</code> (no change under <code>normalize</code>).</p></div>
 <div class="entry" id="normalize-normalize">
 <h3><span class="kind">fn</span>normalize</h3>
-<pre class="sig">pub fn normalize(Form, StringView) -&gt; String</pre><p><code>s</code> in <code>form</code> — NFC, NFD, NFKC or NFKD — exactly as Unicode defines it: decompose recursively, put the sequence in canonical order, then compose the decomposed form when <code>form</code> is a composed one.</p></div>
+<pre class="sig">pub fn normalize(Form, StringView) -&gt; String</pre><p><code>s</code> in <code>form</code> — NFC, NFD, NFKC or NFKD — exactly as Unicode defines it:
+decompose recursively, put the sequence in canonical order, then compose the
+decomposed form when <code>form</code> is a composed one.</p></div>
 <div class="entry" id="normalize-version">
 <h3><span class="kind">fn</span>version</h3>
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the tables come from.</p></div>
 <div class="entry" id="normalize-form">
 <h3><span class="kind">enum</span>Form</h3>
-<p>A Unicode normalization form. NFC and NFKC are the composed forms; NFD and NFKD are the decomposed forms.</p>
+<p>A Unicode normalization form. NFC and NFKC are the composed forms; NFD and
+NFKD are the decomposed forms.</p>
 <pre class="sig">pub(all) enum Form {</pre>
 <ul class="variants"><li>NFC</li><li>NFD</li><li>NFKC</li><li>NFKD</li></ul>
 <p>Implements <code>Show</code>.</p>
@@ -258,16 +339,28 @@
 <pre class="sig">pub fn east_asian_width(Char) -&gt; Eaw</pre><p>The East Asian Width of <code>ch</code> (see <code>Eaw</code>).</p></div>
 <div class="entry" id="width-text_width">
 <h3><span class="kind">fn</span>text_width</h3>
-<pre class="sig">pub fn text_width(StringView, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>s</code> occupies, or -1 when it holds a control character. A Zero Width Joiner hides the character after it, so an emoji sequence counts once, and a Variation Selector 16 (U+FE0F) after a character that takes an emoji presentation widens it by one cell. <code>ambiguous</code> is as for <code>width</code>.</p></div>
+<pre class="sig">pub fn text_width(StringView, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>s</code> occupies, or -1 when it holds a control
+character. A Zero Width Joiner hides the character after it, so an emoji
+sequence counts once, and a Variation Selector 16 (U+FE0F) after a
+character that takes an emoji presentation widens it by one cell.
+<code>ambiguous</code> is as for <code>width</code>.</p></div>
 <div class="entry" id="width-version">
 <h3><span class="kind">fn</span>version</h3>
 <pre class="sig">pub fn version() -&gt; String</pre><p>The version of the Unicode Character Database the width data comes from.</p></div>
 <div class="entry" id="width-width">
 <h3><span class="kind">fn</span>width</h3>
-<pre class="sig">pub fn width(Char, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>ch</code> occupies: -1 for C0 and C1 control characters, 0 for NUL, combining marks and other zero-width code points, 2 for Wide and Fullwidth code points, and 1 otherwise.  <code>ambiguous</code> is the width an East Asian Ambiguous character takes where it would otherwise take one cell; a CJK terminal draws them two wide.</p></div>
+<pre class="sig">pub fn width(Char, ambiguous? : Int32) -&gt; Int32</pre><p>The number of terminal cells <code>ch</code> occupies: -1 for C0 and C1 control
+characters, 0 for NUL, combining marks and other zero-width code points, 2
+for Wide and Fullwidth code points, and 1 otherwise.
+
+<code>ambiguous</code> is the width an East Asian Ambiguous character takes where it
+would otherwise take one cell; a CJK terminal draws them two wide.</p></div>
 <div class="entry" id="width-eaw">
 <h3><span class="kind">enum</span>Eaw</h3>
-<p>The East Asian Width of <code>ch</code>, the UCD <code>ea</code> property: a code point is Wide (W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one, Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned code points and surrogates are Neutral.</p>
+<p>The East Asian Width of <code>ch</code>, the UCD <code>ea</code> property: a code point is Wide
+(W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one,
+Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned
+code points and surrogates are Neutral.</p>
 <pre class="sig">pub(all) enum Eaw {</pre>
 <ul class="variants"><li>A<small>Ambiguous</small></li><li>F<small>Fullwidth</small></li><li>H<small>Halfwidth</small></li><li>N<small>Neutral (the default)</small></li><li>Na<small>Narrow</small></li><li>W<small>Wide</small></li></ul>
 <p>Implements <code>Show</code>.</p>
@@ -281,10 +374,12 @@
 <pre class="sig">pub fn gcb_property(Char) -&gt; Gcb</pre><p>The Grapheme_Cluster_Break property value of a character.</p></div>
 <div class="entry" id="segment-grapheme_at">
 <h3><span class="kind">fn</span>grapheme_at</h3>
-<pre class="sig">pub fn grapheme_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The grapheme cluster holding the UTF-16 offset <code>at</code>, as <code>(start, end)</code>: where a cursor lands when it moves one user-perceived character.</p></div>
+<pre class="sig">pub fn grapheme_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The grapheme cluster holding the UTF-16 offset <code>at</code>, as <code>(start, end)</code>:
+where a cursor lands when it moves one user-perceived character.</p></div>
 <div class="entry" id="segment-grapheme_boundaries">
 <h3><span class="kind">fn</span>grapheme_boundaries</h3>
-<pre class="sig">pub fn grapheme_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Grapheme cluster boundaries: <code>result[i]</code> is true when a boundary falls between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #29.</p></div>
+<pre class="sig">pub fn grapheme_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Grapheme cluster boundaries: <code>result[i]</code> is true when a boundary falls
+between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #29.</p></div>
 <div class="entry" id="segment-grapheme_clusters">
 <h3><span class="kind">fn</span>grapheme_clusters</h3>
 <pre class="sig">pub fn grapheme_clusters(StringView) -&gt; Array[String]</pre><p>The extended grapheme clusters of a string.</p></div>
@@ -305,7 +400,8 @@
 <pre class="sig">pub fn wb_property(Char) -&gt; Wb</pre><p>The Word_Break property value of a character.</p></div>
 <div class="entry" id="segment-word_at">
 <h3><span class="kind">fn</span>word_at</h3>
-<pre class="sig">pub fn word_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The word, or run of spaces or punctuation, holding the UTF-16 offset <code>at</code>, as <code>(start, end)</code>: what a double click selects.</p></div>
+<pre class="sig">pub fn word_at(StringView, Int32) -&gt; (Int32, Int32)</pre><p>The word, or run of spaces or punctuation, holding the UTF-16 offset
+<code>at</code>, as <code>(start, end)</code>: what a double click selects.</p></div>
 <div class="entry" id="segment-word_boundaries">
 <h3><span class="kind">fn</span>word_boundaries</h3>
 <pre class="sig">pub fn word_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>Word boundaries, following UAX #29.</p></div>
@@ -339,13 +435,16 @@
 <p>Line-break opportunities, by UAX #14.</p>
 <div class="entry" id="linebreak-breaks">
 <h3><span class="kind">fn</span>breaks</h3>
-<pre class="sig">pub fn breaks(StringView) -&gt; Array[(Int32, Bool)]</pre><p>The break opportunities inside <code>s</code>, as the UTF-16 offset each line may end at and whether the line must end there (after a hard line break) or only may.</p></div>
+<pre class="sig">pub fn breaks(StringView) -&gt; Array[(Int32, Bool)]</pre><p>The break opportunities inside <code>s</code>, as the UTF-16 offset each line may
+end at and whether the line must end there (after a hard line break) or
+only may.</p></div>
 <div class="entry" id="linebreak-lb_property">
 <h3><span class="kind">fn</span>lb_property</h3>
 <pre class="sig">pub fn lb_property(Char) -&gt; Lb</pre><p>The line-break class of a character.</p></div>
 <div class="entry" id="linebreak-linebreak_boundaries">
 <h3><span class="kind">fn</span>linebreak_boundaries</h3>
-<pre class="sig">pub fn linebreak_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>The line-break boundaries of a code point sequence: <code>result[i]</code> is true when a break opportunity falls between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #14.</p></div>
+<pre class="sig">pub fn linebreak_boundaries(Array[Int32]) -&gt; Array[Bool]</pre><p>The line-break boundaries of a code point sequence: <code>result[i]</code> is true when
+a break opportunity falls between <code>cps[i]</code> and <code>cps[i + 1]</code>, following UAX #14.</p></div>
 <div class="entry" id="linebreak-linebreaks">
 <h3><span class="kind">fn</span>linebreaks</h3>
 <pre class="sig">pub fn linebreaks(StringView) -&gt; Array[String]</pre><p>The line-break opportunities of a string.</p></div>

@@ -358,6 +358,12 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
 }
 .entry .sig::-webkit-scrollbar-track{background:var(--paper-2)}
 .entry .sig::-webkit-scrollbar-thumb{border-color:var(--paper-2)}
+.entry pre.code{
+  font-family:var(--mono);font-size:12.5px;line-height:1.6;background:var(--paper-2);color:var(--ink);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 10px;overflow-x:auto;white-space:pre;
+}
+.entry pre.code::-webkit-scrollbar-track{background:var(--paper-2)}
+.entry pre.code::-webkit-scrollbar-thumb{border-color:var(--paper-2)}
 .entry p{font-size:15px}
 .entry .member{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
 .variants{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;padding:0;list-style:none}

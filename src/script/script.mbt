@@ -228,6 +228,74 @@ pub fn extensions(ch : Char) -> Array[Script] {
 }
 
 ///|
+/// The ranges the script covers: closed intervals, ascending by their start,
+/// neighbours joined.
+///
+/// ```mbt check
+/// test {
+///   let greek = @script.Greek.ranges()
+///   assert_eq(greek[0], (0x370, 0x373))
+///   assert_true(greek.length() > 30)
+/// }
+/// ```
+pub fn Script::ranges(self : Script) -> Array[(Int32, Int32)] {
+  let mut i = 0
+  while scripts[i] != self {
+    i += 1
+  }
+  slice_ranges(script_ranges, script_ranges_offsets, i)
+}
+
+///|
+/// The ranges where the script is one of the scripts a character is used
+/// with: Script_Extensions where the database writes one, and the script the
+/// character is listed under where it does not. A character shared between
+/// scripts changes hands, so this is not `ranges` plus more: the prolonged
+/// sound mark is Common on its own, and here it belongs to Hiragana and
+/// Katakana instead.
+///
+/// ```mbt check
+/// test {
+///   let holds = fn(ranges : Array[(Int32, Int32)], cp : Int32) -> Bool {
+///     for (a, b) in ranges {
+///       if a <= cp && cp <= b {
+///         return true
+///       }
+///     }
+///     false
+///   }
+///   assert_true(holds(@script.Katakana.extended_ranges(), 0x30FC))
+///   assert_true(holds(@script.Hiragana.extended_ranges(), 0x30FC))
+///   assert_true(!holds(@script.Katakana.ranges(), 0x30FC))
+/// }
+/// ```
+pub fn Script::extended_ranges(self : Script) -> Array[(Int32, Int32)] {
+  let mut i = 0
+  while scripts[i] != self {
+    i += 1
+  }
+  slice_ranges(scx_ranges, scx_ranges_offsets, i)
+}
+
+///|
+/// The ranges a table keeps for entry `i`, from the flat start-and-end list the
+/// generator writes and the offsets that cut it.
+fn slice_ranges(
+  table : FixedArray[Int32],
+  offsets : FixedArray[Int32],
+  i : Int32,
+) -> Array[(Int32, Int32)] {
+  let out = []
+  let mut k = offsets[i]
+  let stop = offsets[i + 1]
+  while k < stop {
+    out.push((table[k], table[k + 1]))
+    k += 2
+  }
+  out
+}
+
+///|
 /// The script called `name` — a long name ("Latin", "Old Italic") or a
 /// four-letter code ("Latn", "Ital"), matched the loose way of UAX #44
 /// (LM3): case, spaces, underscores, hyphens and a leading "is" are ignored.
