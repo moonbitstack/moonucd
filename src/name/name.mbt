@@ -56,7 +56,7 @@ fn hangul(cp : Int32) -> String {
 ///|
 fn explicit(i : Int32) -> String {
   name_pool
-  .view(start_offset=name_offsets[i], end_offset=name_offsets[i + 1])
+  .exact_view(start=name_offsets[i], end=name_offsets[i + 1])
   .to_owned()
 }
 
@@ -70,18 +70,16 @@ fn hex(cp : Int32) -> String {
 /// rule NR1, or `PREFIX-XXXX` whose code point sits in a run of that prefix.
 fn derived(key : String) -> Int32? {
   if key.has_prefix("HANGULSYLLABLE") {
-    return syllable(key.view(start_offset=14))
+    return syllable(key.exact_view(start=14))
   }
   for r in 0..<rule_starts.length() {
     let prefix = prefixes[rule_prefix[r]]
-    let head = lm2(prefix.view(end_offset=prefix.length() - 1))
+    let head = lm2(prefix.exact_view(end=prefix.length() - 1))
     if !key.has_prefix(head) {
       continue
     }
-    let tail = key.view(start_offset=head.length())
-    guard parse_hex(tail) is Some(cp) && hex(cp).view() == tail else {
-      continue
-    }
+    let tail = key.exact_view(start=head.length())
+    guard parse_hex(tail) is Some(cp) && hex(cp)[:] == tail else { continue }
     for i in 0..<rule_starts.length() {
       if rule_prefix[i] == rule_prefix[r] &&
         rule_starts[i] <= cp &&
@@ -98,9 +96,9 @@ fn derived(key : String) -> Int32? {
 /// tail that ends the name.
 fn syllable(rest : StringView) -> Int32? {
   guard longest(rest, jamo_leads) is Some(l) else { return None }
-  let rest = rest.view(start_offset=jamo_leads[l].length())
+  let rest = rest.exact_view(start=jamo_leads[l].length())
   guard longest(rest, jamo_vowels) is Some(v) else { return None }
-  let rest = rest.view(start_offset=jamo_vowels[v].length())
+  let rest = rest.exact_view(start=jamo_vowels[v].length())
   for t, tail in jamo_tails {
     if rest == tail {
       return Some(

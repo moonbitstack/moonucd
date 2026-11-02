@@ -6,7 +6,7 @@ fn wrap(text : String, columns : Int32) -> Array[String] {
   let lines = []
   let mut start = 0
   let mut fit = 0
-  let line = fn(a, b) { text.view(start_offset=a, end_offset=b).trim_end() }
+  let line = fn(a, b) { text.exact_view(start=a, end=b).trim_end() }
   for brk in [..@linebreak.breaks(text), (text.length(), true)] {
     let (at, must) = brk
     if fit > start && @width.text_width(line(start, at)) > columns {
