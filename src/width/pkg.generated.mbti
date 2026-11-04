@@ -13,6 +13,7 @@ pub fn width(Char, ambiguous? : Int32) -> Int32
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Eaw {
   A
   F
@@ -20,7 +21,7 @@ pub(all) enum Eaw {
   N
   Na
   W
-} derive(Eq)
+}
 pub fn Eaw::equal(Self, Self) -> Bool
 pub fn Eaw::not_equal(Self, Self) -> Bool
 pub fn Eaw::output(Self, &Logger) -> Unit

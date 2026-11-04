@@ -3,6 +3,7 @@
 
 ///|
 /// A line-break class, after the LB1 resolution the algorithm applies.
+#derive(Eq)
 pub(all) enum Lb {
   XX
   AI
@@ -53,7 +54,7 @@ pub(all) enum Lb {
   WJ
   ZW
   ZWJ
-} derive(Eq)
+}
 
 ///|
 pub extend Lb with Eq::{equal, not_equal}

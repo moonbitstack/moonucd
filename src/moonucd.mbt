@@ -6,6 +6,7 @@ pub fn version() -> String {
 
 ///|
 /// General_Category.
+#derive(Eq)
 pub(all) enum Category {
   Lu
   Ll
@@ -37,7 +38,7 @@ pub(all) enum Category {
   Cs
   Co
   Cn
-} derive(Eq)
+}
 
 ///|
 pub extend Category with Eq::{equal, not_equal}
@@ -108,6 +109,7 @@ pub fn category(ch : Char) -> Category {
 
 ///|
 /// Bidi_Class.
+#derive(Eq)
 pub(all) enum Bidi {
   L
   R
@@ -132,7 +134,7 @@ pub(all) enum Bidi {
   RLI
   FSI
   PDI
-} derive(Eq)
+}
 
 ///|
 pub extend Bidi with Eq::{equal, not_equal}
@@ -195,11 +197,12 @@ pub fn bidi(ch : Char) -> Bidi {
 
 ///|
 /// Numeric_Type, for characters that have one.
+#derive(Eq)
 pub(all) enum Numeric {
   Decimal
   Digit
   Numeric
-} derive(Eq)
+}
 
 ///|
 pub extend Numeric with Eq::{equal, not_equal}
@@ -222,6 +225,7 @@ pub fn numeric(ch : Char) -> Numeric? {
 
 ///|
 /// A binary property from PropList, DerivedCoreProperties and emoji-data.
+#derive(Eq)
 pub(all) enum Property {
   Alphabetic
   Lowercase
@@ -273,7 +277,7 @@ pub(all) enum Property {
   EmojiModifierBase
   EmojiComponent
   ExtendedPictographic
-} derive(Eq)
+}
 
 ///|
 pub extend Property with Eq::{equal, not_equal}

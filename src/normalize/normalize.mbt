@@ -7,12 +7,13 @@ pub fn version() -> String {
 ///|
 /// A Unicode normalization form. NFC and NFKC are the composed forms; NFD and
 /// NFKD are the decomposed forms.
+#derive(Eq)
 pub(all) enum Form {
   NFC
   NFD
   NFKC
   NFKD
-} derive(Eq)
+}
 
 ///|
 pub extend Form with Eq::{equal, not_equal}

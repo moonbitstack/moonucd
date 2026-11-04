@@ -9,6 +9,7 @@ pub fn version() -> String {
 /// (W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one,
 /// Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned
 /// code points and surrogates are Neutral.
+#derive(Eq)
 pub(all) enum Eaw {
   A // Ambiguous
   F // Fullwidth
@@ -16,7 +17,7 @@ pub(all) enum Eaw {
   N // Neutral (the default)
   Na // Narrow
   W // Wide
-} derive(Eq)
+}
 
 ///|
 pub extend Eaw with Eq::{equal, not_equal}

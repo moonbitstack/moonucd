@@ -29,6 +29,7 @@ pub fn words(StringView) -> Array[String]
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Gcb {
   Other
   CR
@@ -44,13 +45,14 @@ pub(all) enum Gcb {
   T
   LV
   LVT
-} derive(Eq)
+}
 pub fn Gcb::equal(Self, Self) -> Bool
 pub fn Gcb::not_equal(Self, Self) -> Bool
 pub fn Gcb::output(Self, &Logger) -> Unit
 pub fn Gcb::to_string(Self) -> String
 pub impl Show for Gcb
 
+#derive(Eq)
 pub(all) enum Sb {
   Other
   CR
@@ -67,13 +69,14 @@ pub(all) enum Sb {
   STerm
   SContinue
   Close
-} derive(Eq)
+}
 pub fn Sb::equal(Self, Self) -> Bool
 pub fn Sb::not_equal(Self, Self) -> Bool
 pub fn Sb::output(Self, &Logger) -> Unit
 pub fn Sb::to_string(Self) -> String
 pub impl Show for Sb
 
+#derive(Eq)
 pub(all) enum Wb {
   Other
   CR
@@ -94,7 +97,7 @@ pub(all) enum Wb {
   WSegSpace
   DoubleQuote
   SingleQuote
-} derive(Eq)
+}
 pub fn Wb::equal(Self, Self) -> Bool
 pub fn Wb::not_equal(Self, Self) -> Bool
 pub fn Wb::output(Self, &Logger) -> Unit

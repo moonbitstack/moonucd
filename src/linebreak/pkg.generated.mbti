@@ -15,6 +15,7 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Lb {
   XX
   AI
@@ -65,7 +66,7 @@ pub(all) enum Lb {
   WJ
   ZW
   ZWJ
-} derive(Eq)
+}
 pub fn Lb::equal(Self, Self) -> Bool
 pub fn Lb::not_equal(Self, Self) -> Bool
 pub fn Lb::output(Self, &Logger) -> Unit

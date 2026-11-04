@@ -15,12 +15,13 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Form {
   NFC
   NFD
   NFKC
   NFKD
-} derive(Eq)
+}
 pub fn Form::equal(Self, Self) -> Bool
 pub fn Form::not_equal(Self, Self) -> Bool
 pub fn Form::output(Self, &Logger) -> Unit

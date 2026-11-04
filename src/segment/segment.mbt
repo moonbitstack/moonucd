@@ -9,6 +9,7 @@ pub fn version() -> String {
 
 ///|
 /// A Grapheme_Cluster_Break property value.
+#derive(Eq)
 pub(all) enum Gcb {
   Other
   CR
@@ -24,7 +25,7 @@ pub(all) enum Gcb {
   T
   LV
   LVT
-} derive(Eq)
+}
 
 ///|
 pub extend Gcb with Eq::{equal, not_equal}
@@ -123,6 +124,7 @@ let gcb_lvt : Int32 = 13
 
 ///|
 /// A Word_Break property value.
+#derive(Eq)
 pub(all) enum Wb {
   Other
   CR
@@ -143,7 +145,7 @@ pub(all) enum Wb {
   WSegSpace
   DoubleQuote
   SingleQuote
-} derive(Eq)
+}
 
 ///|
 pub extend Wb with Eq::{equal, not_equal}
@@ -267,6 +269,7 @@ let wb_single_quote : Int32 = 18
 
 ///|
 /// A Sentence_Break property value.
+#derive(Eq)
 pub(all) enum Sb {
   Other
   CR
@@ -283,7 +286,7 @@ pub(all) enum Sb {
   STerm
   SContinue
   Close
-} derive(Eq)
+}
 
 ///|
 pub extend Sb with Eq::{equal, not_equal}

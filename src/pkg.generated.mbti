@@ -27,6 +27,7 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Bidi {
   L
   R
@@ -51,13 +52,14 @@ pub(all) enum Bidi {
   RLI
   FSI
   PDI
-} derive(Eq)
+}
 pub fn Bidi::equal(Self, Self) -> Bool
 pub fn Bidi::not_equal(Self, Self) -> Bool
 pub fn Bidi::output(Self, &Logger) -> Unit
 pub fn Bidi::to_string(Self) -> String
 pub impl Show for Bidi
 
+#derive(Eq)
 pub(all) enum Category {
   Lu
   Ll
@@ -89,7 +91,7 @@ pub(all) enum Category {
   Cs
   Co
   Cn
-} derive(Eq)
+}
 pub fn Category::equal(Self, Self) -> Bool
 pub fn Category::not_equal(Self, Self) -> Bool
 pub fn Category::output(Self, &Logger) -> Unit
@@ -97,14 +99,16 @@ pub fn Category::ranges(Self) -> Array[(Int32, Int32)]
 pub fn Category::to_string(Self) -> String
 pub impl Show for Category
 
+#derive(Eq)
 pub(all) enum Numeric {
   Decimal
   Digit
   Numeric
-} derive(Eq)
+}
 pub fn Numeric::equal(Self, Self) -> Bool
 pub fn Numeric::not_equal(Self, Self) -> Bool
 
+#derive(Eq)
 pub(all) enum Property {
   Alphabetic
   Lowercase
@@ -156,7 +160,7 @@ pub(all) enum Property {
   EmojiModifierBase
   EmojiComponent
   ExtendedPictographic
-} derive(Eq)
+}
 pub fn Property::equal(Self, Self) -> Bool
 pub fn Property::not_equal(Self, Self) -> Bool
 pub fn Property::ranges(Self) -> Array[(Int32, Int32)]

@@ -11,6 +11,7 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
+#derive(Eq)
 pub(all) enum Script {
   Adlam
   Ahom
@@ -188,7 +189,7 @@ pub(all) enum Script {
   Yezidi
   Yi
   ZanabazarSquare
-} derive(Eq)
+}
 pub fn Script::equal(Self, Self) -> Bool
 pub fn Script::extended_ranges(Self) -> Array[(Int32, Int32)]
 pub fn Script::not_equal(Self, Self) -> Bool

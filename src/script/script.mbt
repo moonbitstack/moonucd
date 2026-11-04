@@ -7,6 +7,7 @@ pub fn version() -> String {
 ///|
 /// Script, the writing system a character belongs to. The long name is what
 /// `Show` writes; `Script::of` reads both it and the four-letter code.
+#derive(Eq)
 pub(all) enum Script {
   Adlam
   Ahom
@@ -184,7 +185,7 @@ pub(all) enum Script {
   Yezidi
   Yi
   ZanabazarSquare
-} derive(Eq)
+}
 
 ///|
 pub extend Script with Eq::{equal, not_equal}
