@@ -3,7 +3,7 @@
 
 ///|
 /// A line-break class, after the LB1 resolution the algorithm applies.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Lb {
   XX
   AI
@@ -1057,3 +1057,6 @@ pub fn linebreaks(s : StringView) -> Array[String] {
 pub fn version() -> String {
   ucd_version
 }
+
+///|
+pub extend Lb with Debug::{to_repr}

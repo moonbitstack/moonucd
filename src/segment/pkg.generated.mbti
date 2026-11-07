@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonucd/segment"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn gcb_property(Char) -> Gcb
 
@@ -29,7 +33,7 @@ pub fn words(StringView) -> Array[String]
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Gcb {
   Other
   CR
@@ -49,10 +53,11 @@ pub(all) enum Gcb {
 pub fn Gcb::equal(Self, Self) -> Bool
 pub fn Gcb::not_equal(Self, Self) -> Bool
 pub fn Gcb::output(Self, &Logger) -> Unit
+pub fn Gcb::to_repr(Self) -> @debug.Repr
 pub fn Gcb::to_string(Self) -> String
 pub impl Show for Gcb
 
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Sb {
   Other
   CR
@@ -73,10 +78,11 @@ pub(all) enum Sb {
 pub fn Sb::equal(Self, Self) -> Bool
 pub fn Sb::not_equal(Self, Self) -> Bool
 pub fn Sb::output(Self, &Logger) -> Unit
+pub fn Sb::to_repr(Self) -> @debug.Repr
 pub fn Sb::to_string(Self) -> String
 pub impl Show for Sb
 
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Wb {
   Other
   CR
@@ -101,6 +107,7 @@ pub(all) enum Wb {
 pub fn Wb::equal(Self, Self) -> Bool
 pub fn Wb::not_equal(Self, Self) -> Bool
 pub fn Wb::output(Self, &Logger) -> Unit
+pub fn Wb::to_repr(Self) -> @debug.Repr
 pub fn Wb::to_string(Self) -> String
 pub impl Show for Wb
 

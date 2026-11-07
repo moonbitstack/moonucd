@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonucd/linebreak"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn breaks(StringView) -> Array[(Int32, Bool)]
 
@@ -15,7 +19,7 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Lb {
   XX
   AI
@@ -70,6 +74,7 @@ pub(all) enum Lb {
 pub fn Lb::equal(Self, Self) -> Bool
 pub fn Lb::not_equal(Self, Self) -> Bool
 pub fn Lb::output(Self, &Logger) -> Unit
+pub fn Lb::to_repr(Self) -> @debug.Repr
 pub fn Lb::to_string(Self) -> String
 pub impl Show for Lb
 

@@ -7,7 +7,7 @@ pub fn version() -> String {
 ///|
 /// Script, the writing system a character belongs to. The long name is what
 /// `Show` writes; `Script::of` reads both it and the four-letter code.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Script {
   Adlam
   Ahom
@@ -393,3 +393,6 @@ fn find_run(
   }
   None
 }
+
+///|
+pub extend Script with Debug::{to_repr}

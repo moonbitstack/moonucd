@@ -9,7 +9,7 @@ pub fn version() -> String {
 /// (W) or Fullwidth (F) in two cells, Narrow (Na) or Halfwidth (H) in one,
 /// Ambiguous (A) depends on context, and Neutral (N) defaults to one. Unassigned
 /// code points and surrogates are Neutral.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Eaw {
   A // Ambiguous
   F // Fullwidth
@@ -191,3 +191,6 @@ fn bisearch(
   }
   false
 }
+
+///|
+pub extend Eaw with Debug::{to_repr}

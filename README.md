@@ -20,7 +20,7 @@ moon add moonbitstack/moonucd
 ```
 
 ```moonbit
-assert_true(@moonucd.category('ǅ') == @moonucd.Lt)
+assert_eq(@moonucd.category('ǅ'), @moonucd.Lt)
 assert_eq(@moonucd.upper("straße"), "STRASSE")
 assert_true(@moonucd.fold("Straße") == @moonucd.fold("STRASSE"))
 assert_eq(@name.name('中'), Some("CJK UNIFIED IDEOGRAPH-4E2D"))
@@ -58,7 +58,7 @@ assert_eq(@moonucd.lower("ΣΟΦΟΣ ΣΟΦΟΣ"), "σοφος σοφος")
 assert_eq(@age.age('€'), Some((2, 1)))
 assert_eq(@block.range("Greek"), Some(('\u{370}', '\u{3FF}')))
 assert_eq(@name.lookup("copyright sign"), Some('©'))
-assert_true(@script.extensions('ー') == [@script.Hiragana, @script.Katakana])
+assert_eq(@script.extensions('ー'), [@script.Hiragana, @script.Katakana])
 assert_eq(@normalize.normalize(NFKC, "ｈｅｌｌｏ"), "hello")
 assert_eq(@normalize.decomposition('½'), "<fraction> 0031 2044 0032")
 assert_eq(@width.width('α', ambiguous=2), 2)

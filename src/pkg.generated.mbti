@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonucd"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn bidi(Char) -> Bidi
 
@@ -27,7 +31,7 @@ pub fn version() -> String
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Bidi {
   L
   R
@@ -56,10 +60,11 @@ pub(all) enum Bidi {
 pub fn Bidi::equal(Self, Self) -> Bool
 pub fn Bidi::not_equal(Self, Self) -> Bool
 pub fn Bidi::output(Self, &Logger) -> Unit
+pub fn Bidi::to_repr(Self) -> @debug.Repr
 pub fn Bidi::to_string(Self) -> String
 pub impl Show for Bidi
 
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Category {
   Lu
   Ll
@@ -96,10 +101,11 @@ pub fn Category::equal(Self, Self) -> Bool
 pub fn Category::not_equal(Self, Self) -> Bool
 pub fn Category::output(Self, &Logger) -> Unit
 pub fn Category::ranges(Self) -> Array[(Int32, Int32)]
+pub fn Category::to_repr(Self) -> @debug.Repr
 pub fn Category::to_string(Self) -> String
 pub impl Show for Category
 
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Numeric {
   Decimal
   Digit
@@ -107,8 +113,9 @@ pub(all) enum Numeric {
 }
 pub fn Numeric::equal(Self, Self) -> Bool
 pub fn Numeric::not_equal(Self, Self) -> Bool
+pub fn Numeric::to_repr(Self) -> @debug.Repr
 
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Property {
   Alphabetic
   Lowercase
@@ -164,6 +171,7 @@ pub(all) enum Property {
 pub fn Property::equal(Self, Self) -> Bool
 pub fn Property::not_equal(Self, Self) -> Bool
 pub fn Property::ranges(Self) -> Array[(Int32, Int32)]
+pub fn Property::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

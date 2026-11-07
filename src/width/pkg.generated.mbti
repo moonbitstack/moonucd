@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbitstack/moonucd/width"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn east_asian_width(Char) -> Eaw
 
@@ -13,7 +17,7 @@ pub fn width(Char, ambiguous? : Int32) -> Int32
 // Errors
 
 // Types and methods
-#derive(Eq)
+#derive(Eq, @debug.Debug)
 pub(all) enum Eaw {
   A
   F
@@ -25,6 +29,7 @@ pub(all) enum Eaw {
 pub fn Eaw::equal(Self, Self) -> Bool
 pub fn Eaw::not_equal(Self, Self) -> Bool
 pub fn Eaw::output(Self, &Logger) -> Unit
+pub fn Eaw::to_repr(Self) -> @debug.Repr
 pub fn Eaw::to_string(Self) -> String
 pub impl Show for Eaw
 

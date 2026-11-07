@@ -6,7 +6,7 @@ pub fn version() -> String {
 
 ///|
 /// General_Category.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Category {
   Lu
   Ll
@@ -109,7 +109,7 @@ pub fn category(ch : Char) -> Category {
 
 ///|
 /// Bidi_Class.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Bidi {
   L
   R
@@ -197,7 +197,7 @@ pub fn bidi(ch : Char) -> Bidi {
 
 ///|
 /// Numeric_Type, for characters that have one.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Numeric {
   Decimal
   Digit
@@ -225,7 +225,7 @@ pub fn numeric(ch : Char) -> Numeric? {
 
 ///|
 /// A binary property from PropList, DerivedCoreProperties and emoji-data.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Property {
   Alphabetic
   Lowercase
@@ -540,3 +540,15 @@ fn find_index(keys : FixedArray[Int32], cp : Int32) -> Int32? {
     None
   }
 }
+
+///|
+pub extend Category with Debug::{to_repr}
+
+///|
+pub extend Bidi with Debug::{to_repr}
+
+///|
+pub extend Numeric with Debug::{to_repr}
+
+///|
+pub extend Property with Debug::{to_repr}

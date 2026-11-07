@@ -7,7 +7,7 @@ pub fn version() -> String {
 ///|
 /// A Unicode normalization form. NFC and NFKC are the composed forms; NFD and
 /// NFKD are the decomposed forms.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Form {
   NFC
   NFD
@@ -345,3 +345,6 @@ fn ccc_of(cp : Int32) -> Int32 {
   }
   0
 }
+
+///|
+pub extend Form with Debug::{to_repr}

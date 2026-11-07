@@ -9,7 +9,7 @@ pub fn version() -> String {
 
 ///|
 /// A Grapheme_Cluster_Break property value.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Gcb {
   Other
   CR
@@ -124,7 +124,7 @@ let gcb_lvt : Int32 = 13
 
 ///|
 /// A Word_Break property value.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Wb {
   Other
   CR
@@ -269,7 +269,7 @@ let wb_single_quote : Int32 = 18
 
 ///|
 /// A Sentence_Break property value.
-#derive(Eq)
+#derive(Eq, Debug)
 pub(all) enum Sb {
   Other
   CR
@@ -997,3 +997,12 @@ pub fn sentences(s : StringView) -> Array[String] {
   let cps = cps_of(s)
   split_by(cps, sentence_boundaries(cps))
 }
+
+///|
+pub extend Gcb with Debug::{to_repr}
+
+///|
+pub extend Wb with Debug::{to_repr}
+
+///|
+pub extend Sb with Debug::{to_repr}
