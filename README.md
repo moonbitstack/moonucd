@@ -20,13 +20,15 @@ moon add moonbitstack/moonucd
 ```
 
 ```moonbit
-@moonucd.category('ǅ')                 // Lt
-@moonucd.upper("straße")               // "STRASSE"
-@moonucd.fold("Straße") == @moonucd.fold("STRASSE")   // true
-@name.name('中')                       // Some("CJK UNIFIED IDEOGRAPH-4E2D")
-@width.text_width("Hello 世界")         // 10
-@segment.grapheme_clusters("🇨🇳e\u{301}!")   // ["🇨🇳", "é", "!"]
-@linebreak.linebreaks("The quick 中文 fox")   // ["The ", "quick ", "中", "文 ", "fox"]
+assert_true(@moonucd.category('ǅ') == @moonucd.Lt)
+assert_eq(@moonucd.upper("straße"), "STRASSE")
+assert_true(@moonucd.fold("Straße") == @moonucd.fold("STRASSE"))
+assert_eq(@name.name('中'), Some("CJK UNIFIED IDEOGRAPH-4E2D"))
+assert_eq(@width.text_width("Hello 世界"), 10)
+assert_eq(@segment.grapheme_clusters("🇨🇳e\u{301}!"), ["🇨🇳", "e\u{301}", "!"])
+assert_eq(@linebreak.linebreaks("The quick 中文 fox"), [
+  "The ", "quick ", "中", "文 ", "fox",
+])
 ```
 
 ## Packages
@@ -51,17 +53,17 @@ Every function is pure and runs on native, wasm, wasm-gc and js. Offsets into st
 ## A few more
 
 ```moonbit
-@moonucd.has('_', XidContinue)                 // true
-@moonucd.lower("ΣΟΦΟΣ ΣΟΦΟΣ")                  // "σοφος σοφος"
-@age.age('€')                                  // Some((2, 1))
-@block.range("Greek")                          // Some(('\u{370}', '\u{3FF}'))
-@name.lookup("copyright sign")                 // Some('©')
-@script.extensions('ー')                       // [Hiragana, Katakana]
-@normalize.normalize(NFKC, "ｈｅｌｌｏ")         // "hello"
-@normalize.decomposition('½')                  // "<fraction> 0031 2044 0032"
-@width.width('α', ambiguous=2)                 // 2
-@segment.word_at("hello, world", 9)            // (7, 12)
-@linebreak.breaks("one two\nthree")            // [(4, false), (8, true)]
+assert_true(@moonucd.has('_', XidContinue))
+assert_eq(@moonucd.lower("ΣΟΦΟΣ ΣΟΦΟΣ"), "σοφος σοφος")
+assert_eq(@age.age('€'), Some((2, 1)))
+assert_eq(@block.range("Greek"), Some(('\u{370}', '\u{3FF}')))
+assert_eq(@name.lookup("copyright sign"), Some('©'))
+assert_true(@script.extensions('ー') == [@script.Hiragana, @script.Katakana])
+assert_eq(@normalize.normalize(NFKC, "ｈｅｌｌｏ"), "hello")
+assert_eq(@normalize.decomposition('½'), "<fraction> 0031 2044 0032")
+assert_eq(@width.width('α', ambiguous=2), 2)
+assert_eq(@segment.word_at("hello, world", 9), (7, 12))
+assert_eq(@linebreak.breaks("one two\nthree"), [(4, false), (8, true)])
 ```
 
 The [guide](https://moonbitstack.github.io/moonucd/guide.html) walks through every package; the [API reference](https://moonbitstack.github.io/moonucd/api.html) lists every function and type.
@@ -74,12 +76,12 @@ and every script answers with its ranges — closed, ascending, neighbours alrea
 sets meet by walking them once.
 
 ```moonbit
-@moonucd.Nd.ranges()[0]                      // (0x30, 0x39)
-@moonucd.Dash.ranges().length()              // 24
-@moonucd.simple_fold('ς')                    // 'σ'
-@moonucd.fold_orbit('K')                     // ['K', 'k', '\u{212A}']
-@script.Greek.ranges()[0]                    // (0x370, 0x373)
-@script.Katakana.extended_ranges().length()  // 22
+assert_eq(@moonucd.Nd.ranges()[0], (0x30, 0x39))
+assert_eq(@moonucd.Dash.ranges().length(), 24)
+assert_eq(@moonucd.simple_fold('ς'), 'σ')
+assert_eq(@moonucd.fold_orbit('K'), ['K', 'k', '\u{212A}'])
+assert_eq(@script.Greek.ranges()[0], (0x370, 0x373))
+assert_eq(@script.Katakana.extended_ranges().length(), 22)
 ```
 
 `simple_fold` is the C and S classes of CaseFolding.txt: one character in, one character out, which
