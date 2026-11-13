@@ -64,7 +64,12 @@ def items_of(folder):
     """Declarations from the interface file, in the order it lists them."""
     lines = (ROOT / folder / "pkg.generated.mbti").read_text(encoding="utf-8").splitlines()
     items, block = [], None
+    derives = []
     for line in lines:
+        m = re.match(r"#derive\((.*)\)$", line)
+        if m:
+            derives = [part.strip().split(".")[-1] for part in m.group(1).split(",")]
+            continue
         if block is not None:
             if line.startswith("}"):
                 items.append(block)
@@ -74,7 +79,8 @@ def items_of(folder):
             continue
         m = re.match(r"pub(?:\((?:all|open)\))?\s+(enum|struct|suberror)\s+(\w+)", line)
         if m:
-            block = {"kind": m.group(1), "name": m.group(2), "sig": line.rstrip(" {"), "variants": []}
+            block = {"kind": m.group(1), "name": m.group(2), "sig": line.rstrip(" {"), "variants": [], "derives": derives}
+            derives = []
             if not line.rstrip().endswith("{"):
                 items.append(block)
                 block = None
@@ -126,10 +132,26 @@ def anchor(pkg, name):
     return f"{pkg}-{name}".replace("::", "-").lower()
 
 
+def declared(folder):
+    """Every public name the interface file declares, so that nothing it lists
+    can be left off the page. A trait method is listed too: it is shown through
+    the `pub impl` line of its type."""
+    names, impls = set(), set()
+    for line in (ROOT / folder / "pkg.generated.mbti").read_text(encoding="utf-8").splitlines():
+        m = re.match(r"pub(?:\(all\)|\(open\))?\s+(?:fn|let|struct|enum|suberror|trait|type|typealias)\s+([A-Za-z_]\w*(?:::[A-Za-z_]\w*)?)", line)
+        if m:
+            names.add(m.group(1))
+        m = re.match(r"pub impl \w+ for (\w+)", line)
+        if m:
+            impls.add(m.group(1))
+    return names, impls
+
+
 def render():
     nav, body = [], []
     for pkg, folder, intro in PACKAGES:
         docs, items = docs_of(folder), items_of(folder)
+        declared_names, impls_rendered = declared(folder)
         route = "moonbitstack/moonucd" if pkg == "moonucd" else f"moonbitstack/moonucd/{pkg}"
         types = [i for i in items if i["kind"] in ("enum", "struct", "suberror")]
         fns = [i for i in items if i["kind"] == "fn"]
@@ -160,12 +182,28 @@ def render():
                     note = docs.get(f'{t["name"]}.{v}', "")
                     chips.append(f"<li>{html.escape(v)}" + (f"<small>{html.escape(note)}</small>" if note else "") + "</li>")
                 body.append(f'<ul class="variants">{"".join(chips)}</ul>')
+            traits = []
             if impls.get(t["name"]):
-                body.append(prose("Implements " + ", ".join(f"`{n}`" for n in impls[t["name"]]) + "."))
+                traits.append("implements " + ", ".join(f"`{n}`" for n in impls[t["name"]]))
+            if t.get("derives"):
+                traits.append("derives " + ", ".join(f"`{n}`" for n in t["derives"]))
+            if traits:
+                body.append(prose("The type " + ", and ".join(traits) + "."))
             for m in methods.get(t["name"], []):
                 body.append(f'<div class="member" id="{anchor(pkg, m["name"])}">{sig(m["sig"])}{prose(docs.get(m["name"], ""))}</div>')
             body.append("</div>")
         body.append("</section>")
+
+        shown = {f["name"] for f in fns} | {t["name"] for t in types}
+        shown |= {m["name"] for group in methods.values() for m in group}
+        shown |= impls_rendered
+        shown_types = {t["name"] for t in types}
+        missing = sorted(
+            name for name in declared_names
+            if name not in shown and name.split("::")[0] not in shown_types
+        )
+        if missing:
+            raise SystemExit(f"{pkg}: the reference leaves out {', '.join(missing)}")
     page = (ROOT / "docs" / "api.template.html").read_text(encoding="utf-8")
     page = page.replace("<!-- nav -->", "\n".join(nav)).replace("<!-- body -->", "\n".join(body))
     (ROOT / "docs" / "api.html").write_text(page, encoding="utf-8", newline="\n")
