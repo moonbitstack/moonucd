@@ -27,14 +27,30 @@ jobs:
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
-      - name: build the library for the inspector
+      # The reference page and the conformance counts are generated from the
+      # sources, so a page that no longer matches the code stops the deploy
+      # instead of shipping a promise the library does not keep.
+      - name: the pages are up to date
         run: |
           moon update
+          moon info --target all
+          python3 scripts/gen_api.py
+          python3 scripts/conformance.py --write
+          git -c core.autocrlf=false diff --exit-code
+
+      - name: build the library the pages run
+        run: |
           moon build --target js --release src/examples/browser
           mkdir -p docs/engine
           cp _build/js/release/build/examples/browser/browser.js docs/engine/moonucd.js
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: configure pages
+        uses: actions/configure-pages@v6
+        with:
+          enablement: true
+
+      - name: upload the site
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs
 
@@ -46,4 +62,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
