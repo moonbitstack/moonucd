@@ -30,9 +30,9 @@ jobs:
       - name: build the library for the inspector
         run: |
           moon update
-          moon build --target js --release src/examples/inspector
+          moon build --target js --release src/examples/browser
           mkdir -p docs/engine
-          cp _build/js/release/build/examples/inspector/inspector.js docs/engine/moonucd.js
+          cp _build/js/release/build/examples/browser/browser.js docs/engine/moonucd.js
 
       - uses: actions/upload-pages-artifact@v3
         with:

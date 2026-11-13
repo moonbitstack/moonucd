@@ -1,3 +1,7 @@
+// The home page's character inspector and string tools, both answered by the
+// compiled library: `inspect(cp)` for the dossier and `analyse(text)` for the
+// pieces.
+
 const ucd = await import("../engine/moonucd.js").catch(() => null);
 if (ucd) {
   start();
@@ -8,13 +12,14 @@ if (ucd) {
 }
 
 function start() {
-  function esc(s){return String(s).replace(/[&<>]/g,function(c){return c==="&"?"&amp;":c==="<"?"&lt;":">";});}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return c==="&"?"&amp;":c==="<"?"&lt;":c===">"?"&gt;":"&quot;";});}
 
   var charIn = document.getElementById("charIn");
+  var engine = ucd;
 
   function inspect(ch){
     var cp = ch.codePointAt(0);
-    try { return JSON.parse(ucd.inspect(cp)); }
+    try { return JSON.parse(engine.inspect(cp)); }
     catch(e){ return null; }
   }
 
@@ -37,7 +42,7 @@ function start() {
     set("sU16", d.utf16);
     set("sEaw", d.eaw);
     set("sWidth", d.width + (d.width===1?" cell":" cells"));
-    set("sNum", d.numeric || "—");
+    set("sNum", (d.numeric || "—") + (d.value !== null ? " · " + d.value : ""));
     set("sEmoji", (d.emoji?"emoji":"not emoji") + (d.extPict?" · ext. pictographic":""));
     set("sName", d.name || "no name");
     set("sNorm", d.nfc + " / " + d.nfd);
@@ -74,15 +79,21 @@ function start() {
   function chip(text,cls){var c=document.createElement("span");c.className="chip"+(cls?" "+cls:"");c.textContent=text;return c;}
   function renderStr(){
     var s = strIn.value;
-    var seg = JSON.parse(ucd.pieces(s));
+    var seg = JSON.parse(engine.analyse(s));
     var gc = document.getElementById("grafChips"); gc.innerHTML="";
-    seg.grapheme.forEach(function(g){gc.appendChild(chip(g,"g"));});
+    seg.graphemes.forEach(function(g){gc.appendChild(chip(g.text,"g"));});
     var wc = document.getElementById("wordChips"); wc.innerHTML="";
-    seg.words.forEach(function(w){wc.appendChild(chip(JSON.stringify(w)));});
+    seg.words.forEach(function(w){wc.appendChild(chip(JSON.stringify(w.text)));});
     var so = document.getElementById("sentOut"); so.innerHTML="";
-    seg.sentences.forEach(function(sn){var d=document.createElement("div");d.className="sent";d.textContent=sn;so.appendChild(d);});
+    seg.sentences.forEach(function(sn){var d=document.createElement("div");d.className="sent";d.textContent=sn.text;so.appendChild(d);});
     var lbc = document.getElementById("lbChips"); lbc.innerHTML="";
-    seg.linebreaks.forEach(function(l){lbc.appendChild(chip(l,"b"));});
+    var from = 0;
+    seg.breaks.forEach(function(b){
+      var piece = s.slice(from, b.at);
+      if(piece) lbc.appendChild(chip(piece,"b"));
+      from = b.at;
+    });
+    if(from < s.length) lbc.appendChild(chip(s.slice(from),"b"));
   }
   strIn.addEventListener("input", renderStr);
 

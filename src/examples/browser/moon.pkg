@@ -12,5 +12,5 @@ import {
 }
 
 options(
-  link: { "js": { "exports": [ "inspect", "pieces" ], "format": "esm" } },
+  link: { "js": { "exports": [ "inspect", "analyse" ], "format": "esm" } },
 )

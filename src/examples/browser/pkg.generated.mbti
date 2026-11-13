@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "moonbitstack/moonucd/examples/inspector"
+package "moonbitstack/moonucd/examples/browser"
 
 // Values
-pub fn inspect(Int32) -> String
+pub fn analyse(String) -> String
 
-pub fn pieces(String) -> String
+pub fn inspect(Int32) -> String
 
 // Errors
 

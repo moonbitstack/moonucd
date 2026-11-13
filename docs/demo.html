@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorting office · moonucd</title>
+<meta name="description" content="Watch the Unicode algorithms work: case mapping and folding, canonical decomposition and composition, grapheme, word and sentence boundaries, terminal width, and line-break opportunities, computed by moonucd in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%235356ff'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23eaf5fc' text-anchor='middle'%3E%E4%B8%AD%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script type="module" src="assets/scrollbar.js"></script>
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <div class="brand"><a href="./">moonucd</a><small>Unicode for MoonBit</small></div>
+    <nav class="top">
+      <a href="./">Home</a>
+      <a href="guide.html">Guide</a>
+      <a href="api.html">API</a>
+      <a href="demo.html" aria-current="page">Demo</a>
+      <a class="gh" href="https://github.com/moonbitstack/moonucd" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap office">
+
+  <section class="hero" style="border-top:0">
+    <p class="eyebrow">Interactive · the algorithms, on your text</p>
+    <h1>The sorting office</h1>
+    <p class="lede">
+      A string arrives as a parcel. Behind these four desks the compiled
+      <strong>moonucd</strong> opens it: it presses the text into a normalization form, sorts it
+      into grapheme clusters, words and sentences, measures it in terminal cells, cuts it where a
+      line may break, and files every character under its case forms. Nothing below is a
+      re-implementation — every number and every glyph comes from the library's own tables, running
+      as JavaScript in this page.
+    </p>
+  </section>
+
+  <section id="parcel" aria-labelledby="parcel-h">
+    <p class="eyebrow">The parcel</p>
+    <h2 id="parcel-h">Type something</h2>
+    <div class="parcel">
+      <label class="parcel-label" for="text">Contents</label>
+      <input id="text" class="parcel-input" value="Straße ｈｅｌｌｏ e&#x301; 中文 🇨🇳" autocomplete="off" spellcheck="false" aria-describedby="parcel-note">
+      <p class="parcel-note" id="parcel-note">Up to 80 code points. Emoji, combining marks and right-to-left text are all fair game.</p>
+      <div class="stamps" role="group" aria-label="Sample parcels">
+        <button type="button" class="stamp" data-text="Straße">Straße</button>
+        <button type="button" class="stamp" data-text="ｈｅｌｌｏ　ｗｏｒｌｄ">ｈｅｌｌｏ　ｗｏｒｌｄ</button>
+        <button type="button" class="stamp" data-text="e&#x301; vs é">e◌́ vs é</button>
+        <button type="button" class="stamp" data-text="🇨🇳🇯🇵🇰🇷">🇨🇳🇯🇵🇰🇷</button>
+        <button type="button" class="stamp" data-text="The quick 中文 fox—jumps!">The quick 中文 fox—jumps!</button>
+        <button type="button" class="stamp" data-text="İstanbul ΟΔΟΣ">İstanbul ΟΔΟΣ</button>
+      </div>
+    </div>
+    <dl class="manifest" id="manifest">
+      <div><dt>Code points</dt><dd data-m="codepoints">—</dd></div>
+      <div><dt>UTF-16 units</dt><dd data-m="utf16">—</dd></div>
+      <div><dt>Grapheme clusters</dt><dd data-m="clusters">—</dd></div>
+      <div><dt>Cells</dt><dd data-m="cells">—</dd></div>
+      <div><dt>Break chances</dt><dd data-m="breaks">—</dd></div>
+      <div><dt>Words</dt><dd data-m="words">—</dd></div>
+    </dl>
+  </section>
+
+  <section id="press" aria-labelledby="press-h">
+    <p class="eyebrow">Desk one</p>
+    <h2 id="press-h">The press</h2>
+    <p class="sec-intro">
+      Normalization is a press with three plates: decompose every character, put the marks in
+      canonical order, then compose what may be composed. The same text can look identical and be
+      different — <span class="mono">é</span> as one code point or as <span class="mono">e</span> and
+      a combining acute. Run the plates and see which characters move.
+    </p>
+
+    <div class="press">
+      <div class="plates" role="tablist" aria-label="Normalization form">
+        <button type="button" class="plate on" role="tab" aria-selected="true" data-form="NFC">NFC</button>
+        <button type="button" class="plate" role="tab" aria-selected="false" data-form="NFD">NFD</button>
+        <button type="button" class="plate" role="tab" aria-selected="false" data-form="NFKC">NFKC</button>
+        <button type="button" class="plate" role="tab" aria-selected="false" data-form="NFKD">NFKD</button>
+      </div>
+
+      <div class="tray" id="tray-in">
+        <div class="tray-head"><span class="tray-name">As written</span><span class="tray-note" id="in-note"></span></div>
+        <div class="glyphs" data-tray="in"></div>
+      </div>
+
+      <div class="press-arm" aria-hidden="true"><span>decompose</span></div>
+
+      <div class="tray" id="tray-nfd">
+        <div class="tray-head"><span class="tray-name">Decomposed, canonically ordered</span><span class="tray-note" id="nfd-note"></span></div>
+        <div class="glyphs" data-tray="nfd"></div>
+      </div>
+
+      <div class="press-arm" aria-hidden="true"><span>compose</span></div>
+
+      <div class="tray" id="tray-form">
+        <div class="tray-head"><span class="tray-name" id="form-name">NFC</span><span class="tray-note" id="form-note"></span></div>
+        <div class="glyphs" data-tray="form"></div>
+        <div class="tray-out mono" id="form-string"></div>
+      </div>
+    </div>
+    <p class="desk-note" id="press-note"></p>
+  </section>
+
+  <section id="belt" aria-labelledby="belt-h">
+    <p class="eyebrow">Desk two</p>
+    <h2 id="belt-h">The belt</h2>
+    <p class="sec-intro">
+      A terminal, a cursor and a line wrapper all count in cells, and they may only cut between
+      grapheme clusters: a flag, an emoji sequence and a letter with its accents are one cluster
+      each. The belt is drawn at one character per cell, so what you see is what a terminal would
+      give the text.
+    </p>
+
+    <div class="belt-controls">
+      <label class="switch"><input type="checkbox" id="ambiguous"> Count East Asian Ambiguous as two cells</label>
+      <span class="mono belt-total" id="belt-total"></span>
+    </div>
+
+    <div class="lane">
+      <div class="lane-name">Grapheme clusters</div>
+      <div class="belt scroll" data-lane="graphemes"></div>
+      <div class="ruler" data-ruler="graphemes" aria-hidden="true"></div>
+    </div>
+    <div class="lane">
+      <div class="lane-name">Words</div>
+      <div class="belt flow" data-lane="words"></div>
+    </div>
+    <div class="lane">
+      <div class="lane-name">Sentences</div>
+      <div class="belt flow" data-lane="sentences"></div>
+    </div>
+    <p class="desk-note">Hover a tile for the code point and the property the boundary was drawn from.</p>
+  </section>
+
+  <section id="guillotine" aria-labelledby="gui-h">
+    <p class="eyebrow">Desk three</p>
+    <h2 id="gui-h">The guillotine</h2>
+    <p class="sec-intro">
+      UAX #14 says where a line may end. Each cut below is a rule from that algorithm: a dashed
+      perforation may break, a solid one must. The pair of classes on each side is what the rule
+      looked at.
+    </p>
+
+    <div class="strip scroll" id="strip"></div>
+    <div class="legend">
+      <span><i class="mark may"></i> may break</span>
+      <span><i class="mark must"></i> must break</span>
+      <span><i class="mark none"></i> no break</span>
+    </div>
+
+    <div class="postcard-controls">
+      <label for="width">Postcard width</label>
+      <input type="range" id="width" min="8" max="60" value="20">
+      <output class="mono" id="width-out">20 cells</output>
+    </div>
+    <div class="postcard" id="postcard" aria-label="Text wrapped to the chosen width"></div>
+    <p class="desk-note" id="wrap-note"></p>
+  </section>
+
+  <section id="rack" aria-labelledby="rack-h">
+    <p class="eyebrow">Desk four</p>
+    <h2 id="rack-h">The case rack</h2>
+    <p class="sec-intro">
+      Every character is filed under six answers: the full uppercase, lowercase and titlecase
+      mappings, which may turn one character into several; the simple ones, one character in and one
+      out; the full fold used to compare without case; and the class the simple fold joins, which is
+      how a matcher closes a set under case without walking the code space.
+    </p>
+    <div class="rack" id="rack-cards"></div>
+    <p class="desk-note">A dash means the mapping changes nothing. The orbit is the whole class, itself included.</p>
+  </section>
+
+  <section id="api">
+    <p class="eyebrow">Under the counter</p>
+    <h2>What the page calls</h2>
+    <p class="sec-intro">
+      The whole page is two calls into the compiled library: <span class="mono">inspect(cp)</span> for
+      the character dossier on the home page, and <span class="mono">analyse(text)</span> for
+      everything here — clusters, offsets, widths, break classes, the four normalizations and the case
+      forms, as one JSON object.
+    </p>
+    <pre><span class="c">// the glue in src/examples/browser, built to docs/engine/moonucd.js</span>
+pub fn analyse(text : String) -> String</pre>
+  </section>
+
+  <footer>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+      <div class="postmark">moonucd<br>17.0.0</div>
+      <div>
+        <div class="airmail">MoonBit Stack · Signed</div>
+        <p style="margin:0"><strong>moonucd</strong> — the Unicode Character Database for MoonBit.</p>
+        <p style="margin:4px 0 0">This page runs the compiled library in your browser. Apache-2.0 licensed. <a href="https://github.com/moonbitstack/moonucd">Source</a> · <a href="guide.html">Guide</a> · <a href="api.html">API</a></p>
+      </div>
+    </div>
+    <p style="margin:0">Install with <span class="mono">moon add moonbitstack/moonucd</span>.</p>
+  </footer>
+
+</main>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script type="module" src="assets/demo.js"></script>
+</body>
+</html>
