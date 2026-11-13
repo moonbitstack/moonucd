@@ -107,10 +107,13 @@ test "the cluster and the word at an offset" {
   assert_eq(@segment.grapheme_at(s, 1), (0, 2))
   assert_eq(@segment.grapheme_at(s, 4), (4, 8))
   assert_eq(@segment.grapheme_at(s, 99), (99, 99))
+  // An offset outside the string has no piece: the answer is the offset itself.
+  assert_eq(@segment.grapheme_at(s, -1), (-1, -1))
   let words = "hello, world"
   assert_eq(@segment.word_at(words, 2), (0, 5))
   assert_eq(@segment.word_at(words, 9), (7, 12))
   assert_eq(@segment.word_at(words, 5), (5, 6))
+  assert_eq(@segment.word_at(words, -1), (-1, -1))
 }
 
 ///|
