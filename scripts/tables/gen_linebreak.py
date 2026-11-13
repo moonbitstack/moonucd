@@ -621,10 +621,11 @@ def emit_enums():
     out = []
     out.append("///|")
     out.append("/// A line-break class, after the LB1 resolution the algorithm applies.")
+    out.append("#derive(Eq, Debug)")
     out.append("pub(all) enum Lb {")
     for v in CLASSES:
         out.append(f"  {v}")
-    out.append("} derive(Eq)")
+    out.append("}")
     out.append("///|")
     out.append("pub extend Lb with Eq::{equal, not_equal}")
     out.append("///|")
@@ -1371,6 +1372,8 @@ def emit_linebreak_mbt():
     lines = ucd.header("gen_linebreak.py", VERSION)
     lines.append(emit_enums())
     lines.append(LINEBREAK_MBT.strip())
+    lines.append("///|")
+    lines.append("pub extend Lb with Debug::{to_repr}")
     return "\n".join(lines)
 
 

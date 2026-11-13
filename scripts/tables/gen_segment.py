@@ -1165,10 +1165,11 @@ def emit_enums():
         ("sb", SB_VALUES, SB_ALIAS, "Sb", "Sentence_Break"),
     ):
         out.append(f"///|\n/// A {label} property value.")
+        out.append("#derive(Eq, Debug)")
         out.append(f"pub(all) enum {name} {{")
         for v in values:
             out.append(f"  {v.replace('_', '')}")
-        out.append("} derive(Eq)")
+        out.append("}")
         out.append("///|")
         out.append(f"pub extend {name} with Eq::{{equal, not_equal}}")
         out.append("///|")
@@ -1285,6 +1286,9 @@ def emit_segment_mbt():
     lines.append("pub fn version() -> String {\n  ucd_version\n}")
     lines.append(emit_enums())
     lines.append(SEGMENT_MBT.strip())
+    for name in ("Gcb", "Wb", "Sb"):
+        lines.append("///|")
+        lines.append(f"pub extend {name} with Debug::{{to_repr}}")
     return "\n".join(lines)
 
 

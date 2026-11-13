@@ -17,8 +17,9 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
 import ucd
 import unicodedata2 as ud
 import wcwidth as wcw
-from wcwidth.wcwidth import WIDE_EASTASIAN, ZERO_WIDTH
 from wcwidth.table_vs16 import VS16_NARROW_TO_WIDE
+from wcwidth.table_wide import WIDE_EASTASIAN
+from wcwidth.table_zero import ZERO_WIDTH
 
 ROOT = ucd.ROOT
 SRC = ROOT / "src" / "width"
