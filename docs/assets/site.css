@@ -8,12 +8,100 @@
   --accent-deep:#378ce7;
   --teal:#67c6e3;
   --line:#c7e0ee;
+  --glow-1:#ffffff;
+  --glow-2:#dff5ff;
+  --tint:#e8f4fb;
+  --tint-2:#eef0ff;
+  --stub-ink:#eaf6ff;
+  --code-bg:#15244a;
+  --code-ink:#cfe4ff;
+  --code-comment:#b9a98a;
+  --code-thumb:#4b5c8f;
+  --warn-bg:#eaf4fb;
+  --warn-line:#bcdcf0;
+  --header-bg:rgba(234,245,252,.85);
   --shadow:0 18px 40px -22px rgba(21,36,74,.32);
   --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   --stamp:"Special Elite","Courier New",monospace;
   --hand:"Caveat","Segoe Script","Bradley Hand","Brush Script MT","Comic Sans MS",cursive;
+}
+/* The same page at night: the paper turns to the colour of a stamp album
+   page, the ink to moonlight, and the accent keeps enough contrast to read. */
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#0b1530;
+    --paper-2:#111f42;
+    --card:#14224a;
+    --ink:#e7efff;
+    --ink-soft:#a2b4dc;
+    --accent:#9a9dff;
+    --accent-deep:#79c0ff;
+    --teal:#6fd3ec;
+    --line:#293c68;
+    --glow-1:#152349;
+    --glow-2:#102044;
+    --tint:#182750;
+    --tint-2:#1c2160;
+    --stub-ink:#eaf6ff;
+    --code-bg:#060e24;
+    --code-ink:#cfe4ff;
+    --code-comment:#b9a98a;
+    --code-thumb:#3b4a7a;
+    --warn-bg:#152448;
+    --warn-line:#2c4272;
+    --header-bg:rgba(11,21,48,.88);
+    --shadow:0 18px 40px -22px rgba(0,0,0,.65);
+  }
+}
+html[data-theme="dark"]{
+  --paper:#0b1530;
+  --paper-2:#111f42;
+  --card:#14224a;
+  --ink:#e7efff;
+  --ink-soft:#a2b4dc;
+  --accent:#9a9dff;
+  --accent-deep:#79c0ff;
+  --teal:#6fd3ec;
+  --line:#293c68;
+  --glow-1:#152349;
+  --glow-2:#102044;
+  --tint:#182750;
+  --tint-2:#1c2160;
+  --stub-ink:#eaf6ff;
+  --code-bg:#060e24;
+  --code-ink:#cfe4ff;
+  --code-comment:#b9a98a;
+  --code-thumb:#3b4a7a;
+  --warn-bg:#152448;
+  --warn-line:#2c4272;
+  --header-bg:rgba(11,21,48,.88);
+  --shadow:0 18px 40px -22px rgba(0,0,0,.65);
+}
+html[data-theme="light"]{
+  --paper:#eaf5fc;
+  --paper-2:#dff5ff;
+  --card:#ffffff;
+  --ink:#15244a;
+  --ink-soft:#4e608a;
+  --accent:#5356ff;
+  --accent-deep:#378ce7;
+  --teal:#67c6e3;
+  --line:#c7e0ee;
+  --glow-1:#ffffff;
+  --glow-2:#dff5ff;
+  --tint:#e8f4fb;
+  --tint-2:#eef0ff;
+  --stub-ink:#eaf6ff;
+  --code-bg:#15244a;
+  --code-ink:#cfe4ff;
+  --code-comment:#b9a98a;
+  --code-thumb:#4b5c8f;
+  --warn-bg:#eaf4fb;
+  --warn-line:#bcdcf0;
+  --header-bg:rgba(234,245,252,.85);
+  --shadow:0 18px 40px -22px rgba(21,36,74,.32);
 }
 *{box-sizing:border-box}
 @supports not selector(::-webkit-scrollbar){
@@ -29,14 +117,14 @@
 ::-webkit-scrollbar-thumb:hover{background:var(--accent-deep)}
 ::-webkit-scrollbar-button{display:none}
 ::-webkit-scrollbar-corner{background:transparent}
-pre::-webkit-scrollbar-track{background:var(--ink)}
-pre::-webkit-scrollbar-thumb{background:#4b5c8f;border-color:var(--ink)}
+pre::-webkit-scrollbar-track{background:var(--code-bg)}
+pre::-webkit-scrollbar-thumb{background:var(--code-thumb);border-color:var(--code-bg)}
 
 body{
   margin:0;
   background:
-    radial-gradient(circle at 20% -10%, #ffffff 0%, rgba(255,255,255,0) 45%),
-    radial-gradient(circle at 100% 0%, #dff5ff 0%, rgba(223,245,255,0) 42%),
+    radial-gradient(circle at 20% -10%, var(--glow-1) 0%, transparent 45%),
+    radial-gradient(circle at 100% 0%, var(--glow-2) 0%, transparent 42%),
     var(--paper);
   color:var(--ink);
   font-family:var(--sans);
@@ -49,7 +137,7 @@ a:hover{text-decoration:underline}
 
 header.site{
   border-bottom:1px solid var(--line);
-  background:rgba(234,245,252,.85);
+  background:var(--header-bg);
   backdrop-filter:blur(8px);
   position:sticky;top:0;z-index:30;
 }
@@ -108,7 +196,7 @@ p{margin:0 0 14px}
 }
 .ticket .stub{
   background:linear-gradient(160deg,var(--accent),var(--accent-deep));
-  color:#eaf6ff;
+  color:var(--stub-ink);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:22px 12px;position:relative;
 }
@@ -202,8 +290,8 @@ textarea.str:focus{outline:2px solid var(--accent);outline-offset:2px}
   font-family:var(--mono);font-size:13px;padding:6px 10px;
   background:var(--card);border:1px solid var(--line);border-radius:8px;
 }
-.chip.g{background:#e8f4fb;border-color:#bfe0f0}
-.chip.b{background:#eef0ff;border-color:#c9ccff}
+.chip.g{background:var(--tint);border-color:var(--line)}
+.chip.b{background:var(--tint-2);border-color:var(--line)}
 .chip .lab{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:2px}
 .sent{font-family:var(--sans);background:var(--paper-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:6px}
 .field-label{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
@@ -214,7 +302,7 @@ textarea.str:focus{outline:2px solid var(--accent);outline-offset:2px}
   flex:1 1 150px;min-width:138px;max-width:210px;
   display:flex;align-items:center;gap:12px;
   padding:12px 14px;border-radius:12px;
-  background:linear-gradient(150deg,#ffffff,#eef7fd);
+  background:linear-gradient(150deg,var(--card),var(--paper-2));
   border:1px solid var(--line);
   box-shadow:var(--shadow);cursor:pointer;
   transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease;
@@ -223,7 +311,7 @@ textarea.str:focus{outline:2px solid var(--accent);outline-offset:2px}
 .gal .g{
   font-family:var(--serif);font-weight:600;font-size:27px;line-height:1;flex:none;
   width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:#e8f4fb;color:var(--ink);
+  background:var(--tint);color:var(--ink);
 }
 .gal .meta{display:flex;flex-direction:column;gap:2px;min-width:0}
 .gal .lab{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -238,9 +326,9 @@ textarea.str:focus{outline:2px solid var(--accent);outline-offset:2px}
 }
 .pkg .band{
   background:linear-gradient(120deg,var(--accent),var(--accent-deep));
-  color:#eaf6ff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:var(--stub-ink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
 }
-.pkg .band h3{margin:0;font-family:var(--serif);font-weight:600;font-size:20px;color:#fff}
+.pkg .band h3{margin:0;font-family:var(--serif);font-weight:600;font-size:20px;color:var(--stub-ink)}
 .pkg .band .tag{font-family:var(--stamp);font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.92;flex:none;transform:rotate(-7deg);display:inline-block}
 .pkg .body{padding:14px 16px 18px}
 .pkg .route{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:10px;word-break:break-all}
@@ -254,10 +342,10 @@ table.api th,table.api td{text-align:left;padding:8px 10px;border-bottom:1px sol
 table.api th{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
 table.api td code{font-family:var(--mono);font-size:13px;background:var(--paper-2);padding:1px 5px;border-radius:4px}
 pre{
-  font-family:var(--mono);font-size:13px;background:var(--ink);color:#cfe4ff;
+  font-family:var(--mono);font-size:13px;background:var(--code-bg);color:var(--code-ink);
   padding:16px 18px;border-radius:12px;overflow:auto;line-height:1.55;
 }
-pre .c{color:#b9a98a}
+pre .c{color:var(--code-comment)}
 pre .w1,pre .w2{display:inline-block;text-align:center;line-height:1}
 pre .w1{width:1ch}
 pre .w2{width:2ch}
@@ -275,7 +363,7 @@ pre .w2{width:2ch}
 .example-list a .num{
   flex:none;display:inline-flex;align-items:center;justify-content:center;
   min-width:32px;height:26px;padding:0 8px;border-radius:7px;
-  background:var(--accent);color:#fff;font-family:var(--mono);font-weight:600;font-size:12px;
+  background:var(--accent);color:var(--stub-ink);font-family:var(--mono);font-weight:600;font-size:12px;
   letter-spacing:.5px;box-shadow:0 2px 6px -2px rgba(83,86,255,.65);
 }
 .example-list a .name{margin-left:auto;font-family:var(--sans);font-weight:500;color:var(--ink)}
@@ -290,7 +378,7 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
   text-align:center;transform:rotate(-8deg);letter-spacing:.5px;position:relative;
 }
 .postmark::after{content:"";position:absolute;inset:6px;border-radius:50%;border:1px dashed var(--accent);opacity:.6}
-.warn{background:#eaf4fb;border:1px solid #bcdcf0;color:var(--accent-deep);padding:10px 14px;border-radius:10px;font-size:14px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--accent-deep);padding:10px 14px;border-radius:10px;font-size:14px}
 @media (width <= 640px){
   .ticket{grid-template-columns:1fr}
   .ticket .perf{display:none}
@@ -341,10 +429,10 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
 
 /* reference */
 .band-head{
-  background:linear-gradient(120deg,var(--accent),var(--accent-deep));color:#eaf6ff;
+  background:linear-gradient(120deg,var(--accent),var(--accent-deep));color:var(--stub-ink);
   border-radius:14px;padding:16px 20px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;
 }
-.band-head h2{margin:0;color:#fff;font-size:26px}
+.band-head h2{margin:0;color:var(--stub-ink);font-size:26px}
 .band-head .route{font-family:var(--mono);font-size:12px;opacity:.9}
 .entry{
   background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
@@ -446,7 +534,7 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
 .tile .g{font-family:var(--serif);font-size:26px;line-height:1.15;font-weight:500}
 .tile .u{font-family:var(--mono);font-size:9.5px;letter-spacing:.3px;color:var(--ink-soft)}
 .tile .ccc{
-  position:absolute;top:-6px;right:-4px;background:var(--accent);color:#fff;
+  position:absolute;top:-6px;right:-4px;background:var(--accent);color:var(--stub-ink);
   font-family:var(--mono);font-size:9px;padding:0 4px;border-radius:6px;
 }
 .tile.moved{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -572,11 +660,51 @@ footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--ink-soft
   .stamp,.tip{transition:none}
 }
 
-/* The page scroll bar shows while the page moves or under the pointer and
-   hides a moment after; it keeps its place, so nothing shifts. */
+/* The page scroll bar keeps its place and only its thumb comes and goes: out
+   of the way at the top of the page, in view from the first pixel scrolled. */
 @supports selector(::-webkit-scrollbar) {
-  html:not(.scrolling)::-webkit-scrollbar-thumb { background: transparent; border-color: transparent; box-shadow: none; }
+  html::-webkit-scrollbar { width: 12px; height: 12px; }
+  html::-webkit-scrollbar-track { background: var(--paper-2); }
+  html::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent) 55%, transparent);
+    border: 3px solid var(--paper-2); border-radius: 99px;
+  }
+  html::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  html.at-top::-webkit-scrollbar-thumb { background: transparent; }
 }
 @supports not selector(::-webkit-scrollbar) {
-  html:not(.scrolling) { scrollbar-color: transparent transparent; }
+  html { scrollbar-width: thin; scrollbar-color: var(--accent) var(--paper-2); }
+  html.at-top { scrollbar-color: transparent transparent; }
 }
+
+/* Inner scroll areas — code frames, the belt, the strip — keep a thin thumb
+   that is faint at rest and darkens under the pointer. */
+pre::-webkit-scrollbar-thumb,
+.entry .sig::-webkit-scrollbar-thumb,
+.entry pre.code::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--code-thumb) 65%, transparent);
+}
+pre:hover::-webkit-scrollbar-thumb,
+.entry .sig:hover::-webkit-scrollbar-thumb,
+.entry pre.code:hover::-webkit-scrollbar-thumb {
+  background: var(--code-thumb);
+}
+.scroll::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 18%, transparent); }
+.scroll:hover::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 42%, transparent); }
+
+/* the theme switch beside the repository icon */
+.theme-toggle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;padding:0;border:0;border-radius:6px;
+  background:transparent;color:var(--ink-soft);cursor:pointer;
+}
+.theme-toggle:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.theme-toggle svg{width:17px;height:17px;display:block}
+.theme-toggle .i-sun{display:none}
+html[data-theme="dark"] .theme-toggle .i-sun{display:block}
+html[data-theme="dark"] .theme-toggle .i-moon{display:none}
+@media (prefers-color-scheme: dark){
+  html:not([data-theme="light"]) .theme-toggle .i-sun{display:block}
+  html:not([data-theme="light"]) .theme-toggle .i-moon{display:none}
+}
+nav.top .theme-toggle{flex:none}
