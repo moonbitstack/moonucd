@@ -39,7 +39,11 @@
 <li><a href="#moonucd-has">has</a></li>
 <li><a href="#moonucd-lower">lower</a></li>
 <li><a href="#moonucd-numeric">numeric</a></li>
+<li><a href="#moonucd-numeric_value">numeric_value</a></li>
 <li><a href="#moonucd-simple_fold">simple_fold</a></li>
+<li><a href="#moonucd-simple_lower">simple_lower</a></li>
+<li><a href="#moonucd-simple_title">simple_title</a></li>
+<li><a href="#moonucd-simple_upper">simple_upper</a></li>
 <li><a href="#moonucd-title">title</a></li>
 <li><a href="#moonucd-upper">upper</a></li>
 <li><a href="#moonucd-version">version</a></li>
@@ -143,6 +147,16 @@ of a word becomes <code>ς</code>.</p></div>
 <div class="entry" id="moonucd-numeric">
 <h3><span class="kind">fn</span>numeric</h3>
 <pre class="sig">pub fn numeric(Char) -&gt; Numeric?</pre><p>The numeric type of <code>ch</code>; <code>None</code> for characters without a numeric value.</p></div>
+<div class="entry" id="moonucd-numeric_value">
+<h3><span class="kind">fn</span>numeric_value</h3>
+<pre class="sig">pub fn numeric_value(Char) -&gt; Double?</pre><p>The numeric value of <code>ch</code>: <code>7</code> for <code>'7'</code>, <code>0.5</code> for <code>'½'</code>, <code>100</code> for
+<code>'佰'</code>; <code>None</code> for characters that count nothing.</p><pre class="code">test {
+assert_eq(@moonucd.numeric_value('7'), Some(7.0))
+assert_eq(@moonucd.numeric_value('٣'), Some(3.0))
+assert_eq(@moonucd.numeric_value('½'), Some(0.5))
+assert_eq(@moonucd.numeric_value('五'), Some(5.0))
+assert_eq(@moonucd.numeric_value('中'), None)
+}</pre></div>
 <div class="entry" id="moonucd-simple_fold">
 <h3><span class="kind">fn</span>simple_fold</h3>
 <pre class="sig">pub fn simple_fold(Char) -&gt; Char</pre><p>The simple case folding of <code>ch</code>: the one character it turns into when case
@@ -153,6 +167,33 @@ assert_eq(@moonucd.simple_fold('A'), 'a')
 assert_eq(@moonucd.simple_fold('ς'), 'σ')
 assert_eq(@moonucd.simple_fold('ß'), 'ß')
 assert_eq(@moonucd.simple_fold('1'), '1')
+}</pre></div>
+<div class="entry" id="moonucd-simple_lower">
+<h3><span class="kind">fn</span>simple_lower</h3>
+<pre class="sig">pub fn simple_lower(Char) -&gt; Char</pre><p>The simple lowercase mapping of <code>ch</code>: one character in, one character out.
+<code>İ</code> becomes <code>i</code> here, where <code>lower</code> writes <code>i</code> and a combining dot.</p><pre class="code">test {
+assert_eq(@moonucd.simple_lower('A'), 'a')
+assert_eq(@moonucd.simple_lower('İ'), 'i')
+assert_eq(@moonucd.simple_lower('Σ'), 'σ')
+}</pre></div>
+<div class="entry" id="moonucd-simple_title">
+<h3><span class="kind">fn</span>simple_title</h3>
+<pre class="sig">pub fn simple_title(Char) -&gt; Char</pre><p>The simple titlecase mapping of <code>ch</code>: one character in, one character out.
+A character with no titlecase mapping of its own takes its uppercase one,
+which is why <code>ǆ</code> becomes <code>ǅ</code> or <code>Ǆ</code> depending on which call is used.</p><pre class="code">test {
+assert_eq(@moonucd.simple_title('ǆ'), 'ǅ')
+assert_eq(@moonucd.simple_title('a'), 'A')
+assert_eq(@moonucd.simple_title('中'), '中')
+}</pre></div>
+<div class="entry" id="moonucd-simple_upper">
+<h3><span class="kind">fn</span>simple_upper</h3>
+<pre class="sig">pub fn simple_upper(Char) -&gt; Char</pre><p>The simple uppercase mapping of <code>ch</code>: one character in, one character out,
+as UnicodeData lists it. <code>ß</code> stays <code>ß</code>, where <code>upper</code> writes <code>SS</code>; a caller
+that maps a character in place, a matcher or a keyboard, wants this one.</p><pre class="code">test {
+assert_eq(@moonucd.simple_upper('a'), 'A')
+assert_eq(@moonucd.simple_upper('ß'), 'ß')
+assert_eq(@moonucd.simple_upper('ǅ'), 'Ǆ')
+assert_eq(@moonucd.simple_upper('中'), '中')
 }</pre></div>
 <div class="entry" id="moonucd-title">
 <h3><span class="kind">fn</span>title</h3>

@@ -213,3 +213,88 @@ test "a fold class is ascending, holds its own member, and each of its members a
     }
   }
 }
+
+///|
+test "simple mappings agree with UnicodeData on every code point" {
+  assert_eq(
+    digest((ch, out) => out.push(@moonucd.simple_upper(ch).to_int())),
+    simple_upper_digest,
+  )
+  assert_eq(
+    digest((ch, out) => out.push(@moonucd.simple_lower(ch).to_int())),
+    simple_lower_digest,
+  )
+  assert_eq(
+    digest((ch, out) => out.push(@moonucd.simple_title(ch).to_int())),
+    simple_title_digest,
+  )
+}
+
+///|
+test "simple mappings on the usual suspects" {
+  assert_eq(@moonucd.simple_upper('a'), 'A')
+  assert_eq(@moonucd.simple_upper('ǅ'), 'Ǆ')
+  assert_eq(@moonucd.simple_upper('ß'), 'ß')
+  assert_eq(@moonucd.simple_lower('İ'), 'i')
+  assert_eq(@moonucd.simple_lower('Σ'), 'σ')
+  assert_eq(@moonucd.simple_title('ǆ'), 'ǅ')
+  assert_eq(@moonucd.simple_title('Ǆ'), 'ǅ')
+  assert_eq(@moonucd.simple_upper('中'), '中')
+  assert_eq(@moonucd.simple_lower('😀'), '😀')
+}
+
+///|
+test "a full mapping of one character is the simple mapping" {
+  for cp in 0..<0x110000 {
+    if cp >= 0xD800 && cp <= 0xDFFF {
+      continue
+    }
+    let ch = cp.unsafe_to_char()
+    let text = ch.to_string()
+    let upper = @moonucd.upper(text).iter().collect()
+    if upper.length() == 1 {
+      assert_eq(upper[0], @moonucd.simple_upper(ch))
+    }
+    let lower = @moonucd.lower(text).iter().collect()
+    if lower.length() == 1 {
+      assert_eq(lower[0], @moonucd.simple_lower(ch))
+    }
+    let title = @moonucd.title(text).iter().collect()
+    if title.length() == 1 {
+      assert_eq(title[0], @moonucd.simple_title(ch))
+    }
+  }
+}
+
+///|
+test "numeric values as the UCD writes them" {
+  for probe in numeric_value_probes {
+    let ch = probe.0.unsafe_to_char()
+    assert_eq(@moonucd.numeric_value(ch), Some(probe.1))
+  }
+  assert_eq(@moonucd.numeric_value('7'), Some(7.0))
+  assert_eq(@moonucd.numeric_value('٣'), Some(3.0))
+  assert_eq(@moonucd.numeric_value('½'), Some(0.5))
+  assert_eq(@moonucd.numeric_value('五'), Some(5.0))
+  assert_eq(@moonucd.numeric_value('中'), None)
+  assert_eq(@moonucd.numeric_value('A'), None)
+}
+
+///|
+test "a numeric value exactly when a numeric type, and no value without one" {
+  let mut counted = 0
+  for cp in 0..<0x110000 {
+    if cp >= 0xD800 && cp <= 0xDFFF {
+      continue
+    }
+    let ch = cp.unsafe_to_char()
+    match @moonucd.numeric_value(ch) {
+      Some(_) => {
+        assert_true(@moonucd.numeric(ch) is Some(_))
+        counted += 1
+      }
+      None => assert_true(@moonucd.numeric(ch) is None)
+    }
+  }
+  assert_eq(counted, numeric_value_count)
+}

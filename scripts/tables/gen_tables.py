@@ -74,9 +74,10 @@ NUMERIC = ["Decimal", "Digit", "Numeric"]
 
 
 def unicode_data(text):
-    """General category, bidi class and simple case mappings per code point,
-    with the <..., First>/<..., Last> pairs expanded."""
+    """General category, bidi class, simple case mappings and numeric values per
+    code point, with the <..., First>/<..., Last> pairs expanded."""
     category, bidi, upper, lower, title = {}, {}, {}, {}, {}
+    numeric_value = {}
     first = None
     for f in ucd.records(text):
         cp = int(f[0], 16)
@@ -96,7 +97,46 @@ def unicode_data(text):
             title[cp] = int(f[14], 16)
         elif f[12]:
             title[cp] = int(f[12], 16)
-    return category, bidi, upper, lower, title
+        # Decimal and digit values repeat the numeric field for most
+        # characters; the numeric field is the one that carries fractions.
+        for field in (f[8], f[7], f[6]):
+            if field:
+                numeric_value[cp] = rational(field)
+                break
+    return category, bidi, upper, lower, title, numeric_value
+
+
+def rational(field):
+    """A UnicodeData numeric field as a float: an integer, a decimal, or a
+    fraction written `numerator/denominator`."""
+    if "/" in field:
+        a, b = field.split("/")
+        return int(a) / int(b)
+    return float(field)
+
+
+def unihan_numeric(text):
+    """(code point, value) for every Unihan numeric entry: kPrimaryNumeric
+    first, then kOtherNumeric, then kAccountingNumeric for the numerals that
+    only have an accounting form. These are the numeric values of the CJK
+    characters UnicodeData does not carry one for."""
+    primary, other, accounting = {}, {}, {}
+    for line in text.splitlines():
+        line = line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        cp, field, value = line.split("\t")
+        # A character with more than one reading lists them in order of
+        # preference; the first is the one it counts as.
+        at = int(cp[2:], 16)
+        if field == "kPrimaryNumeric":
+            primary[at] = rational(value.split()[0])
+        elif field == "kOtherNumeric":
+            other.setdefault(at, rational(value.split()[0]))
+        elif field == "kAccountingNumeric":
+            accounting.setdefault(at, rational(value.split()[0]))
+    return {**accounting, **other, **primary}
+
 
 
 def special_casing(text):
@@ -176,10 +216,11 @@ def fold_orbits(simple):
     return orbit
 
 
-def write_vectors(version, cat_buckets, prop_buckets, simple, orbit):
+def write_vectors(version, cat_buckets, prop_buckets, simple, orbit, case, numeric):
     """The vectors the tests replay: a digest of each range table, of the fold
     of every code point, and of every fold class, plus the simple foldings as
-    the file lists them."""
+    the file lists them, a digest of each simple case mapping, and the numeric
+    values at the points where a table goes wrong if it goes wrong at all."""
     scalar = [cp for cp in range(0x110000) if not 0xD800 <= cp <= 0xDFFF]
     folded = [simple.get(cp, cp) for cp in scalar]
     classes = []
@@ -192,6 +233,11 @@ def write_vectors(version, cat_buckets, prop_buckets, simple, orbit):
     for variants, order in ((categories, CATEGORIES), (properties, PROPERTIES)):
         if variants != [ucd.camel(name) for name in order]:
             sys.exit("the enum and the table order no longer agree")
+    nv = sorted(numeric)
+    probes = nv[:: max(1, len(nv) // 32)]
+    probes += [cp for cp in nv if numeric[cp] != int(numeric[cp])]
+    probes += [cp for cp in nv if abs(numeric[cp]) >= 1000]
+    probes = sorted(set(probes))
     lines = ucd.header("gen_tables.py", version, "Test vectors only; not part of the package.") + [
         "",
         "///|",
@@ -232,6 +278,28 @@ def write_vectors(version, cat_buckets, prop_buckets, simple, orbit):
         ucd.mbt_ints("simple_fold_to", [simple[cp] for cp in pairs]),
         "",
     ]
+    for label, table in case:
+        mapped = [table.get(cp, cp) for cp in scalar]
+        lines += [
+            "///|",
+            f"/// FNV-1a over the simple {label} mapping of every code point that is",
+            "/// not a surrogate.",
+            f"let simple_{label}_digest : UInt32 = {fnv(mapped)}",
+            "",
+        ]
+    lines += [
+        "///|",
+        "/// How many code points carry a numeric value.",
+        f"let numeric_value_count : Int = {len(nv)}",
+        "",
+        "///|",
+        "/// The numeric values a table is most likely to lose: a sample across the",
+        "/// code space, every fraction, and every value of a thousand or more.",
+        "let numeric_value_probes : Array[(Int32, Double)] = [",
+        *[f"  ({cp}, {ucd.mbt_double(numeric[cp])})," for cp in probes],
+        "]",
+        "",
+    ]
     ucd.write(VECTORS, lines)
 
 
@@ -241,7 +309,9 @@ def main():
     version = parser.parse_args().version
     text = {name: ucd.fetch(version, name) for name in FILES}
 
-    category, bidi, upper, lower, title = unicode_data(text["UnicodeData.txt"])
+    category, bidi, upper, lower, title, numeric_value = unicode_data(
+        text["UnicodeData.txt"]
+    )
     for f in ucd.records(text["extracted/DerivedBidiClass.txt"]):
         a, b = ucd.span(f[0])
         for c in range(a, b + 1):
@@ -258,6 +328,13 @@ def main():
         a, b = ucd.span(f[0])
         for c in range(a, b + 1):
             numeric[c] = f[1]
+
+    # UnicodeData leaves CJK numerals without a value; Unihan is where their
+    # numbers live, and DerivedNumericType already counts them as Numeric.
+    for cp, value in unihan_numeric(
+        ucd.fetch_member(version, "Unihan.zip", "Unihan_NumericValues.txt")
+    ).items():
+        numeric_value.setdefault(cp, value)
 
     special = special_casing(text["SpecialCasing.txt"])
     full_upper, full_lower, full_title = {}, {}, {}
@@ -324,6 +401,23 @@ def main():
     out += ["///|", ucd.mbt_ints("numeric_ends", [r[1] for r in num_runs]), ""]
     out += ["///|", ucd.mbt_ints("numeric_values", [NUMERIC.index(r[2]) for r in num_runs]), ""]
 
+    nv_keys = sorted(numeric_value)
+    out += ["///|", ucd.mbt_ints("numeric_value_keys", nv_keys), ""]
+    out += [
+        "///|",
+        ucd.mbt_doubles("numeric_value_values", [numeric_value[cp] for cp in nv_keys]),
+        "",
+    ]
+
+    for label, table in (("upper", upper), ("lower", lower), ("title", title)):
+        keys = sorted(cp for cp, to in table.items() if to != cp)
+        out += ["///|", ucd.mbt_ints(f"simple_{label}_keys", keys), ""]
+        out += [
+            "///|",
+            ucd.mbt_ints(f"simple_{label}_values", [table[cp] for cp in keys]),
+            "",
+        ]
+
     prop_buckets = {name: ucd.merge(props[name]) for name in PROPERTIES}
     flat = []
     offsets = [0]
@@ -373,7 +467,15 @@ def main():
         print(f"  python {unicodedata.unidata_version} is not {version}: no unicodedata cross-check")
     else:
         print(f"  category ranges agree with unicodedata {version}")
-    write_vectors(version, cat_buckets if reference is None else reference, prop_buckets, simple, orbit)
+    write_vectors(
+        version,
+        cat_buckets if reference is None else reference,
+        prop_buckets,
+        simple,
+        orbit,
+        (("upper", upper), ("lower", lower), ("title", title)),
+        numeric_value,
+    )
 
 
 if __name__ == "__main__":

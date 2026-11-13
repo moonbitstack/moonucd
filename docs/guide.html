@@ -106,6 +106,18 @@
         <tr><td><code>Numeric</code></td><td>other characters with a numeric value</td><td><code>'½'</code> <code>'五'</code></td></tr>
       </table>
       <p>
+        <code>numeric_value</code> gives the number itself, as a <code>Double</code>: the UCD carries it for
+        the digits, the fractions and the number signs, and Unihan carries it for the CJK numerals, which
+        the UCD only classifies.
+      </p>
+      <pre>@moonucd.numeric_value('<span class="w1">7</span>')     <span class="c">// Some(7)</span>
+@moonucd.numeric_value('<span class="w1">½</span>')     <span class="c">// Some(0.5)</span>
+@moonucd.numeric_value('<span class="w1">⅓</span>')     <span class="c">// Some(0.3333333333333333)</span>
+@moonucd.numeric_value('<span class="w1">Ⅻ</span>')     <span class="c">// Some(12)</span>
+@moonucd.numeric_value('<span class="w2">五</span>')    <span class="c">// Some(5)</span>
+@moonucd.numeric_value('<span class="w2">百</span>')    <span class="c">// Some(100)</span>
+@moonucd.numeric_value('<span class="w2">中</span>')    <span class="c">// None</span></pre>
+      <p>
         <code>has</code> answers 50 binary properties through one enum: identifiers (<code>XidStart</code>,
         <code>XidContinue</code>, <code>PatternSyntax</code>), case (<code>Uppercase</code>, <code>Cased</code>,
         <code>ChangesWhenCasefolded</code>), emoji (<code>Emoji</code>, <code>EmojiPresentation</code>,
@@ -150,6 +162,15 @@ is_identifier("1st")       <span class="c">// false</span></pre>
         caller's choice, and <code>@segment.words</code> finds them. Rules that hold only in one language,
         such as the Turkish dotless i, are left to the caller as well.
       </p>
+      <p>
+        When one character has to stay one character — a matcher that rewrites what it matches, a key map, a
+        keyboard — take the simple mappings. They are the one line each character has in UnicodeData, beside
+        the full mappings that can grow a character into several.
+      </p>
+      <pre>@moonucd.simple_upper('<span class="w1">ß</span>')      <span class="c">// "<span class="w1">ß</span>" — one character in, one out</span>
+@moonucd.simple_lower('<span class="w1">İ</span>')      <span class="c">// "i"</span>
+@moonucd.simple_title('<span class="w1">ǆ</span>')      <span class="c">// "<span class="w1">ǅ</span>"</span>
+@moonucd.simple_upper('<span class="w1">ǅ</span>')      <span class="c">// "<span class="w1">Ǆ</span>"</span></pre>
       <p>To compare text regardless of case and of how accents are composed, fold between two normalizations:</p>
       <pre>fn same_text(a : String, b : String) -> Bool {
   let key = fn(s : String) {

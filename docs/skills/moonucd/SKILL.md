@@ -31,7 +31,7 @@ fn same_ignoring_case(a : String, b : String) -> Bool {
 }
 ```
 
-`fold` is full case folding; `upper` and `lower` are full case mapping with the special cases (`ß` to `SS`, final sigma). `simple_fold` maps one character to one character, for a matcher that ignores case character by character.
+`fold` is full case folding; `upper` and `lower` are full case mapping with the special cases (`ß` to `SS`, final sigma). `simple_fold` maps one character to one character, for a matcher that ignores case character by character. `simple_upper`, `simple_lower` and `simple_title` are the same one-in-one-out shape for case, for a key map or a matcher that rewrites a character in place.
 
 ## Normalise before storing or comparing
 
@@ -65,5 +65,6 @@ Cut by grapheme cluster, never by code point: an emoji sequence or a letter with
 
 - Offsets into strings are UTF-16 code units, the index MoonBit strings use: `word_at`, `grapheme_at` and `breaks` answer in them.
 - `width` answers -1 for a control character and 0 for a combining mark; East Asian Ambiguous characters are one cell unless you pass `ambiguous=2`, as a CJK terminal draws them.
+- `numeric_value` gives the number a character counts as (`7`, `0.5`, `100`), CJK numerals included; `numeric` gives only its kind.
 - `linebreaks` gives the pieces a line may break after, and `breaks` the offsets with whether each break is mandatory.
 - Every category, binary property and script answers `ranges()`: closed, ascending intervals with neighbours joined, which is what a pattern engine or a tokenizer wants.

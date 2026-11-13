@@ -37,7 +37,7 @@ The root package holds the general character facts. The other eight carry their 
 
 <table>
 <tr><th>Import</th><th>Answers</th><th>Main calls</th></tr>
-<tr><td><code>moonbitstack/moonucd</code></td><td>what a character is, how it changes case, the ranges a category or property covers</td><td><code>category</code> <code>bidi</code> <code>numeric</code> <code>has</code> <code>upper</code> <code>lower</code> <code>title</code> <code>fold</code> <code>simple_fold</code> <code>fold_orbit</code> <code>ranges</code></td></tr>
+<tr><td><code>moonbitstack/moonucd</code></td><td>what a character is, how it changes case, the ranges a category or property covers</td><td><code>category</code> <code>bidi</code> <code>numeric</code> <code>numeric_value</code> <code>has</code> <code>upper</code> <code>lower</code> <code>title</code> <code>fold</code> <code>simple_upper</code> <code>simple_lower</code> <code>simple_title</code> <code>simple_fold</code> <code>fold_orbit</code> <code>ranges</code></td></tr>
 <tr><td><code>…/moonucd/age</code></td><td>the version that first assigned a code point</td><td><code>age</code></td></tr>
 <tr><td><code>…/moonucd/block</code></td><td>the block of a code point, the range of a block</td><td><code>block</code> <code>range</code></td></tr>
 <tr><td><code>…/moonucd/name</code></td><td>the name of a code point, the code point of a name</td><td><code>name</code> <code>lookup</code></td></tr>
@@ -55,6 +55,10 @@ Every function is pure and runs on native, wasm, wasm-gc and js. Offsets into st
 ```moonbit
 assert_true(@moonucd.has('_', XidContinue))
 assert_eq(@moonucd.lower("ΣΟΦΟΣ ΣΟΦΟΣ"), "σοφος σοφος")
+assert_eq(@moonucd.numeric_value('½'), Some(0.5))
+assert_eq(@moonucd.numeric_value('五'), Some(5))
+assert_eq(@moonucd.simple_upper('ß'), 'ß')
+assert_eq(@moonucd.simple_title('ǆ'), 'ǅ')
 assert_eq(@age.age('€'), Some((2, 1)))
 assert_eq(@block.range("Greek"), Some(('\u{370}', '\u{3FF}')))
 assert_eq(@name.lookup("copyright sign"), Some('©'))
@@ -89,6 +93,11 @@ is what a match that ignores case character by character needs. `fold_orbit` giv
 character folds with, so a set closes under case without a walk of the code space.
 `Script::ranges` follows the script a character is listed under; `Script::extended_ranges` follows
 Script_Extensions, the scripts it is shared with.
+
+`simple_upper`, `simple_lower` and `simple_title` are the same one-character-in, one-character-out
+shape for case: a keyboard, a character map or a matcher that rewrites a character in place needs `ß`
+to stay `ß`, where `upper` writes `SS`. `numeric_value` answers the number a character counts as —
+`7`, `0.5`, `100` — and the CJK numerals take theirs from Unihan, where the UCD keeps them.
 
 ## Examples
 

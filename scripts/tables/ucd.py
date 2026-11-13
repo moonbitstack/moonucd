@@ -12,6 +12,7 @@ them here, in one place, so no two generators can disagree about a format.
 
 import pathlib
 import urllib.request
+import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CACHE = pathlib.Path(__file__).resolve().parent / ".ucd"
@@ -25,6 +26,19 @@ def fetch(version, name):
         path.parent.mkdir(parents=True, exist_ok=True)
         with urllib.request.urlopen(BASE.format(v=version, f=name)) as r:
             path.write_bytes(r.read())
+    return path.read_text(encoding="utf-8")
+
+
+def fetch_member(version, archive, member):
+    """The text of one file inside a UCD archive, downloaded once and cached
+    under the member's own name."""
+    path = CACHE / version / member
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with urllib.request.urlopen(BASE.format(v=version, f=archive)) as r:
+            data = r.read()
+        with zipfile.ZipFile(__import__("io").BytesIO(data)) as z:
+            path.write_bytes(z.read(member))
     return path.read_text(encoding="utf-8")
 
 
@@ -80,6 +94,27 @@ def mbt_ints(name, values, per_line=12, typ="Int32"):
     lines = [f"let {name} : FixedArray[{typ}] = ["]
     for i in range(0, len(values), per_line):
         chunk = ", ".join(str(v) for v in values[i : i + per_line])
+        lines.append(f"  {chunk},")
+    lines.append("]")
+    return "\n".join(lines)
+
+
+def mbt_double(v):
+    """A MoonBit Double literal that reads back as exactly `v`."""
+    text = repr(float(v))
+    if "e" in text or "E" in text:
+        # MoonBit reads a fractional literal, not an exponent: every value this
+        # repository stores is an integer or a small fraction, so one decimal
+        # place is exact.
+        text = f"{float(v):.1f}"
+    return text
+
+
+def mbt_doubles(name, values, per_line=8):
+    """A `let` of a FixedArray of doubles, wrapped for a readable width."""
+    lines = [f"let {name} : FixedArray[Double] = ["]
+    for i in range(0, len(values), per_line):
+        chunk = ", ".join(mbt_double(v) for v in values[i : i + per_line])
         lines.append(f"  {chunk},")
     lines.append("]")
     return "\n".join(lines)

@@ -20,7 +20,15 @@ pub fn lower(StringView) -> String
 
 pub fn numeric(Char) -> Numeric?
 
+pub fn numeric_value(Char) -> Double?
+
 pub fn simple_fold(Char) -> Char
+
+pub fn simple_lower(Char) -> Char
+
+pub fn simple_title(Char) -> Char
+
+pub fn simple_upper(Char) -> Char
 
 pub fn title(StringView) -> String
 

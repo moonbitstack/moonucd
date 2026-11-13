@@ -224,6 +224,26 @@ pub fn numeric(ch : Char) -> Numeric? {
 }
 
 ///|
+/// The numeric value of `ch`: `7` for `'7'`, `0.5` for `'½'`, `100` for
+/// `'佰'`; `None` for characters that count nothing.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.numeric_value('7'), Some(7.0))
+///   assert_eq(@moonucd.numeric_value('٣'), Some(3.0))
+///   assert_eq(@moonucd.numeric_value('½'), Some(0.5))
+///   assert_eq(@moonucd.numeric_value('五'), Some(5.0))
+///   assert_eq(@moonucd.numeric_value('中'), None)
+/// }
+/// ```
+pub fn numeric_value(ch : Char) -> Double? {
+  match find_index(numeric_value_keys, ch.to_int()) {
+    Some(i) => Some(numeric_value_values[i])
+    None => None
+  }
+}
+
+///|
 /// A binary property from PropList, DerivedCoreProperties and emoji-data.
 #derive(Eq, Debug)
 pub(all) enum Property {
@@ -428,6 +448,54 @@ pub fn simple_fold(ch : Char) -> Char {
 }
 
 ///|
+/// The simple uppercase mapping of `ch`: one character in, one character out,
+/// as UnicodeData lists it. `ß` stays `ß`, where `upper` writes `SS`; a caller
+/// that maps a character in place, a matcher or a keyboard, wants this one.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.simple_upper('a'), 'A')
+///   assert_eq(@moonucd.simple_upper('ß'), 'ß')
+///   assert_eq(@moonucd.simple_upper('ǅ'), 'Ǆ')
+///   assert_eq(@moonucd.simple_upper('中'), '中')
+/// }
+/// ```
+pub fn simple_upper(ch : Char) -> Char {
+  simple_map(ch, simple_upper_keys, simple_upper_values)
+}
+
+///|
+/// The simple lowercase mapping of `ch`: one character in, one character out.
+/// `İ` becomes `i` here, where `lower` writes `i` and a combining dot.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.simple_lower('A'), 'a')
+///   assert_eq(@moonucd.simple_lower('İ'), 'i')
+///   assert_eq(@moonucd.simple_lower('Σ'), 'σ')
+/// }
+/// ```
+pub fn simple_lower(ch : Char) -> Char {
+  simple_map(ch, simple_lower_keys, simple_lower_values)
+}
+
+///|
+/// The simple titlecase mapping of `ch`: one character in, one character out.
+/// A character with no titlecase mapping of its own takes its uppercase one,
+/// which is why `ǆ` becomes `ǅ` or `Ǆ` depending on which call is used.
+///
+/// ```mbt check
+/// test {
+///   assert_eq(@moonucd.simple_title('ǆ'), 'ǅ')
+///   assert_eq(@moonucd.simple_title('a'), 'A')
+///   assert_eq(@moonucd.simple_title('中'), '中')
+/// }
+/// ```
+pub fn simple_title(ch : Char) -> Char {
+  simple_map(ch, simple_title_keys, simple_title_values)
+}
+
+///|
 /// Every character that folds to or from `ch`, itself included, ascending:
 /// the class a caseless match of one character has to cover.
 ///
@@ -494,6 +562,20 @@ fn map_into(
     }
   } else {
     out.write_char(ch)
+  }
+}
+
+///|
+/// `ch` read through a one-character mapping table, or `ch` itself when the
+/// table has no entry for it.
+fn simple_map(
+  ch : Char,
+  keys : FixedArray[Int32],
+  values : FixedArray[Int32],
+) -> Char {
+  match find_index(keys, ch.to_int()) {
+    Some(i) => values[i].unsafe_to_char()
+    None => ch
   }
 }
 
