@@ -104,7 +104,9 @@ jobs:
         run: |
           moon update
           moon build --target native --release src/tools/dump_ucd
-          ./_build/native/release/build/tools/dump_ucd/dump_ucd > "$RUNNER_TEMP/ucd.tsv"
+          binary="$(find _build/native/release/build/tools/dump_ucd -maxdepth 1 -type f \( -name dump_ucd -o -name dump_ucd.exe \) | head -1)"
+          echo "dumping with $binary"
+          "$binary" > "$RUNNER_TEMP/ucd.tsv"
           wc -l "$RUNNER_TEMP/ucd.tsv"
 
       - name: compare with unicodedata2 and wcwidth
