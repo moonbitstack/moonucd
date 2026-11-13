@@ -44,6 +44,10 @@ let grapheme_text_part0 : String = "\r\r\r\u{0308}\r\r\n\r\u{0308}\n\r\u{0000}\r
 let grapheme_text : String = grapheme_text_part0
 
 ///|
+/// How many cases the official grapheme file holds.
+let grapheme_case_count : Int32 = 766
+
+///|
 /// Code point offset of each grapheme test case.
 let grapheme_bounds : FixedArray[Int32] = [
   0, 2, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35, 37, 40, 42, 45, 47, 50,
@@ -245,6 +249,10 @@ let word_text_part0 : String = "\r\r\r\u{0308}\r\r\n\r\u{0308}\n\r\u{000B}\r\u{0
 
 ///|
 let word_text : String = word_text_part0
+
+///|
+/// How many cases the official word file holds.
+let word_case_count : Int32 = 1944
 
 ///|
 /// Code point offset of each word test case.
@@ -510,6 +518,10 @@ let sentence_text_part0 : String = "\r\r\r\u{0308}\r\r\n\r\u{0308}\n\r\u{0300}\r
 
 ///|
 let sentence_text : String = sentence_text_part0
+
+///|
+/// How many cases the official sentence file holds.
+let sentence_case_count : Int32 = 512
 
 ///|
 /// Code point offset of each sentence test case.

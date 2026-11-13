@@ -1394,6 +1394,9 @@ def emit_tests():
     lines.append(ucd.mbt_string_pool(
         "lb_text", text, width=60, escaper=ucd.quote_full))
     lines.append("///|")
+    lines.append(f"/// How many cases LineBreakTest.txt holds.")
+    lines.append(f"let lb_case_count : Int = {n}")
+    lines.append("///|")
     lines.append("/// Code point offset of each LineBreakTest case.")
     lines.append(ucd.mbt_ints("lb_bounds", bounds, per_line=12, typ="Int"))
     lines.append("///|")

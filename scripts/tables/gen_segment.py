@@ -1265,6 +1265,9 @@ def emit_tests(cases_by_name):
         lines.append(ucd.mbt_string_pool(
             f"{name}_text", text, width=60, escaper=ucd.quote_full))
         lines.append("///|")
+        lines.append(f"/// How many cases the official {name} file holds.")
+        lines.append(f"let {name}_case_count : Int = {len(cases)}")
+        lines.append("///|")
         lines.append(f"/// Code point offset of each {name} test case.")
         lines.append(ucd.mbt_ints(f"{name}_bounds", bounds, per_line=12, typ="Int"))
         lines.append("///|")

@@ -120,3 +120,8 @@ test "is_normalized" {
   // to "1⁄4".
   assert_true(!@normalize.is_normalized(NFKC, "\u{00BC}"))
 }
+
+///|
+test "the vectors hold every source line the official file has" {
+  assert_eq(nt_source_bounds.length() - 1, nt_source_count)
+}

@@ -112,3 +112,10 @@ test "the cluster and the word at an offset" {
   assert_eq(@segment.word_at(words, 9), (7, 12))
   assert_eq(@segment.word_at(words, 5), (5, 6))
 }
+
+///|
+test "the vectors hold every case the official files have" {
+  assert_eq(grapheme_bounds.length() - 1, grapheme_case_count)
+  assert_eq(word_bounds.length() - 1, word_case_count)
+  assert_eq(sentence_bounds.length() - 1, sentence_case_count)
+}

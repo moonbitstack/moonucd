@@ -64,6 +64,10 @@ jobs:
         if: runner.os == 'Linux'
         run: python3 scripts/check_snippets.py
 
+      - name: the conformance table matches the vectors
+        if: runner.os == 'Linux'
+        run: python3 scripts/conformance.py --check
+
       - name: interfaces are up to date
         run: |
           moon info --target all && git -c core.autocrlf=false diff --ignore-cr-at-eol --exit-code
@@ -72,3 +76,43 @@ jobs:
         run: |
           python3 scripts/gen_api.py || python scripts/gen_api.py
           git -c core.autocrlf=false diff --ignore-cr-at-eol --exit-code docs/api.html
+
+  # A second implementation for everything the library answers: the official
+  # test files cover the algorithms, and these two cover the data behind them,
+  # code point by code point, for every property and every normalization form.
+  differential:
+    permissions:
+      contents: read
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: install moonbit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: the other implementations, at the same Unicode version
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet "unicodedata2==17.0.0" "wcwidth==0.2.14"
+          npm install --no-save --no-package-lock --prefix scripts/differential "@unicode/unicode-17.0.0@2.1.0"
+
+      - name: every answer the library gives about a code point
+        run: |
+          moon update
+          moon build --target native --release src/tools/dump_ucd
+          ./_build/native/release/build/tools/dump_ucd/dump_ucd > "$RUNNER_TEMP/ucd.tsv"
+          wc -l "$RUNNER_TEMP/ucd.tsv"
+
+      - name: compare with unicodedata2 and wcwidth
+        run: |
+          "$RUNNER_TEMP/venv/bin/python" scripts/differential/compare.py "$RUNNER_TEMP/ucd.tsv"
+
+      - name: compare with unicode-js
+        run: node scripts/differential/compare.mjs "$RUNNER_TEMP/ucd.tsv"
+
+      - name: how many cases the official suites hold
+        run: python3 scripts/conformance.py

@@ -3415,6 +3415,10 @@ let nt_sources_concat : String = nt_sources_concat_part0 +
   nt_sources_concat_part1
 
 ///|
+/// How many source lines NormalizationTest.txt holds.
+let nt_source_count : Int32 = 20034
+
+///|
 /// Cumulative code-point length of each NormalizationTest source.
 let nt_source_bounds : FixedArray[Int32] = [
   0, 1, 2, 4, 6, 9, 12, 14, 16, 19, 22, 26, 30, 31, 32, 34, 36, 37, 39, 41, 44, 47,

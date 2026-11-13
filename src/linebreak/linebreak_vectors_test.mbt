@@ -1021,6 +1021,10 @@ let lb_text_part1 : String = "\u{11A8}\"\u{11A8} \"\u{11A8}\u{0308}\"\u{11A8}\u{
 let lb_text : String = lb_text_part0 + lb_text_part1
 
 ///|
+/// How many cases LineBreakTest.txt holds.
+let lb_case_count : Int32 = 19338
+
+///|
 /// Code point offset of each LineBreakTest case.
 let lb_bounds : FixedArray[Int32] = [
   0, 2, 5, 8, 12, 14, 17, 20, 24, 26, 29, 32, 36, 38, 41, 44, 48, 50, 53, 56, 60,

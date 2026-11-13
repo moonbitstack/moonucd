@@ -67,3 +67,8 @@ test "property" {
   assert_eq(@linebreak.lb_property('a') == @linebreak.AL, true)
   assert_eq(@linebreak.lb_property('1') == @linebreak.NU, true)
 }
+
+///|
+test "the vectors hold every case the official file has" {
+  assert_eq(lb_bounds.length() - 1, lb_case_count)
+}

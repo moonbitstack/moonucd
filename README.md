@@ -115,6 +115,28 @@ to stay `ß`, where `upper` writes `SS`. `numeric_value` answers the number a ch
 moon run src/examples/07-terminal
 ```
 
+## Conformance
+
+The algorithms are replayed against the test files the Unicode Standard ships
+with them: every case of each file, on every build.
+
+<!-- conformance -->
+| File | Cases |
+|:--|--:|
+| `GraphemeBreakTest.txt` | 766 |
+| `SentenceBreakTest.txt` | 512 |
+| `WordBreakTest.txt` | 1,944 |
+| `LineBreakTest.txt` | 19,338 |
+| `NormalizationTest.txt` | 20,034 |
+<!-- /conformance -->
+
+The properties with no test file of their own — the block, the script, the
+numeric values, the case forms — are compared code point by code point with two
+independent implementations of the same Unicode version, all 1,112,064 of them.
+Where an implementation and the Standard disagree the Standard wins: Tangut and
+the newest CJK extensions take their names from the Standard's rule NR2, and
+are named here even though one of the two implementations has no name for them.
+
 ## Tables
 
 Every table is generated from the Unicode Character Database by the scripts in `scripts/tables`. Every package reports the version in `version()`, and a new Unicode version is a regeneration that leaves the interfaces as they are.

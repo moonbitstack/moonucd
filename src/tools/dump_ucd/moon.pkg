@@ -1,0 +1,11 @@
+import {
+  "moonbitstack/moonucd",
+  "moonbitstack/moonucd/block",
+  "moonbitstack/moonucd/linebreak",
+  "moonbitstack/moonucd/name",
+  "moonbitstack/moonucd/normalize",
+  "moonbitstack/moonucd/script",
+  "moonbitstack/moonucd/width",
+}
+
+pkgtype(kind: "executable")
